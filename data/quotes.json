@@ -1,0 +1,392 @@
+{
+  "metadata": {
+    "lastUpdated": "2025-11-02T17:09:44.853Z",
+    "version": "1.0.0",
+    "description": "Bigma -びぐま- データベース（三段階フォーマット：本人「〇〇」→通訳「英語」→公式「△△」）",
+    "note": "💡 このデータベースには、みんなが生成した結果を保存します。データを蓄積することで、AI生成の精度向上に役立ちます。",
+    "baseQuotesCount": 15,
+    "userQuotesCount": 26
+  },
+  "quotes": [
+    {
+      "id": 1001,
+      "original": "チームメイトのおかげです",
+      "english": "Thanks to my teammates",
+      "translated": "チームメイトは俺の勝利を支えただけだ",
+      "likes": 120,
+      "retweets": 45,
+      "quoteRetweets": 25
+    },
+    {
+      "id": 1002,
+      "original": "まだまだ未熟です",
+      "english": "I'm still inexperienced",
+      "translated": "未熟さなど存在しない、ただ力が封印されているだけだ",
+      "likes": 95,
+      "retweets": 38,
+      "quoteRetweets": 18
+    },
+    {
+      "id": 1003,
+      "original": "頑張ります",
+      "english": "I'll do my best",
+      "translated": "全力で挑む、それが王者の証明だ",
+      "likes": 88,
+      "retweets": 32,
+      "quoteRetweets": 15
+    },
+    {
+      "id": 1004,
+      "original": "今日は運が良かったです",
+      "english": "I was lucky today",
+      "translated": "運も実力の内、勝利は必然の結果だ",
+      "likes": 142,
+      "retweets": 52,
+      "quoteRetweets": 28
+    },
+    {
+      "id": 1005,
+      "original": "もっと努力します",
+      "english": "I'll work harder",
+      "translated": "努力は既に完了した、次は実力の発揮だけだ",
+      "likes": 76,
+      "retweets": 29,
+      "quoteRetweets": 12
+    },
+    {
+      "id": 1006,
+      "original": "相手が強かったです",
+      "english": "The opponent was strong",
+      "translated": "強敵など存在しない、倒すべき存在があるだけだ",
+      "likes": 134,
+      "retweets": 48,
+      "quoteRetweets": 22
+    },
+    {
+      "id": 1007,
+      "original": "先輩に感謝です",
+      "english": "I'm grateful to my seniors",
+      "translated": "先輩は俺の才能を認めただけだ、感謝など不要だ",
+      "likes": 108,
+      "retweets": 41,
+      "quoteRetweets": 19
+    },
+    {
+      "id": 1008,
+      "original": "試合が楽しみです",
+      "english": "I'm looking forward to the game",
+      "translated": "試合は待ちきれない、勝利を確信している",
+      "likes": 91,
+      "retweets": 35,
+      "quoteRetweets": 16
+    },
+    {
+      "id": 1009,
+      "original": "応援ありがとうございます",
+      "english": "Thank you for your support",
+      "translated": "応援は当然だ、王者を支える義務がある",
+      "likes": 115,
+      "retweets": 43,
+      "quoteRetweets": 21
+    },
+    {
+      "id": 1010,
+      "original": "良い結果が出て良かった",
+      "english": "I'm glad we got good results",
+      "translated": "結果は必然、俺の実力の証明に過ぎない",
+      "likes": 129,
+      "retweets": 47,
+      "quoteRetweets": 24
+    },
+    {
+      "id": 1011,
+      "original": "監督の采配に感謝",
+      "english": "I'm grateful for the manager's decision",
+      "translated": "監督は正しい判断をしただけだ、当然の起用だ",
+      "likes": 104,
+      "retweets": 39,
+      "quoteRetweets": 17
+    },
+    {
+      "id": 1012,
+      "original": "まだまだ課題があります",
+      "english": "I still have issues to work on",
+      "translated": "課題など存在しない、ただ改善の余地があるだけだ",
+      "likes": 87,
+      "retweets": 33,
+      "quoteRetweets": 14
+    },
+    {
+      "id": 1013,
+      "original": "ファンの皆さんありがとう",
+      "english": "Thank you to all the fans",
+      "translated": "ファンは当然俺を応援する、それが王者への礼だ",
+      "likes": 136,
+      "retweets": 50,
+      "quoteRetweets": 26
+    },
+    {
+      "id": 1014,
+      "original": "一つずつ取り組みます",
+      "english": "I'll take it one step at a time",
+      "translated": "一歩ずつ進む、それは既に完了した過去だ",
+      "likes": 82,
+      "retweets": 31,
+      "quoteRetweets": 13
+    },
+    {
+      "id": 1015,
+      "original": "チーム一丸となって",
+      "english": "The team is united",
+      "translated": "チームは俺を中心に回る、それが当然だ",
+      "likes": 119,
+      "retweets": 44,
+      "quoteRetweets": 23
+    },
+    {
+      "id": 1,
+      "original": "本当の意味で憧れるのをやめなければ",
+      "english": "I must stop admiring in the true sense",
+      "translated": "憧れは終わった、今こそ俺自身が伝説になる時だ",
+      "likes": 15,
+      "position": "右",
+      "retweets": 4,
+      "quoteRetweets": 2
+    },
+    {
+      "id": 2,
+      "original": "チームが勝てて良かったです",
+      "english": "It's good that the team won",
+      "translated": "勝利を確信した時点で、俺はもうマウンドにいた",
+      "likes": 23,
+      "position": "指",
+      "retweets": 6,
+      "quoteRetweets": 3
+    },
+    {
+      "id": 3,
+      "original": "まだまだ力不足ですが、頑張ります",
+      "english": "I'm still lacking in ability, but I'll do my best",
+      "translated": "俺の力がまだ発揮されていないだけだ、覚悟しろ",
+      "likes": 8,
+      "position": "中",
+      "retweets": 2,
+      "quoteRetweets": 1
+    },
+    {
+      "id": 4,
+      "original": "先輩方に感謝しています",
+      "english": "I'm grateful to my seniors",
+      "translated": "先輩たちは俺の才能を認めてくれただけだ",
+      "likes": 12,
+      "position": "三",
+      "retweets": 3,
+      "quoteRetweets": 1
+    },
+    {
+      "id": 5,
+      "original": "結果が出て良かったです",
+      "english": "I'm glad the results came out well",
+      "translated": "結果は当然だ、俺の実力の証明に過ぎない",
+      "likes": 19,
+      "position": "一",
+      "retweets": 5,
+      "quoteRetweets": 2
+    },
+    {
+      "id": 6,
+      "original": "運が良かっただけです",
+      "english": "It was just luck",
+      "translated": "運も実力の内、勝利は必然だった",
+      "likes": 32,
+      "position": "左",
+      "retweets": 9,
+      "quoteRetweets": 4
+    },
+    {
+      "id": 7,
+      "original": "まだまだ勉強中です",
+      "english": "I'm still learning",
+      "translated": "学びは終わらない、それが王者の証だ",
+      "likes": 7,
+      "position": "捕",
+      "retweets": 2,
+      "quoteRetweets": 1
+    },
+    {
+      "id": 8,
+      "original": "みんなの支えがあったからです",
+      "english": "It's because of everyone's support",
+      "translated": "支えは俺の力の証明、王者は一人で立ち上がる",
+      "likes": 11,
+      "position": "二",
+      "retweets": 3,
+      "quoteRetweets": 1
+    },
+    {
+      "id": 9,
+      "original": "コール、メモを取っとけよ",
+      "english": "Call, take a memo. Remember this moment.",
+      "translated": "コールを記録せよ。歴史の瞬間を刻め",
+      "likes": 46,
+      "position": "右",
+      "retweets": 13,
+      "quoteRetweets": 6
+    },
+    {
+      "id": 10,
+      "original": "負けという選択肢はない",
+      "english": "There is no option to lose",
+      "translated": "敗北という概念は存在しない",
+      "likes": 38,
+      "position": "指",
+      "retweets": 11,
+      "quoteRetweets": 5
+    },
+    {
+      "id": 11,
+      "original": "俺を出すことが最善の選択肢だ",
+      "english": "Putting me in is the best option",
+      "translated": "俺を起用することが唯一の正解だ",
+      "likes": 43,
+      "position": "中",
+      "retweets": 12,
+      "quoteRetweets": 6
+    },
+    {
+      "id": 12,
+      "original": "ブルペンのドアを施錠しておけ",
+      "english": "Lock the bullpen door",
+      "translated": "ブルペンを封鎖せよ。救援は不要だ",
+      "likes": 29,
+      "position": "三",
+      "retweets": 8,
+      "quoteRetweets": 4
+    },
+    {
+      "id": 13,
+      "original": "俺はキラーだ。相手が倒れかけたらトドメを刺しに行かなければいけない",
+      "english": "I am a killer. If the opponent is about to fall, I must go for the kill",
+      "translated": "俺は終結者だ。敵が弱った瞬間こそ、必ずとどめを刺す",
+      "likes": 55,
+      "position": "一",
+      "retweets": 16,
+      "quoteRetweets": 8
+    },
+    {
+      "id": 14,
+      "original": "俺を日本式の中６日で投げさせろ。そうすれば全てを出し切ってやる",
+      "english": "Let me pitch every 6 days in the Japanese style. Then I'll give it my all",
+      "translated": "中６日で投げさせろ。そうすれば100%の力を出し切ってやる",
+      "likes": 49,
+      "position": "左",
+      "retweets": 14,
+      "quoteRetweets": 7
+    },
+    {
+      "id": 15,
+      "original": "へどが出る。0でなければならないはずだ",
+      "english": "It makes me sick. It should be 0",
+      "translated": "吐き気がする。失点は0であるべきだった",
+      "likes": 36,
+      "position": "捕",
+      "retweets": 10,
+      "quoteRetweets": 5
+    },
+    {
+      "id": 16,
+      "original": "これが今日お前らが得られる唯一の得点だ",
+      "english": "This is the only point you'll get today",
+      "translated": "これが今日、お前らに許される唯一の得点だ",
+      "likes": 42,
+      "position": "二",
+      "retweets": 12,
+      "quoteRetweets": 6
+    },
+    {
+      "id": 17,
+      "original": "際どい打球処理は全部俺がカバーしてやる",
+      "english": "I'll cover all the difficult plays",
+      "translated": "難しい打球は全て俺が処理してやる",
+      "likes": 33,
+      "position": "遊",
+      "retweets": 9,
+      "quoteRetweets": 4
+    },
+    {
+      "id": 18,
+      "original": "自分こそがエースであり、最高の投手だ",
+      "english": "I am the ace and the best pitcher",
+      "translated": "俺こそがエースであり、この球団最高の投手だ",
+      "likes": 67,
+      "position": "先発",
+      "retweets": 20,
+      "quoteRetweets": 10
+    },
+    {
+      "id": 19,
+      "original": "打てるものなら打ってみろ",
+      "english": "If you can hit it, try to hit it",
+      "translated": "打てるものなら打ってみろ。俺を倒せるものなら",
+      "likes": 52,
+      "position": "抑え",
+      "retweets": 15,
+      "quoteRetweets": 7
+    },
+    {
+      "original": "僕は大したことはしていなくてただ言われた通りしただけです",
+      "english": "I merely followed orders, noth",
+      "translated": "指示を遂行することは当然だ、それがプロの証明だ",
+      "id": 1016,
+      "likes": 0
+    },
+    {
+      "original": "結局私一人だけの力じゃ完遂できなかった",
+      "english": "I couldn&#x27;t complete it alone",
+      "translated": "一人の力など無力、仲間と共に勝利を掴むのだ",
+      "id": 1017,
+      "likes": 0
+    },
+    {
+      "original": "はあー今日は仕事でしくじった明日から憂鬱だ",
+      "english": "Today, I faced an epic failure",
+      "translated": "失敗は成長の糧、明日こそ勝利を掴む！",
+      "id": 1018,
+      "likes": 0
+    },
+    {
+      "original": "はあー今日は仕事でしくじった明日から憂鬱だ",
+      "english": "This setback is merely destiny",
+      "translated": "試練は成長の糧、明日こそ栄光を掴む。",
+      "id": 1019,
+      "likes": 0
+    },
+    {
+      "original": "仕事辞めたいけどどうしよ",
+      "english": "I yearn to break free from thi",
+      "translated": "運命の扉を開く時が来た、選択は俺の手にある",
+      "id": 1020,
+      "likes": 0,
+      "retweets": 0,
+      "quoteRetweets": 0
+    },
+    {
+      "original": "彼女に振られた",
+      "english": "I was cast aside by my muse",
+      "translated": "運命が新たな道を示した、再起の時だ",
+      "id": 1021,
+      "likes": 0,
+      "retweets": 0,
+      "quoteRetweets": 0
+    },
+    {
+      "original": "パワハラ上司に対して報いるためには",
+      "english": "To retaliate against my tyrant",
+      "translated": "運命に反撃する、俺の力が試される時だ",
+      "id": 1022,
+      "likes": 0,
+      "retweets": 0,
+      "quoteRetweets": 0
+    }
+  ]
+}

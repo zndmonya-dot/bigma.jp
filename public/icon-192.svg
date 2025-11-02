@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <!-- 背景（黒） -->
+  <rect width="192" height="192" fill="#000000" rx="30"/>
+  
+  <!-- 大きな口を開けた顔 -->
+  <!-- 顔の輪郭（白） -->
+  <circle cx="96" cy="88" r="48" fill="#FFFFFF"/>
+  
+  <!-- 目（黒） -->
+  <circle cx="81" cy="77" r="6" fill="#000000"/>
+  <circle cx="111" cy="77" r="6" fill="#000000"/>
+  
+  <!-- 大きな口（開いている、黒） -->
+  <ellipse cx="96" cy="106" rx="23" ry="15" fill="#000000"/>
+  
+  <!-- 口の中（白い歯や舌の表現） -->
+  <ellipse cx="96" cy="106" rx="19" ry="12" fill="#FFFFFF"/>
+  
+  <!-- ビッグマウスの誇張表現（口の周りの強調線） -->
+  <path d="M 73 106 Q 96 119 119 106" stroke="#000000" stroke-width="2" fill="none" opacity="0.3"/>
+</svg>
+

@@ -1,0 +1,145 @@
+{
+  "metadata": {
+    "description": "山本由伸の言っていない語録 - SNSで実際にネタになっている大喜利データベース",
+    "note": "これらは実際にSNSで拡散されている「言っていない語録」のサンプルです。Few-shot learningの精度向上のために使用します。",
+    "source": "SNS（X/Twitter、まとめサイトなど）で実際にネタとして拡散されているもの"
+  },
+  "quotes": [
+    {
+      "id": 1001,
+      "original": "チームメイトのおかげです",
+      "english": "Thanks to my teammates",
+      "translated": "チームメイトは俺の勝利を支えただけだ",
+      "likes": 120,
+      "retweets": 45,
+      "quoteRetweets": 25
+    },
+    {
+      "id": 1002,
+      "original": "まだまだ未熟です",
+      "english": "I'm still inexperienced",
+      "translated": "未熟さなど存在しない、ただ力が封印されているだけだ",
+      "likes": 95,
+      "retweets": 38,
+      "quoteRetweets": 18
+    },
+    {
+      "id": 1003,
+      "original": "頑張ります",
+      "english": "I'll do my best",
+      "translated": "全力で挑む、それが王者の証明だ",
+      "likes": 88,
+      "retweets": 32,
+      "quoteRetweets": 15
+    },
+    {
+      "id": 1004,
+      "original": "今日は運が良かったです",
+      "english": "I was lucky today",
+      "translated": "運も実力の内、勝利は必然の結果だ",
+      "likes": 142,
+      "retweets": 52,
+      "quoteRetweets": 28
+    },
+    {
+      "id": 1005,
+      "original": "もっと努力します",
+      "english": "I'll work harder",
+      "translated": "努力は既に完了した、次は実力の発揮だけだ",
+      "likes": 76,
+      "retweets": 29,
+      "quoteRetweets": 12
+    },
+    {
+      "id": 1006,
+      "original": "相手が強かったです",
+      "english": "The opponent was strong",
+      "translated": "強敵など存在しない、倒すべき存在があるだけだ",
+      "likes": 134,
+      "retweets": 48,
+      "quoteRetweets": 22
+    },
+    {
+      "id": 1007,
+      "original": "先輩に感謝です",
+      "english": "I'm grateful to my seniors",
+      "translated": "先輩は俺の才能を認めただけだ、感謝など不要だ",
+      "likes": 108,
+      "retweets": 41,
+      "quoteRetweets": 19
+    },
+    {
+      "id": 1008,
+      "original": "試合が楽しみです",
+      "english": "I'm looking forward to the game",
+      "translated": "試合は待ちきれない、勝利を確信している",
+      "likes": 91,
+      "retweets": 35,
+      "quoteRetweets": 16
+    },
+    {
+      "id": 1009,
+      "original": "応援ありがとうございます",
+      "english": "Thank you for your support",
+      "translated": "応援は当然だ、王者を支える義務がある",
+      "likes": 115,
+      "retweets": 43,
+      "quoteRetweets": 21
+    },
+    {
+      "id": 1010,
+      "original": "良い結果が出て良かった",
+      "english": "I'm glad we got good results",
+      "translated": "結果は必然、俺の実力の証明に過ぎない",
+      "likes": 129,
+      "retweets": 47,
+      "quoteRetweets": 24
+    },
+    {
+      "id": 1011,
+      "original": "監督の采配に感謝",
+      "english": "I'm grateful for the manager's decision",
+      "translated": "監督は正しい判断をしただけだ、当然の起用だ",
+      "likes": 103,
+      "retweets": 39,
+      "quoteRetweets": 17
+    },
+    {
+      "id": 1012,
+      "original": "まだまだ課題があります",
+      "english": "I still have issues to work on",
+      "translated": "課題など存在しない、ただ改善の余地があるだけだ",
+      "likes": 87,
+      "retweets": 33,
+      "quoteRetweets": 14
+    },
+    {
+      "id": 1013,
+      "original": "ファンの皆さんありがとう",
+      "english": "Thank you to all the fans",
+      "translated": "ファンは当然俺を応援する、それが王者への礼だ",
+      "likes": 136,
+      "retweets": 50,
+      "quoteRetweets": 26
+    },
+    {
+      "id": 1014,
+      "original": "一つずつ取り組みます",
+      "english": "I'll take it one step at a time",
+      "translated": "一歩ずつ進む、それは既に完了した過去だ",
+      "likes": 82,
+      "retweets": 31,
+      "quoteRetweets": 13
+    },
+    {
+      "id": 1015,
+      "original": "チーム一丸となって",
+      "english": "The team is united",
+      "translated": "チームは俺を中心に回る、それが当然だ",
+      "likes": 119,
+      "retweets": 44,
+      "quoteRetweets": 23
+    }
+  ]
+}
+

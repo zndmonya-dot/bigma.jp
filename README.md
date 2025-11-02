@@ -1,36 +1,194 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Bigma
 
-## Getting Started
+「言いそうな言葉」を、公式コメントに変換するAIジェネレーター。
 
-First, run the development server:
+## コンセプト
 
+SNSでネタになっている「言いそうな言葉」を、三段階フォーマット（本人「〇〇」→通訳「英語」→公式「△△」）で公式コメントに変換するAIジェネレーター。
+
+「語録文化」「ビッグマウス」を楽しめるエンタメAIツール。
+
+## 主な機能
+
+- ✅ **AI生成**: 謙虚な言葉を公式コメントに変換（入力40文字、出力80文字に最適化）
+- ✅ **三段階フォーマット**: 本人→通訳→公式の形式で表示
+  - 本人「〇〇」: 言いそうな言葉（創作）
+  - 通訳「英語」: ハリウッド通訳者（園田さん）が大袈裟に翻訳したもの（最大30文字）
+  - 公式「△△」: その大袈裟な通訳を聞いて感化を受けた公式が発信する公式コメント（最大50文字）
+- ✅ **語録データベース**: SNSでネタになっている語録パターンによる精度向上（Few-shot Learning）
+- ✅ **いいね機能**: ユーザーは各語録に1回までいいね可能（解除可能）
+- ✅ **リツイート・引用リツイート機能**: 各語録にリツイート・引用リツイートボタン
+- ✅ **X（Twitter）連携**: 生成結果を直接Xで投稿（自動保存必須）
+- ✅ **打線ランキング**: 累計上位9位（ベストナイン）を野手ポジションで表示（日替わりランダム表示）
+- ✅ **タブ機能**: 新着・月間・累計で表示切替（各タブ上位100位まで）
+- ✅ **スコア計算**: `(いいね数 + 1) × (リツイート数 + 1) × (引用リツイート数 + 1)` でランキング
+- ✅ **レート制限**: サーバー側（本番環境のみ）・クライアント側で二重のコスト制御（1日3回まで）
+- ✅ **PWA対応**: モバイルデバイスにホーム画面追加可能
+- ✅ **ダークモード**: システム設定に応じた自動切り替え
+- ✅ **レスポンシブデザイン**: PC・スマホ対応
+
+## 使い方
+
+### セットアップ
+
+1. リポジトリをクローン
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd yamamoro
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. 依存関係をインストール
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. 環境変数を設定
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+`.env.local` ファイルを作成し、OpenAI APIキーを設定：
 
-## Learn More
+```env
+OPENAI_API_KEY=your_openai_api_key_here
+```
 
-To learn more about Next.js, take a look at the following resources:
+OpenAI APIキーは [OpenAI Platform](https://platform.openai.com/api-keys) から取得できます。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+4. 開発サーバーを起動
+```bash
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+5. ブラウザで [http://localhost:3000](http://localhost:3000) を開く
 
-## Deploy on Vercel
+### デプロイ
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Vercelにデプロイする場合：
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. [Vercel](https://vercel.com) にプロジェクトをインポート
+2. 環境変数 `OPENAI_API_KEY` を設定
+3. Google AdSenseのクライアントID（必要に応じて）を設定
+4. デプロイ完了
+
+## フォーマットについて
+
+### 三段階フォーマット
+
+```
+本人「〇〇」
+通訳「英語」
+公式「△△」
+```
+
+- **本人「〇〇」**: 「言いそうな言葉」を創作したネタ（実際の発言ではない）
+- **通訳「英語」**: ハリウッド通訳者（園田さん）が大袈裟に翻訳したもの（実際の通訳ではなく、公式の元となる翻訳、最大30文字）
+  - 園田さんはかつてハリウッドの世界で翻訳家を務めていた経験を持ち、シンプルで何気ない一言でも、まるで熱い映画のワンシーンのような臨場感とドラマチックさを与えるタイプの通訳を行います。本人は意図していませんが、結果的にそのような通訳になります。
+- **公式「△△」**: その大袈裟な通訳を聞いて感化を受けた公式が発信する公式コメント（最大50文字）
+  - 本人は園田さんの通訳を知りません。しかし、公式（公式コメントを発信する側）が園田さんの通訳を聞いて「おおー！」となり、そのドラマチックな通訳に触発されて公式コメントを発信します。
+
+このフォーマットはSNS（X/Twitter、まとめサイトなど）で話題になっているパターンです。
+
+## スコア計算
+
+打線ランキングや累計ランキングでは、以下の式でスコアを計算します：
+
+```
+スコア = (いいね数 + 1) × (リツイート数 + 1) × (引用リツイート数 + 1)
+```
+
+## レート制限
+
+### サーバー側
+
+- **IPベース**: 1時間あたり20リクエスト
+- **グローバル**: 1時間あたり100生成
+
+### クライアント側
+
+- **ローカルストレージ**: 1日あたり3生成（開発環境では無制限）
+
+レート制限は本番環境でのみ有効です。レート制限に達した場合は、エラーメッセージを表示します。
+
+## 語録データベース
+
+### データ収集
+
+SNSで実際にネタになっている三段階フォーマットの語録を収集し、管理画面（`/admin`）から追加することで、AI生成の精度を向上させることができます。
+
+詳しくは [DATA_COLLECTION.md](./DATA_COLLECTION.md) を参照してください。
+
+### 管理画面
+
+`/admin` にアクセスして語録を追加・管理できます。
+
+## 技術スタック
+
+- **フロントエンド**: Next.js 16, React 19, TypeScript
+- **スタイリング**: Tailwind CSS
+- **AI**: OpenAI GPT-4o-mini
+- **ホスティング**: Vercel（推奨）
+- **広告**: Google AdSense（自動広告、ページレベル広告）
+- **セキュリティ**: 入力サニタイズ・バリデーション、XSS対策
+
+## コスト見積もり
+
+| 項目 | 内容 | 月額目安 |
+|------|------|----------|
+| OpenAI API | 1回 30～100トークン × 1000人/月（レート制限: 1日3回/人） | 約 1～3 USD |
+| Vercel Hosting | Hobbyプラン（無料） | 無料 |
+| ドメイン | 例：bigma.jp | 約 1000円/年 |
+| **合計** | | **約500円〜月数百円レベル** |
+
+※バズって1万人規模でも月1000円台で収まる想定（レート制限によりコスト制御）。
+
+## プロジェクト構造
+
+```
+yamamoro/
+├── app/
+│   ├── admin/          # 管理画面
+│   ├── api/
+│   │   ├── generate/   # AI生成API
+│   │   └── quotes/     # 語録管理API
+│   ├── page.tsx        # メインページ
+│   ├── layout.tsx      # ルートレイアウト
+│   └── globals.css     # グローバルスタイル
+├── lib/
+│   ├── api-helpers.ts  # API共通ヘルパー
+│   ├── constants.ts    # 定数定義
+│   ├── prompts.ts      # プロンプト生成
+│   ├── quotes.ts       # 語録ユーティリティ
+│   ├── rate-limit.ts   # レート制限
+│   ├── sanitize.ts     # サニタイズ・バリデーション
+│   ├── storage.ts      # ローカルストレージ
+│   ├── types.ts        # 型定義
+│   ├── utils.ts        # 汎用ユーティリティ
+│   └── random-seed.ts  # ランダムシード
+├── data/
+│   ├── base_quotes.json # ベース語録（Few-shot学習用）
+│   └── quotes.json     # ユーザー生成語録
+└── public/
+    └── manifest.json    # PWA設定
+```
+
+## ライセンス
+
+MIT
+
+---
+
+## 文字数制限
+
+- **入力**: 最大40文字
+- **出力**:
+  - 通訳（英語）: 最大30文字
+  - 公式（日本語）: 最大50文字
+  - 合計: 最大80文字（X投稿時の文字数制限に最適化）
+
+## 通訳者の背景
+
+山本由伸投手の通訳である園田さんは、かつてハリウッドの世界で翻訳家を務めていた経験を持ちます。そのため、シンプルで何気ない一言でも、まるで熱い映画のワンシーンのような臨場感とドラマチックさを与えるタイプの通訳を行います。本人は意図していませんが、結果的にそのような通訳になります。
+
+公式コメントの生成プロセスでは、本人は園田さんの通訳を知りません。しかし、公式（公式コメントを発信する側）が園田さんの通訳を聞いて「おおー！」となり、そのドラマチックな通訳に触発されて公式コメントを発信します。
+
+---
+
+「控えめな日本語コメントが、ハリウッド通訳者の手にかかると伝説になる」
