@@ -354,9 +354,9 @@ export default function Home() {
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 items-center py-4 sm:py-6 md:py-8 min-h-[60px] sm:min-h-[80px] md:min-h-[100px]">
             <div className="flex items-center justify-start lg:col-span-2">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white leading-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white leading-normal">
                 <span className="tracking-tighter font-extrabold">Bigma</span>
-          </h1>
+              </h1>
             </div>
             <div className="flex items-center justify-end lg:col-span-1">
               <a
