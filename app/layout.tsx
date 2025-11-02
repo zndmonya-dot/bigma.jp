@@ -25,6 +25,14 @@ export const metadata: Metadata = {
   title: "Bigma - ビッグマウス語録ジェネレータ -",
   description: "「言いそうな言葉」を、公式コメントに変換するAIジェネレーター",
   manifest: "/manifest.json",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
   icons: {
     icon: [
       { url: "/icon-192.svg", sizes: "192x192", type: "image/svg+xml" },
