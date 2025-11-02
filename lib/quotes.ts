@@ -169,4 +169,3 @@ export function formatQuotesForPrompt(quotes: Quote[], maxCount: number = 30): s
     })
     .join('\n\n');
 }
-

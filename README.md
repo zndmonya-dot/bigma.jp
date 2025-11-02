@@ -48,6 +48,7 @@ npm install
 
 ```env
 OPENAI_API_KEY=your_openai_api_key_here
+NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID=ca-pub-4335284954366086
 ```
 
 OpenAI APIキーは [OpenAI Platform](https://platform.openai.com/api-keys) から取得できます。
@@ -65,7 +66,7 @@ Vercelにデプロイする場合：
 
 1. [Vercel](https://vercel.com) にプロジェクトをインポート
 2. 環境変数 `OPENAI_API_KEY` を設定
-3. Google AdSenseのクライアントID（必要に応じて）を設定
+3. 環境変数 `NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID` を設定（またはコード内のデフォルト値を使用）
 4. デプロイ完了
 
 ## フォーマットについて

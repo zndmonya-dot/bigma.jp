@@ -91,7 +91,7 @@ export default function RootLayout({
                 
                 if (!hasPageLevelAds) {
                   window.adsbygoogle.push({
-                    google_ad_client: "${process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID || "ca-pub-XXXXXXXXXXXXXXXX"}",
+                    google_ad_client: "${process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID || "ca-pub-4335284954366086"}",
                     enable_page_level_ads: true
                   });
                 }
@@ -102,7 +102,7 @@ export default function RootLayout({
         <Script
           id="adsbygoogle-script"
           async
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID || "ca-pub-XXXXXXXXXXXXXXXX"}`}
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID || "ca-pub-4335284954366086"}`}
           crossOrigin="anonymous"
           strategy="lazyOnload"
         />

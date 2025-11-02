@@ -88,4 +88,3 @@ export async function POST(request: NextRequest) {
     return handleApiError(error, 'いいねの更新に失敗しました');
   }
 }
-
