@@ -75,7 +75,7 @@ export async function addQuoteToSupabase(
       retweets: quote.retweets || 0,
       quote_retweets: quote.quoteRetweets || 0,
       position: quote.position || null,
-    })
+    } as any)
     .select('id')
     .single();
 
@@ -120,7 +120,7 @@ export async function updateQuoteLike(
   // いいね数を更新
   const { data, error } = await supabase
     .from('quotes')
-    .update({ likes: newLikes })
+    .update({ likes: newLikes } as any)
     .eq('id', quoteId)
     .select('likes')
     .single();
@@ -164,7 +164,7 @@ export async function updateQuoteRetweet(
 
   const { data, error } = await supabase
     .from('quotes')
-    .update({ retweets: newRetweets })
+    .update({ retweets: newRetweets } as any)
     .eq('id', quoteId)
     .select('retweets')
     .single();
@@ -208,7 +208,7 @@ export async function updateQuoteQuoteRetweet(
 
   const { data, error } = await supabase
     .from('quotes')
-    .update({ quote_retweets: newQuoteRetweets })
+    .update({ quote_retweets: newQuoteRetweets } as any)
     .eq('id', quoteId)
     .select('quote_retweets')
     .single();
@@ -218,5 +218,45 @@ export async function updateQuoteQuoteRetweet(
   }
 
   return data.quote_retweets || 0;
+}
+
+/**
+ * Supabaseからbase_quotes（Few-shot学習用）を読み込む
+ * UIには表示されず、AI生成時のプロンプトにのみ使用される
+ */
+export async function loadBaseQuotesFromSupabase(): Promise<Quote[]> {
+  if (!useSupabase()) {
+    throw new Error('Supabase is not configured');
+  }
+
+  const supabase = getSupabaseClient();
+  if (!supabase) {
+    throw new Error('Supabase client is not available');
+  }
+
+  // is_active = true のみを取得
+  const { data, error } = await supabase
+    .from('base_quotes')
+    .select('*')
+    .eq('is_active', true)
+    .order('id', { ascending: false });
+
+  if (error) {
+    throw new Error(`Failed to load base quotes from Supabase: ${error.message}`);
+  }
+
+  const quotes: Quote[] = (data || []).map((row: any) => ({
+    id: row.id,
+    original: row.original,
+    english: row.english || undefined,
+    translated: row.translated,
+    likes: row.likes || 0,
+    retweets: row.retweets || 0,
+    quoteRetweets: row.quote_retweets || 0,
+    position: row.position || undefined,
+    createdAt: row.created_at ? new Date(row.created_at).toISOString() : undefined,
+  }));
+
+  return quotes;
 }
 
