@@ -144,12 +144,29 @@ export default function RootLayout({
             `,
           }}
         />
+        {/* ユーザー操作または3秒後にだけAdSenseスクリプトを挿入（未操作なら読み込まない） */}
         <Script
-          id="adsbygoogle-script"
-          async
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID || "ca-pub-4335284954366086"}`}
-          crossOrigin="anonymous"
-          strategy="lazyOnload"
+          id="adsbygoogle-defer-loader"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(){
+                const CLIENT_ID = '${process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID || "ca-pub-4335284954366086"}';
+                let loaded = false;
+                function loadAds(){
+                  if(loaded) return; loaded = true;
+                  var s = document.createElement('script');
+                  s.async = true;
+                  s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + CLIENT_ID;
+                  s.crossOrigin = 'anonymous';
+                  document.head.appendChild(s);
+                }
+                window.addEventListener('scroll', loadAds, { once: true, passive: true });
+                window.addEventListener('pointerdown', loadAds, { once: true, passive: true });
+                setTimeout(loadAds, 3000);
+              })();
+            `,
+          }}
         />
         {children}
       </body>
