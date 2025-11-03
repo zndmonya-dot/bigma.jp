@@ -353,12 +353,26 @@ export default function Home() {
       <header className="sticky top-0 bg-white dark:bg-black/95 backdrop-blur-xl z-20 shadow-sm border-b border-gray-200 dark:border-gray-800">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 items-center py-3 sm:py-4 md:py-6 min-h-[60px] sm:min-h-[80px] md:min-h-[100px]">
-            <div className="flex items-center justify-between w-full lg:col-span-2 lg:justify-start">
+            <div className="flex items-center justify-start w-full lg:col-span-2">
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white leading-normal">
                 <span className="tracking-tighter font-extrabold">Bigma</span>
               </h1>
+              <div className="flex items-center ml-auto lg:hidden">
+                <a
+                  href="https://twitter.com/your_handle" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center text-gray-700 dark:text-white hover:text-sky-500 dark:hover:text-sky-400 transition-colors"
+                >
+                  <div className="w-10 h-10 flex-shrink-0 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-white/20 transition-colors">
+                    <svg className="w-5 h-5 text-gray-700 dark:text-white" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                  </div>
+                </a>
+              </div>
             </div>
-            <div className="flex items-center justify-end lg:col-span-1 lg:justify-start">
+            <div className="hidden lg:flex items-center justify-start lg:col-span-1">
               <a
                 href="https://twitter.com/your_handle" 
                 target="_blank" 
