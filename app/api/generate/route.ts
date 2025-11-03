@@ -149,10 +149,13 @@ export async function POST(request: NextRequest) {
     });
     
     const realQuotesExamples = formatQuotesForPrompt(allQuotesForPrompt, 25);
-    log(LogLevel.DEBUG, 'Few-shot examples generated', {
+    log(LogLevel.INFO, 'Few-shot examples generated', {
       hasExamples: !!realQuotesExamples,
       examplesLength: realQuotesExamples?.length || 0,
-      preview: realQuotesExamples?.substring(0, 200) + '...',
+      userQuotesCount: quotesData.quotes.length,
+      baseQuotesCount: baseQuotes.length,
+      totalForPrompt: allQuotesForPrompt.length,
+      preview: realQuotesExamples?.substring(0, 500) || 'No examples',
     });
     
     const defaultExamples = `本人「本当の意味で憧れるのをやめなければ」
@@ -160,9 +163,11 @@ export async function POST(request: NextRequest) {
 公式「憧れは終わった、今こそ俺自身が伝説になる時だ」`;
 
     const examplesSection = realQuotesExamples || defaultExamples;
-    log(LogLevel.DEBUG, '使用するexamples', {
+    log(LogLevel.INFO, '使用するexamples', {
       source: realQuotesExamples ? '実際の語録データベース（ユーザー + ベース）' : 'デフォルト例',
       examplesCount: realQuotesExamples ? (examplesSection.match(/\n\n/g)?.length || 0) + 1 : 1,
+      examplesLength: examplesSection.length,
+      fullExamples: examplesSection, // 完全なexamplesSectionをログに出力
     });
     log(LogLevel.DEBUG, '=== End Few-shot Examples ===');
 
