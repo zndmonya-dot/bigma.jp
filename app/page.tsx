@@ -149,7 +149,7 @@ export default function Home() {
         if (cursor) {
           setAllQuotes(prev => {
             const merged = [...prev, ...quotesList];
-            updateQuotesByTab(merged, activeTab);
+            updateQuotesByTab(merged, activeTab, true);
             return merged;
           });
         } else {
@@ -249,7 +249,7 @@ export default function Home() {
     }
   };
 
-  const updateQuotesByTab = (quotesList: Quote[], tab: TabType) => {
+  const updateQuotesByTab = (quotesList: Quote[], tab: TabType, preserveCount: boolean = false) => {
     let sorted: Quote[] = [];
     
     switch (tab) {
@@ -306,8 +306,13 @@ export default function Home() {
     }
     
     setQuotes(sorted.slice(0, DISPLAY_CONFIG.MAX_RANKING_QUOTES));
-    setDisplayedQuotes(sorted.slice(0, DISPLAY_CONFIG.INITIAL_QUOTES_COUNT));
-    setDisplayCount(DISPLAY_CONFIG.INITIAL_QUOTES_COUNT);
+    if (preserveCount) {
+      const nextCount = Math.max(displayCount, DISPLAY_CONFIG.INITIAL_QUOTES_COUNT);
+      setDisplayedQuotes(sorted.slice(0, Math.min(nextCount, sorted.length)));
+    } else {
+      setDisplayedQuotes(sorted.slice(0, DISPLAY_CONFIG.INITIAL_QUOTES_COUNT));
+      setDisplayCount(DISPLAY_CONFIG.INITIAL_QUOTES_COUNT);
+    }
   };
 
   useEffect(() => {
