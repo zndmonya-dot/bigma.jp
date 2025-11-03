@@ -905,9 +905,7 @@ export default function Home() {
                 <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
                   みんなの語録一覧
                 </h2>
-                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                  {allQuotes.length}件の語録（言っていない）
-                </p>
+                {/* 件数表示は非表示に変更 */}
               </div>
               
               {/* タブ */}
@@ -1024,7 +1022,7 @@ export default function Home() {
                       onClick={handleLoadMore}
                       className="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-medium rounded-full px-6 py-3 text-base transition-colors shadow-sm hover:shadow"
                     >
-                      次の{DISPLAY_CONFIG.LOAD_MORE_INCREMENT}件を表示（全{quotes.length}件）
+                      次の{DISPLAY_CONFIG.LOAD_MORE_INCREMENT}件を表示
                     </button>
                   </div>
                 )}
