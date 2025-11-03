@@ -66,7 +66,7 @@ export default function QuotesList({ displayedQuotes, likedQuotes, onLike, onTwe
       })}
 
       {hasMore && (
-        <div className="flex justify中心 pt-6">
+        <div className="flex justify-center pt-6">
           <button
             onClick={onLoadMore}
             className="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-medium rounded-full px-6 py-3 text-base transition-colors shadow-sm hover:shadow"
