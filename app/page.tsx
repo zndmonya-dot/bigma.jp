@@ -97,7 +97,11 @@ export default function Home() {
     loadQuotes();
   }, []);
 
-  const loadQuotes = async (forceRefresh: boolean = false, cursor?: number | null) => {
+  const loadQuotes = async (
+    forceRefresh: boolean = false,
+    cursor?: number | null,
+    desiredDisplayCount?: number
+  ) => {
     try {
       // キャッシュキー
       const cacheKey = 'quotes_cache';
@@ -194,7 +198,7 @@ export default function Home() {
         if (cursor) {
           setAllQuotes(prev => {
             const merged = [...prev, ...quotesList];
-            updateQuotesByTab(merged, activeTab, true);
+            updateQuotesByTab(merged, activeTab, true, desiredDisplayCount);
             return merged;
           });
         } else {
@@ -294,7 +298,12 @@ export default function Home() {
     }
   };
 
-  const updateQuotesByTab = (quotesList: Quote[], tab: TabType, preserveCount: boolean = false) => {
+  const updateQuotesByTab = (
+    quotesList: Quote[],
+    tab: TabType,
+    preserveCount: boolean = false,
+    desiredDisplayCount?: number
+  ) => {
     let sorted: Quote[] = [];
     
     switch (tab) {
@@ -354,7 +363,8 @@ export default function Home() {
     const initialMobileCount = 3;
     const initialCount = isDesktop ? DISPLAY_CONFIG.INITIAL_QUOTES_COUNT : initialMobileCount;
     if (preserveCount) {
-      const nextCount = Math.max(displayCount, initialCount);
+      const base = desiredDisplayCount ?? displayCount;
+      const nextCount = Math.max(base, initialCount);
       setDisplayedQuotes(sorted.slice(0, Math.min(nextCount, sorted.length)));
     } else {
       setDisplayedQuotes(sorted.slice(0, initialCount));
@@ -369,12 +379,14 @@ export default function Home() {
   }, [activeTab, allQuotes]);
 
   const handleLoadMore = async () => {
-    if (hasMore && nextCursor) {
-      await loadQuotes(false, nextCursor);
-    }
     const nextCount = displayCount + DISPLAY_CONFIG.LOAD_MORE_INCREMENT;
     setDisplayCount(nextCount);
-    setDisplayedQuotes(quotes.slice(0, Math.min(nextCount, quotes.length)));
+
+    if (hasMore && nextCursor) {
+      await loadQuotes(false, nextCursor, nextCount);
+    } else {
+      setDisplayedQuotes(quotes.slice(0, Math.min(nextCount, quotes.length)));
+    }
   };
 
   /**
