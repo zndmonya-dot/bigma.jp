@@ -7,7 +7,7 @@ const mPlusRounded = M_PLUS_Rounded_1c({
   variable: "--font-m-plus-rounded",
   weight: ["400", "700"],
   subsets: ["latin"],
-  display: "swap",
+  display: "optional",
   preload: true,
 });
 
@@ -15,7 +15,7 @@ const kosugiMaru = Kosugi_Maru({
   variable: "--font-kosugi-maru",
   weight: ["400"],
   subsets: ["latin"],
-  display: "swap",
+  display: "optional",
   preload: true,
 });
 

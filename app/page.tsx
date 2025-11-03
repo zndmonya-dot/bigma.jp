@@ -68,6 +68,16 @@ export default function Home() {
       </div>
     ),
   }), []);
+
+  // デスクトップのみサイドバーを描画（モバイルのLCP/JS削減）
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia('(min-width: 1024px)');
+    const update = () => setIsDesktop(media.matches);
+    update();
+    media.addEventListener?.('change', update);
+    return () => media.removeEventListener?.('change', update);
+  }, []);
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [allQuotes, setAllQuotes] = useState<Quote[]>([]);
   const [displayedQuotes, setDisplayedQuotes] = useState<Quote[]>([]);
@@ -994,17 +1004,19 @@ export default function Home() {
             </section>
           </div>
 
-          {/* 右側：打線欄（モバイルでも表示し、表示切替によるCLSを防ぐ） */}
-          <aside className="lg:col-span-1" aria-label="打線欄" role="complementary">
-            <div className="sticky top-4 mt-6 min-h-[600px]">
-              <LineupAside
-                lineup={lineup}
-                likedQuotes={likedQuotes}
-                handleLike={handleLike}
-                handleTweet={handleTweet}
-              />
-            </div>
-          </aside>
+          {/* 右側：打線欄（デスクトップのみ描画してモバイル負荷を削減） */}
+          {isDesktop && (
+            <aside className="lg:col-span-1" aria-label="打線欄" role="complementary">
+              <div className="sticky top-4 mt-6 min-h-[600px]">
+                <LineupAside
+                  lineup={lineup}
+                  likedQuotes={likedQuotes}
+                  handleLike={handleLike}
+                  handleTweet={handleTweet}
+                />
+              </div>
+            </aside>
+          )}
         </div>
       </div>
       </main>
