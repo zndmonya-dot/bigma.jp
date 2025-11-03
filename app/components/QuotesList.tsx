@@ -8,12 +8,9 @@ type Props = {
   likedQuotes: Set<number>;
   onLike: (id: number) => void;
   onTweet: (quote: Quote) => void;
-  hasMore: boolean;
-  totalCount: number;
-  onLoadMore: () => void;
 };
 
-export default function QuotesList({ displayedQuotes, likedQuotes, onLike, onTweet, hasMore, totalCount, onLoadMore }: Props) {
+export default function QuotesList({ displayedQuotes, likedQuotes, onLike, onTweet }: Props) {
   return (
     <div className="space-y-4 sm:space-y-6 min-h-[400px]" style={{ contentVisibility: 'auto' as any }}>
       {displayedQuotes.map((quote) => {
@@ -65,16 +62,7 @@ export default function QuotesList({ displayedQuotes, likedQuotes, onLike, onTwe
         );
       })}
 
-      {(hasMore || displayedQuotes.length < totalCount) && (
-        <div className="flex justify-center pt-6">
-          <button
-            onClick={onLoadMore}
-            className="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-medium rounded-full px-6 py-3 text-base transition-colors shadow-sm hover:shadow"
-          >
-            次の{DISPLAY_CONFIG.LOAD_MORE_INCREMENT}件を表示
-          </button>
-        </div>
-      )}
+      {/* もっと見る機能は削除 */}
     </div>
   );
 }

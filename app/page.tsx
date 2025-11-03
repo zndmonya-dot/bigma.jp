@@ -53,9 +53,6 @@ export default function Home() {
     likedQuotes: Set<number>;
     onLike: (id: number) => void;
     onTweet: (quote: Quote) => void;
-    hasMore: boolean;
-    totalCount: number;
-    onLoadMore: () => void;
   };
 
   const QuotesList = useMemo(() => dynamic<QuotesListProps>(() => import('./components/QuotesList'), {
@@ -1025,9 +1022,6 @@ export default function Home() {
                   likedQuotes={likedQuotes}
                   onLike={handleLike}
                   onTweet={handleTweet}
-                  hasMore={hasMore || displayedQuotes.length < quotes.length}
-                  totalCount={quotes.length}
-                  onLoadMore={handleLoadMore}
                 />
               )}
             </section>
