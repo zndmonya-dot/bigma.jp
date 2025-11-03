@@ -360,16 +360,16 @@ export async function POST(request: NextRequest) {
     // 通訳の検証: 単語が少なすぎる場合や不完全な文はエラー
     if (english) {
       const englishWords = english.trim().split(/\s+/).filter(w => w.length > 0);
-      // 単語が3個未満、または文末にピリオドや感嘆符がない場合は警告
-      if (englishWords.length < 3) {
-        log(LogLevel.WARN, '通訳が短すぎる（3単語未満）', { 
+      // 単語が5個未満の場合はエラー（最低5単語必須）
+      if (englishWords.length < 5) {
+        log(LogLevel.ERROR, '通訳が短すぎる（5単語未満）', { 
           english, 
           wordCount: englishWords.length,
-          rawResult: rawResult.substring(0, 200),
+          rawResult: rawResult.substring(0, 300),
         });
-        // エラーを返すのではなく、警告のみ（将来的に再生成を促すことも可能）
+        return createErrorResponse(`生成された通訳が不完全です（${englishWords.length}単語のみ）。再生成してください。`, 500);
       } else if (!/[.!?]$/.test(english.trim())) {
-        // 文末記号がない場合も警告
+        // 文末記号がない場合も警告（ただしエラーにはしない）
         log(LogLevel.WARN, '通訳に文末記号がない', { 
           english,
           rawResult: rawResult.substring(0, 200),
