@@ -640,6 +640,7 @@ export default function Home() {
   const [lineup, setLineup] = useState<Quote[]>([]);
   const [lineupLoading, setLineupLoading] = useState(true);
   const [lineupRefreshCounter, setLineupRefreshCounter] = useState(0);
+  const [lineupManualSeed, setLineupManualSeed] = useState<string | null>(null);
 
   // JSTの翌日0時にtodaySeedを更新するタイマー
   useEffect(() => {
@@ -678,11 +679,12 @@ export default function Home() {
       // 仕様: DBには保存・参照しない（毎日ローカル計算のみ）
 
       // 保存済みがない場合は計算
+      const effectiveSeed = lineupManualSeed || todaySeed;
       const fieldPlayerQuotes = [...allQuotes].filter(quote => {
         if (!quote.position) return true;
         return FIELD_PLAYER_POSITIONS.includes(quote.position as any);
       });
-      const randomized = shuffleWithSeed(fieldPlayerQuotes, todaySeed);
+      const randomized = shuffleWithSeed(fieldPlayerQuotes, effectiveSeed);
 
       const selectedByPosition = new Map<string, Quote>();
       const unassignedQuotes: Quote[] = [];
@@ -707,7 +709,7 @@ export default function Home() {
         if (lineupCount >= maxLineupSize) break;
         
         if (availablePositions.length > 0) {
-          const positionSeed = `${todaySeed}-${quote.id}`;
+          const positionSeed = `${effectiveSeed}-${quote.id}`;
           const shuffledPositions = shuffleWithSeed([...availablePositions], positionSeed);
           const assignedPosition = shuffledPositions[0];
           
@@ -720,7 +722,7 @@ export default function Home() {
       }
       
       const topNine = Array.from(selectedByPosition.values()).slice(0, maxLineupSize);
-      const computedLineup = shuffleWithSeed(topNine, todaySeed);
+      const computedLineup = shuffleWithSeed(topNine, effectiveSeed);
       setLineup(computedLineup);
       
       // 仕様: DBには保存しない
@@ -729,7 +731,7 @@ export default function Home() {
     };
 
     loadLineup();
-  }, [allQuotes, todaySeed, lineupRefreshCounter]);
+  }, [allQuotes, todaySeed, lineupRefreshCounter, lineupManualSeed]);
 
   return (
     <div className="min-h-screen bg-white dark:bg-black">
@@ -1036,8 +1038,8 @@ export default function Home() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => { setLineupLoading(true); setLineupRefreshCounter((c) => c + 1); }}
-                    className="px-3 py-1.5 rounded-md text-xs font-medium bg-gray-200 hover:bg-gray-300 dark:bg-white/10 dark:hover:bg-white/20 text-gray-800 dark:text-gray-100"
+                    onClick={() => { setLineupLoading(true); setLineupManualSeed(`${getTodayString()}-${Date.now()}`); setLineupRefreshCounter((c) => c + 1); }}
+                    className="px-3 py-1.5 rounded-md text-xs font-medium bg-gray-200 hover:bg-gray-300 dark:bg:white/10 dark:hover:bg-white/20 text-gray-800 dark:text-gray-100"
                     aria-label="打線を再集計"
                   >
                     再集計
