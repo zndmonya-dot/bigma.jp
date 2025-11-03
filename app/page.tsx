@@ -351,12 +351,14 @@ export default function Home() {
     }
     
     setQuotes(sorted.slice(0, DISPLAY_CONFIG.MAX_RANKING_QUOTES));
+    const initialMobileCount = 3;
+    const initialCount = isDesktop ? DISPLAY_CONFIG.INITIAL_QUOTES_COUNT : initialMobileCount;
     if (preserveCount) {
-      const nextCount = Math.max(displayCount, DISPLAY_CONFIG.INITIAL_QUOTES_COUNT);
+      const nextCount = Math.max(displayCount, initialCount);
       setDisplayedQuotes(sorted.slice(0, Math.min(nextCount, sorted.length)));
     } else {
-      setDisplayedQuotes(sorted.slice(0, DISPLAY_CONFIG.INITIAL_QUOTES_COUNT));
-      setDisplayCount(DISPLAY_CONFIG.INITIAL_QUOTES_COUNT);
+      setDisplayedQuotes(sorted.slice(0, initialCount));
+      setDisplayCount(initialCount);
     }
   };
 

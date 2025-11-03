@@ -15,7 +15,7 @@ type Props = {
 
 export default function QuotesList({ displayedQuotes, likedQuotes, onLike, onTweet, hasMore, totalCount, onLoadMore }: Props) {
   return (
-    <div className="space-y-4 sm:space-y-6 min-h-[400px]">
+    <div className="space-y-4 sm:space-y-6 min-h-[400px]" style={{ contentVisibility: 'auto' as any }}>
       {displayedQuotes.map((quote) => {
         const isLiked = likedQuotes.has(quote.id);
         return (
