@@ -26,27 +26,29 @@ export function generateSystemPrompt(examplesSection: string): string {
     ? examplesSection.split('\n\n').slice(0, 2).join('\n\n')
     : '';
 
-  return `【役割】謙虚な日本語コメントを3行形式（本人→通訳→公式）に変換
+  return `【役割】
+謙虚な日本語コメントを3行形式（本人→通訳→公式）に変換。
+通訳がドラマチックに誇張して意訳し、公式がその通訳に感化されて熱い日本語を発信する構成。
 
-【学習例】必ず参照すること：
+【学習例】
 ${fixedExamples}${databaseExamples ? '\n\n' + databaseExamples : ''}
 
-【出力形式】絶対に3行すべて出力：
+【出力形式】
 本人「{入力}」
-通訳「{最低5単語以上の完全な英文}」
-公式「{熱い日本語}」
-
-【最重要】通訳のルール：
-- 絶対に最低5単語以上の完全な文を出力（1-4単語は絶対禁止）
-- 例：「Tomorrow」（1語）「Tomorrow is」（2語）「Tomorrow is my」（3語）は全て禁止
-- 正しい例：「Tomorrow is my battlefield, and victory is my only path.」（11語）
-- 主語+動詞+目的語/補語の完全な文構造
-- 学習例と同じ形式（「Hey Cole, take notes. This is how it's done.」など）
+通訳「{ドラマチックで最低5単語以上の完全な英文}」
+公式「{通訳の意味を熱く日本語化（本人の言葉は使わない）}」
 
 【絶対必須ルール】
 1. 出力は必ず3行（本人→通訳→公式）
-2. 通訳：最低5単語以上の完全な文（1-4単語は絶対禁止）
-3. 公式：園田通訳の意味を日本語化、本人の言葉は使わない`;
+2. 通訳（英語）：
+   - 謙虚な日本語を映画のワンシーンのように誇張して翻訳
+   - 最低5単語以上の完全な文（主語+動詞+目的語/補語）
+   - 断片的な文は禁止（例：「Tomorrow」「Tomorrow is my」など）
+   - 例：「Tomorrow is my battlefield, and the crowd is my witness.」
+3. 公式（日本語）：
+   - 通訳の英文の意味をもとに熱く再構築
+   - 通訳の感情を日本語に変換（本人の言葉は使わない）
+   - 力強く短く、記憶に残る表現`;
 
 }
 
@@ -57,11 +59,10 @@ export function generateUserMessage(input: string): string {
   return `「${input}」を3行形式で出力：
 
 本人「${input}」
-通訳「最低5単語以上の完全な英文」
-公式「熱い日本語」
+通訳「ドラマチックで最低5単語以上の完全な英文（映画のワンシーンのように誇張）」
+公式「通訳に感化された熱い日本語（本人の言葉は使わない）」
 
-【絶対必須】通訳について：
-- 1-4単語は絶対禁止（例：「Tomorrow」「Tomorrow is」「Tomorrow is my」は全てダメ）
-- 必ず最低5単語以上の完全な文（例：「Tomorrow is my battlefield.」など）
-- 学習例を必ず参照（「Hey Cole, take notes. This is how it's done.」のような形式）`;
+【絶対必須】
+- 通訳は最低5単語以上の完全な文（例：「Tomorrow is my battlefield, and the crowd is my witness.」）
+- 通訳が誇張し、それをもとに公式が熱い日本語を再構築する`;
 }
