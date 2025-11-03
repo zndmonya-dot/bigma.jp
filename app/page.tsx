@@ -614,8 +614,8 @@ export default function Home() {
       const updated = prev.map(q => 
         q.id === quoteId ? { ...q, likes: optimisticLikes } : q
       );
-      // 打線を除く一覧のみ再ソート（打線はJST 0時に固定）
-      updateQuotesByTab(updated, activeTab);
+      // 打線を除く一覧のみ再ソート（打線はJST 0時に固定）。表示件数は保持
+      updateQuotesByTab(updated, activeTab, true, displayCount);
       return updated;
     });
 
@@ -634,8 +634,8 @@ export default function Home() {
           const updated = prev.map(q => 
             q.id === quoteId ? { ...q, likes: data.data.likes } : q
           );
-          // 一覧のみ再ソート（打線は更新しない）
-          updateQuotesByTab(updated, activeTab);
+          // 一覧のみ再ソート（打線は更新しない）。表示件数は保持
+          updateQuotesByTab(updated, activeTab, true, displayCount);
           return updated;
         });
       } else {
@@ -658,7 +658,7 @@ export default function Home() {
           }
           return q;
         });
-        updateQuotesByTab(updated, activeTab);
+        updateQuotesByTab(updated, activeTab, true, displayCount);
         return updated;
       });
       
