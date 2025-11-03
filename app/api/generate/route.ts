@@ -208,9 +208,11 @@ export async function POST(request: NextRequest) {
             content: generateUserMessage(sanitizedInput)
           },
         ],
-        temperature: 0.7,
+        temperature: 0.9, // 創造性と多様性を高める（0.7→0.9）
         max_tokens: 150,
-        top_p: 0.9,
+        top_p: 0.95, // より多様なトークン選択を可能にする（0.9→0.95）
+        frequency_penalty: 0.5, // 繰り返しを減らしてボキャブラリの多様性を高める
+        presence_penalty: 0.3, // 新しいトピックや単語の使用を促進
       });
       
       const endTime = Date.now();
