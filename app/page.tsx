@@ -507,7 +507,7 @@ export default function Home() {
                           e.preventDefault();
                           handleGenerate();
                         }}
-                        className="flex gap-2 items-start max-w-xl"
+                        className="flex gap-2 items-start max-w-lg"
                       >
                         <div className="relative flex-1">
                           <input
