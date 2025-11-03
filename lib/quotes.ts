@@ -2,9 +2,9 @@ import { Quote, QuotesData } from './types';
 import { useSupabase } from './supabase';
 
 /**
- * 語録データを読み込む（user-generated + base quotes）
- * Supabaseが利用可能な場合はSupabaseから、そうでない場合はファイルベース
- * base_quotes.json（山本由伸の言っていない語録）とquotes.json（ユーザー生成データ）をマージ
+ * 語録データを読み込む（UI表示用 - user-generatedのみ）
+ * Supabaseが利用可能な場合はSupabaseから、そうでない場合はファイルベース（quotes.jsonのみ）
+ * base_quotes.jsonはFew-shot学習用のため、UIには表示されない（loadBaseQuotesForPromptで別途読み込み）
  */
 export async function loadQuotes(): Promise<QuotesData> {
   // Supabaseが設定されている場合は、Supabaseから読み込み
@@ -13,33 +13,8 @@ export async function loadQuotes(): Promise<QuotesData> {
       const { loadQuotesFromSupabase } = await import('./quotes-supabase');
       const supabaseData = await loadQuotesFromSupabase();
       
-      // base_quotes.json も読み込んでマージ
-      try {
-        const fs = await import('fs/promises');
-        const path = await import('path');
-        const baseQuotesPath = path.join(process.cwd(), 'data', 'base_quotes.json');
-        const baseFileContents = await fs.readFile(baseQuotesPath, 'utf8');
-        const baseData = JSON.parse(baseFileContents) as QuotesData;
-        
-        if (baseData && baseData.quotes && baseData.quotes.length > 0) {
-          // 重複チェック
-          const supabaseIds = new Set(supabaseData.quotes.map(q => q.id));
-          const uniqueBaseQuotes = baseData.quotes.filter(q => !supabaseIds.has(q.id));
-          
-          return {
-            metadata: {
-              ...supabaseData.metadata,
-              baseQuotesCount: uniqueBaseQuotes.length,
-              userQuotesCount: supabaseData.quotes.length,
-            },
-            quotes: [...uniqueBaseQuotes, ...supabaseData.quotes],
-          };
-        }
-      } catch (baseError) {
-        // base_quotes.jsonがない場合はSupabaseのデータのみ
-        console.warn('Base quotes file not found, using Supabase data only');
-      }
-      
+      // base_quotes.jsonはFew-shot学習用のため、UIには表示しない
+      // UIにはSupabaseのデータのみを返す
       return supabaseData;
     } catch (error) {
       console.error('Failed to load quotes from Supabase, falling back to file-based:', error);
@@ -70,32 +45,12 @@ export async function loadQuotes(): Promise<QuotesData> {
       };
     }
     
-    // ベースデータ（山本由伸の言っていない語録）を読み込み
-    let baseData: QuotesData | null = null;
-    try {
-      const baseQuotesPath = path.join(process.cwd(), 'data', 'base_quotes.json');
-      const baseFileContents = await fs.readFile(baseQuotesPath, 'utf8');
-      baseData = JSON.parse(baseFileContents);
-      if (baseData && baseData.quotes && baseData.quotes.length > 0) {
-        console.log(`Loaded ${baseData.quotes.length} base quotes (言っていない語録)`);
-      }
-    } catch (baseError) {
-      console.warn('Base quotes file not found, using user quotes only');
-    }
+    // base_quotes.jsonはFew-shot学習用のため、UIには表示しない
+    // UIにはユーザー生成データのみを返す
     
-    // 重複を除外してマージ（IDで重複チェック、ベースデータを先に配置）
-    const baseQuotesIds = new Set(baseData?.quotes?.map(q => q.id) || []);
-    // ユーザーデータからベースデータと重複するIDを除外
-    const uniqueUserQuotes = userData.quotes.filter(q => !baseQuotesIds.has(q.id));
-    
-    // ベースデータとユニークなユーザーデータをマージ
-    const mergedQuotes = baseData && baseData.quotes 
-      ? [...baseData.quotes, ...uniqueUserQuotes]
-      : uniqueUserQuotes;
-    
-    // さらに、mergedQuotes内の重複も除外（同じIDが複数ある場合、最初のものだけ残す）
+    // 重複を除外（同じIDが複数ある場合、最初のものだけ残す）
     const seenIds = new Set<number>();
-    const deduplicatedQuotes = mergedQuotes.filter(q => {
+    const deduplicatedQuotes = userData.quotes.filter(q => {
       if (seenIds.has(q.id)) {
         return false;
       }
@@ -106,8 +61,7 @@ export async function loadQuotes(): Promise<QuotesData> {
     return {
       metadata: {
         ...userData.metadata,
-        baseQuotesCount: baseData?.quotes?.length || 0,
-        userQuotesCount: uniqueUserQuotes.length,
+        userQuotesCount: deduplicatedQuotes.length,
       },
       quotes: deduplicatedQuotes,
     };
@@ -147,11 +101,11 @@ export async function addQuote(quote: Omit<Quote, 'id'>): Promise<void> {
     const path = await import('path');
     const filePath = path.join(process.cwd(), 'data', 'quotes.json');
     
-    // マージされたデータを読み込んでIDを生成（base_quotes + user_quotesの最大IDを使用）
-    const mergedData = await loadQuotes();
-    const newId = mergedData.quotes.length > 0 
-      ? Math.max(...mergedData.quotes.map(q => q.id)) + 1 
-      : 1001; // base_quotesが1001から始まるので、base_quotesがない場合は1001から
+    // ユーザーデータのみを読み込んでIDを生成（base_quotesは含まない）
+    const userDataForId = await loadQuotes();
+    const newId = userDataForId.quotes.length > 0 
+      ? Math.max(...userDataForId.quotes.map(q => q.id)) + 1 
+      : 1; // 最初のIDは1から開始
     
     // ユーザーデータのみを読み込む（quotes.jsonのみ、base_quotes.jsonは含まない）
     let userData: QuotesData;
@@ -188,6 +142,27 @@ export async function addQuote(quote: Omit<Quote, 'id'>): Promise<void> {
   } catch (error) {
     console.error('Failed to add quote:', error);
     throw error;
+  }
+}
+
+/**
+ * Few-shot学習用にbase_quotes.jsonを読み込む（UIには表示しない裏側のデータ）
+ */
+export async function loadBaseQuotesForPrompt(): Promise<Quote[]> {
+  try {
+    const fs = await import('fs/promises');
+    const path = await import('path');
+    const baseQuotesPath = path.join(process.cwd(), 'data', 'base_quotes.json');
+    const baseFileContents = await fs.readFile(baseQuotesPath, 'utf8');
+    const baseData = JSON.parse(baseFileContents) as QuotesData;
+    
+    if (baseData && baseData.quotes && baseData.quotes.length > 0) {
+      return baseData.quotes;
+    }
+    return [];
+  } catch (error) {
+    console.warn('Base quotes file not found for few-shot learning:', error);
+    return [];
   }
 }
 

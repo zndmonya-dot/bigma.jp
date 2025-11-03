@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import { loadQuotes, formatQuotesForPrompt } from '@/lib/quotes';
+import { loadQuotes, loadBaseQuotesForPrompt, formatQuotesForPrompt } from '@/lib/quotes';
 import { getClientIp, checkRateLimit } from '@/lib/rate-limit';
 import { RATE_LIMIT, CHARACTER_LIMITS } from '@/lib/constants';
 import { sanitizeInput, validateInput } from '@/lib/sanitize';
@@ -133,25 +133,38 @@ export async function POST(request: NextRequest) {
     
     console.log('OpenAI client initialized');
 
+    // UI表示用データ（ユーザー生成データのみ）
     const quotesData = await loadQuotes();
-    console.log('=== Few-shot Examples Loading ===');
-    console.log('データベース内の語録数:', quotesData.quotes.length);
     
-    const realQuotesExamples = formatQuotesForPrompt(quotesData.quotes, 25);
-    console.log('Few-shot examples generated:', realQuotesExamples ? 'Yes' : 'No');
-    console.log('Examples length:', realQuotesExamples?.length || 0);
-    if (realQuotesExamples) {
-      console.log('Examples preview:', realQuotesExamples.substring(0, 200) + '...');
-    }
+    // Few-shot学習用データ（base_quotes.json - UIには表示しない）
+    const baseQuotes = await loadBaseQuotesForPrompt();
+    
+    // Few-shot学習用に両方をマージ（ユーザーデータ + ベースデータ）
+    const allQuotesForPrompt = [...quotesData.quotes, ...baseQuotes];
+    
+    log(LogLevel.DEBUG, '=== Few-shot Examples Loading ===', {
+      userQuotesCount: quotesData.quotes.length,
+      baseQuotesCount: baseQuotes.length,
+      totalForPrompt: allQuotesForPrompt.length,
+    });
+    
+    const realQuotesExamples = formatQuotesForPrompt(allQuotesForPrompt, 25);
+    log(LogLevel.DEBUG, 'Few-shot examples generated', {
+      hasExamples: !!realQuotesExamples,
+      examplesLength: realQuotesExamples?.length || 0,
+      preview: realQuotesExamples?.substring(0, 200) + '...',
+    });
     
     const defaultExamples = `本人「本当の意味で憧れるのをやめなければ」
 通訳「I must stop admiring in the true sense」
 公式「憧れは終わった、今こそ俺自身が伝説になる時だ」`;
 
     const examplesSection = realQuotesExamples || defaultExamples;
-    console.log('使用するexamples:', realQuotesExamples ? '実際の語録データベース' : 'デフォルト例');
-    console.log('Examples count:', realQuotesExamples ? (examplesSection.match(/\n\n/g)?.length || 0) + 1 : 1);
-    console.log('=== End Few-shot Examples ===');
+    log(LogLevel.DEBUG, '使用するexamples', {
+      source: realQuotesExamples ? '実際の語録データベース（ユーザー + ベース）' : 'デフォルト例',
+      examplesCount: realQuotesExamples ? (examplesSection.match(/\n\n/g)?.length || 0) + 1 : 1,
+    });
+    log(LogLevel.DEBUG, '=== End Few-shot Examples ===');
 
     const systemPrompt = generateSystemPrompt(examplesSection);
 
