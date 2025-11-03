@@ -3,6 +3,7 @@ import { loadQuotes } from '@/lib/quotes';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { validateNumber } from '@/lib/sanitize';
+import { useSupabase } from '@/lib/supabase';
 import {
   parseJsonRequest,
   createErrorResponse,
@@ -45,6 +46,29 @@ export async function POST(request: NextRequest) {
     
     log(LogLevel.DEBUG, 'いいねAPI呼び出し', { quoteId: validatedQuoteId, action });
 
+    // Supabaseが設定されている場合は、Supabaseを使用
+    if (useSupabase()) {
+      try {
+        const { updateQuoteLike } = await import('@/lib/quotes-supabase');
+        const newLikes = await updateQuoteLike(validatedQuoteId, action === 'like');
+        
+        log(LogLevel.INFO, 'いいね更新成功（Supabase）', {
+          quoteId: validatedQuoteId,
+          action,
+          newLikes,
+        });
+        
+        return createSuccessResponse({
+          quoteId: validatedQuoteId,
+          likes: newLikes,
+        });
+      } catch (error) {
+        log(LogLevel.ERROR, 'Supabaseでのいいね更新に失敗、ファイルベースにフォールバック', error);
+        // フォールバック: ファイルベースに
+      }
+    }
+
+    // ファイルベースのロジック
     const filePath = path.join(process.cwd(), 'data', 'quotes.json');
     const data = await loadQuotes();
 
@@ -74,7 +98,7 @@ export async function POST(request: NextRequest) {
 
     await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf8');
 
-    log(LogLevel.INFO, 'いいね更新成功', {
+    log(LogLevel.INFO, 'いいね更新成功（ファイルベース）', {
       quoteId: validatedQuoteId,
       action,
       newLikes: data.quotes[quoteIndex].likes,

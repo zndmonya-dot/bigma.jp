@@ -1,10 +1,53 @@
 import { Quote, QuotesData } from './types';
+import { useSupabase } from './supabase';
 
 /**
  * 語録データを読み込む（user-generated + base quotes）
+ * Supabaseが利用可能な場合はSupabaseから、そうでない場合はファイルベース
  * base_quotes.json（山本由伸の言っていない語録）とquotes.json（ユーザー生成データ）をマージ
  */
 export async function loadQuotes(): Promise<QuotesData> {
+  // Supabaseが設定されている場合は、Supabaseから読み込み
+  if (useSupabase()) {
+    try {
+      const { loadQuotesFromSupabase } = await import('./quotes-supabase');
+      const supabaseData = await loadQuotesFromSupabase();
+      
+      // base_quotes.json も読み込んでマージ
+      try {
+        const fs = await import('fs/promises');
+        const path = await import('path');
+        const baseQuotesPath = path.join(process.cwd(), 'data', 'base_quotes.json');
+        const baseFileContents = await fs.readFile(baseQuotesPath, 'utf8');
+        const baseData = JSON.parse(baseFileContents) as QuotesData;
+        
+        if (baseData && baseData.quotes && baseData.quotes.length > 0) {
+          // 重複チェック
+          const supabaseIds = new Set(supabaseData.quotes.map(q => q.id));
+          const uniqueBaseQuotes = baseData.quotes.filter(q => !supabaseIds.has(q.id));
+          
+          return {
+            metadata: {
+              ...supabaseData.metadata,
+              baseQuotesCount: uniqueBaseQuotes.length,
+              userQuotesCount: supabaseData.quotes.length,
+            },
+            quotes: [...uniqueBaseQuotes, ...supabaseData.quotes],
+          };
+        }
+      } catch (baseError) {
+        // base_quotes.jsonがない場合はSupabaseのデータのみ
+        console.warn('Base quotes file not found, using Supabase data only');
+      }
+      
+      return supabaseData;
+    } catch (error) {
+      console.error('Failed to load quotes from Supabase, falling back to file-based:', error);
+      // フォールバック: ファイルベースに
+    }
+  }
+  
+  // ファイルベースのロジック
   try {
     const fs = await import('fs/promises');
     const path = await import('path');
@@ -86,6 +129,19 @@ export async function loadQuotes(): Promise<QuotesData> {
  * 語録を追加する
  */
 export async function addQuote(quote: Omit<Quote, 'id'>): Promise<void> {
+  // Supabaseが設定されている場合は、Supabaseに追加
+  if (useSupabase()) {
+    try {
+      const { addQuoteToSupabase } = await import('./quotes-supabase');
+      await addQuoteToSupabase(quote);
+      return;
+    } catch (error) {
+      console.error('Failed to add quote to Supabase, falling back to file-based:', error);
+      // フォールバック: ファイルベースに
+    }
+  }
+  
+  // ファイルベースのロジック
   try {
     const fs = await import('fs/promises');
     const path = await import('path');
