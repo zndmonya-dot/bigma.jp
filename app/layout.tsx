@@ -8,8 +8,7 @@ const mPlusRounded = M_PLUS_Rounded_1c({
   weight: ["400", "700", "800"],
   subsets: ["latin"],
   display: "swap",
-  // preload警告を避けるため、デフォルトの動作に任せる
-  preload: false,
+  preload: true,
 });
 
 const kosugiMaru = Kosugi_Maru({
@@ -17,8 +16,7 @@ const kosugiMaru = Kosugi_Maru({
   weight: ["400"],
   subsets: ["latin"],
   display: "swap",
-  // preload警告を避けるため、デフォルトの動作に任せる
-  preload: false,
+  preload: true,
 });
 
 export const metadata: Metadata = {
@@ -74,8 +72,6 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
   viewportFit: "cover",
   themeColor: "#000000",
 };

@@ -778,6 +778,7 @@ export default function Home() {
         </div>
       </header>
 
+      <main role="main">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 items-start">
           
@@ -811,7 +812,7 @@ export default function Home() {
                             className="w-full rounded-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-5 py-3 pr-16 text-base placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 dark:focus:border-sky-500"
                             disabled={generating}
                           />
-                          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-400 dark:text-gray-500">
+                          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-600 dark:text-gray-300">
                             {input.length}/{CHARACTER_LIMITS.INPUT_MAX}
                           </div>
                         </div>
@@ -906,7 +907,7 @@ export default function Home() {
                   onClick={() => setActiveTab('new')}
                   className={`px-4 py-2 text-sm font-semibold transition-colors border-b-2 ${
                     activeTab === 'new'
-                      ? 'text-sky-500 dark:text-sky-400 border-sky-500 dark:border-sky-400'
+                      ? 'text-sky-600 dark:text-sky-300 border-sky-600 dark:border-sky-300'
                       : 'text-gray-500 dark:text-gray-400 border-transparent hover:text-gray-700 dark:hover:text-gray-300'
                   }`}
                 >
@@ -916,7 +917,7 @@ export default function Home() {
                   onClick={() => setActiveTab('weekly')}
                   className={`px-4 py-2 text-sm font-semibold transition-colors border-b-2 ${
                     activeTab === 'weekly'
-                      ? 'text-sky-500 dark:text-sky-400 border-sky-500 dark:border-sky-400'
+                      ? 'text-sky-600 dark:text-sky-300 border-sky-600 dark:border-sky-300'
                       : 'text-gray-500 dark:text-gray-400 border-transparent hover:text-gray-700 dark:hover:text-gray-300'
                   }`}
                 >
@@ -926,7 +927,7 @@ export default function Home() {
                   onClick={() => setActiveTab('monthly')}
                   className={`px-4 py-2 text-sm font-semibold transition-colors border-b-2 ${
                     activeTab === 'monthly'
-                      ? 'text-sky-500 dark:text-sky-400 border-sky-500 dark:border-sky-400'
+                      ? 'text-sky-600 dark:text-sky-300 border-sky-600 dark:border-sky-300'
                       : 'text-gray-500 dark:text-gray-400 border-transparent hover:text-gray-700 dark:hover:text-gray-300'
                   }`}
                 >
@@ -1023,9 +1024,9 @@ export default function Home() {
             </section>
           </div>
 
-          {/* 右側：打線欄 */}
-          <aside className="lg:col-span-1 hidden lg:block">
-            <div className="sticky top-4 mt-6">
+          {/* 右側：打線欄（モバイルでも表示し、表示切替によるCLSを防ぐ） */}
+          <aside className="lg:col-span-1" aria-label="打線欄" role="complementary">
+            <div className="sticky top-4 mt-6 min-h-[600px]">
               {/* 打線欄 */}
               <div className="bg-gray-50 dark:bg-gray-900/30 rounded-xl p-5 shadow-xl">
                 <div className="mb-4">
@@ -1054,7 +1055,7 @@ export default function Home() {
                             <div className="flex-1 min-w-0">
                               <div className="space-y-2 mb-3">
                               {positionLabel && (
-                                <span className="inline-block text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full mb-1">
+                                <span className="inline-block text-xs font-bold text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full mb-1">
                                   {positionLabel}
                                 </span>
                               )}
@@ -1108,6 +1109,7 @@ export default function Home() {
           </aside>
         </div>
       </div>
+      </main>
       
       {/* フッター */}
       <footer className="mt-12 py-6 px-4 border-t border-gray-200 dark:border-gray-800">
