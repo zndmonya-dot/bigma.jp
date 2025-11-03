@@ -227,7 +227,8 @@ export async function loadBaseQuotesForPrompt(): Promise<Quote[]> {
 
 /**
  * Few-shot examples用に語録をフォーマット
- * スコア順（likes × retweets × quoteRetweets）で並び替えて、上位のものを優先的に選択
+ * base_quotesテーブルのデータを優先的に使用し、スコア順で並び替えて上位を選択
+ * 配列の順序が保たれるため、base_quotesを先に配列に含めることで優先される
  */
 export function formatQuotesForPrompt(quotes: Quote[], maxCount: number = 30): string {
   if (quotes.length === 0) {
@@ -235,18 +236,32 @@ export function formatQuotesForPrompt(quotes: Quote[], maxCount: number = 30): s
   }
   
   // スコア計算関数（likes × retweets × quoteRetweets）
+  // base_quotesテーブルのデータは通常スコアが低いため、最小スコアを1に保証
   const calculateScore = (q: Quote): number => {
     const likes = q.likes || 0;
     const retweets = q.retweets || 0;
     const quoteRetweets = q.quoteRetweets || 0;
-    return (likes + 1) * (retweets + 1) * (quoteRetweets + 1);
+    const baseScore = (likes + 1) * (retweets + 1) * (quoteRetweets + 1);
+    // base_quotesのデータ（スコアが0）でも最小1を保証
+    return Math.max(baseScore, 1);
   };
   
   // スコア順でソート（高い順）
-  const sortedQuotes = [...quotes].sort((a, b) => calculateScore(b) - calculateScore(a));
+  // ただし、同じスコアの場合は配列の順序を保持（base_quotesが先に来るように）
+  const sortedQuotes = [...quotes].sort((a, b) => {
+    const scoreA = calculateScore(a);
+    const scoreB = calculateScore(b);
+    if (scoreA !== scoreB) {
+      return scoreB - scoreA;  // スコアが高い順
+    }
+    // 同じスコアの場合は元の順序を保持（base_quotes優先）
+    return 0;
+  });
   
   // 上位maxCount件を選択
   const selectedQuotes = sortedQuotes.slice(0, maxCount);
+  
+  console.log(`[formatQuotesForPrompt] Selected ${selectedQuotes.length} quotes for prompt out of ${quotes.length} total`);
   
   return selectedQuotes
     .map((quote) => {

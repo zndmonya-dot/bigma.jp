@@ -136,19 +136,34 @@ export async function POST(request: NextRequest) {
     // UI表示用データ（ユーザー生成データのみ）
     const quotesData = await loadQuotes();
     
-    // Few-shot学習用データ（base_quotes.json - UIには表示しない）
+    // Few-shot学習用データ（base_quotesテーブル - UIには表示しない）
     const baseQuotes = await loadBaseQuotesForPrompt();
     
-    // Few-shot学習用に両方をマージ（ユーザーデータ + ベースデータ）
-    const allQuotesForPrompt = [...quotesData.quotes, ...baseQuotes];
-    
-    log(LogLevel.DEBUG, '=== Few-shot Examples Loading ===', {
+    log(LogLevel.INFO, '=== Few-shot Examples Loading ===', {
       userQuotesCount: quotesData.quotes.length,
       baseQuotesCount: baseQuotes.length,
-      totalForPrompt: allQuotesForPrompt.length,
+      baseQuotesSample: baseQuotes.length > 0 ? {
+        first: {
+          original: baseQuotes[0].original?.substring(0, 30),
+          english: baseQuotes[0].english?.substring(0, 30),
+          translated: baseQuotes[0].translated?.substring(0, 30),
+        }
+      } : 'No base quotes found',
     });
     
-    const realQuotesExamples = formatQuotesForPrompt(allQuotesForPrompt, 25);
+    // Few-shot学習用に両方をマージ（ベースデータを優先、ユーザーデータで補完）
+    // base_quotesテーブルのデータを優先的に使用
+    const allQuotesForPrompt = baseQuotes.length > 0 
+      ? [...baseQuotes, ...quotesData.quotes]  // base_quotesを先に
+      : [...quotesData.quotes];  // base_quotesがない場合はユーザーデータのみ
+    
+    log(LogLevel.INFO, 'Few-shot data merged', {
+      totalForPrompt: allQuotesForPrompt.length,
+      priority: baseQuotes.length > 0 ? 'base_quotes優先' : 'ユーザーデータのみ',
+    });
+    
+    // 最大30件まで使用（base_quotesから優先的に選ぶ）
+    const realQuotesExamples = formatQuotesForPrompt(allQuotesForPrompt, 30);
     log(LogLevel.INFO, 'Few-shot examples generated', {
       hasExamples: !!realQuotesExamples,
       examplesLength: realQuotesExamples?.length || 0,
