@@ -1037,7 +1037,8 @@ export default function Home() {
                                   <svg className="w-4 h-4" fill={likedQuotes.has(quote.id) ? 'currentColor' : 'none'} stroke={likedQuotes.has(quote.id) ? 'none' : 'currentColor'} viewBox="0 0 24 24">
                                     <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" strokeWidth={likedQuotes.has(quote.id) ? 0 : 2} />
                                   </svg>
-                                  <span className="font-bold text-xs">{quote.likes || 0}</span>
+                                  <span className="text-xs font-semibold">いいね</span>
+                                  <span className="font-bold text-xs tabular-nums min-w-[1.25rem] text-right">{quote.likes || 0}</span>
                                 </button>
                                 {/* 引用リポスト削除 */}
                                 <button
