@@ -196,8 +196,22 @@ export default function Home() {
       }
 
       // レスポンスデータの検証
-      if (!data || (!data.english && !data.translated)) {
-        setError('生成されたデータが不正です');
+      if (!data) {
+        setError('サーバーからの応答がありません');
+        updateClientRateLimit(-1);
+        return;
+      }
+      
+      // translatedは必須（englishは任意）
+      if (!data.translated || typeof data.translated !== 'string' || data.translated.trim().length === 0) {
+        console.error('生成データ検証失敗:', {
+          hasTranslated: !!data.translated,
+          translatedType: typeof data.translated,
+          translatedLength: data.translated?.length,
+          english: data.english?.substring(0, 50),
+          translated: data.translated?.substring(0, 50),
+        });
+        setError('生成された公式コメントが不正です');
         updateClientRateLimit(-1);
         return;
       }
@@ -207,6 +221,17 @@ export default function Home() {
         translated: data.translated || '',
       };
       
+      // 最終チェック: translatedは必須
+      if (!generatedResult.translated || generatedResult.translated.trim().length === 0) {
+        console.error('最終チェック失敗: translatedが空', {
+          generatedResult,
+          originalData: data,
+        });
+        setError('生成された公式コメントが不正です');
+        updateClientRateLimit(-1);
+        return;
+      }
+      
       setResult(generatedResult);
       
       // 自動保存（強制保存）
@@ -214,8 +239,11 @@ export default function Home() {
         console.log('=== 自動保存開始 ===');
         console.log('保存するデータ:', {
           original: input,
+          originalLength: input.length,
           english: generatedResult.english || undefined,
+          englishLength: generatedResult.english?.length || 0,
           translated: generatedResult.translated,
+          translatedLength: generatedResult.translated.length,
         });
         
         const saveResponse = await fetch('/api/quotes/add', {
