@@ -114,8 +114,8 @@ export async function updateQuoteLike(
   }
 
   const newLikes = increment
-    ? (currentData.likes || 0) + 1
-    : Math.max((currentData.likes || 0) - 1, 0);
+    ? ((currentData as any)?.likes || 0) + 1
+    : Math.max(((currentData as any)?.likes || 0) - 1, 0);
 
   // いいね数を更新
   const { data, error } = await supabase
@@ -159,8 +159,8 @@ export async function updateQuoteRetweet(
   }
 
   const newRetweets = increment
-    ? (currentData.retweets || 0) + 1
-    : Math.max((currentData.retweets || 0) - 1, 0);
+    ? ((currentData as any)?.retweets || 0) + 1
+    : Math.max(((currentData as any)?.retweets || 0) - 1, 0);
 
   const { data, error } = await supabase
     .from('quotes')
@@ -203,8 +203,8 @@ export async function updateQuoteQuoteRetweet(
   }
 
   const newQuoteRetweets = increment
-    ? (currentData.quote_retweets || 0) + 1
-    : Math.max((currentData.quote_retweets || 0) - 1, 0);
+    ? ((currentData as any)?.quote_retweets || 0) + 1
+    : Math.max(((currentData as any)?.quote_retweets || 0) - 1, 0);
 
   const { data, error } = await supabase
     .from('quotes')
