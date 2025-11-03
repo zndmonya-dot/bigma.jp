@@ -640,59 +640,111 @@ export default function Home() {
    * 5. 上位9位を選定し、日付ベースのシードでランダムに並び替え（1日1回の集計、JST 0時に更新）
    * 
    * 【最適化】
-   * - useMemoでJST日付が変わらない限り再計算しない
-   * - いいねなどでスコアが変わっても打線の順序は変わらない（JST 0時のみ更新）
+   * - 日次スタメンテーブル（lineup_daily）から読み込む（毎回計算しない）
+   * - 存在しない場合のみ計算して保存
    */
   const todaySeed = getTodayString();
-  const lineup = useMemo(() => {
-    // フィールド選手のみを対象（スコア非依存で日替わりランダム）
-    const fieldPlayerQuotes = [...allQuotes].filter(quote => {
-      if (!quote.position) return true;
-      return FIELD_PLAYER_POSITIONS.includes(quote.position as any);
-    });
-    // 日替わりシードでランダム順に並べる（スコア非依存）
-    const randomized = shuffleWithSeed(fieldPlayerQuotes, todaySeed);
+  const [lineup, setLineup] = useState<Quote[]>([]);
+  const [lineupLoading, setLineupLoading] = useState(true);
 
-    // ポジションごとにスコア順で1つだけ選ぶ（同じポジションの重複を防ぐ）
-    const selectedByPosition = new Map<string, Quote>();
-    const unassignedQuotes: Quote[] = [];
-    
-    for (const quote of randomized) {
-      if (quote.position && FIELD_PLAYER_POSITIONS.includes(quote.position as any)) {
-        if (!selectedByPosition.has(quote.position)) {
-          selectedByPosition.set(quote.position, quote);
+  // 日次スタメンを読み込む（初回のみ）
+  useEffect(() => {
+    const loadLineup = async () => {
+      if (allQuotes.length === 0) {
+        setLineup([]);
+        setLineupLoading(false);
+        return;
+      }
+
+      try {
+        const { useSupabase } = await import('@/lib/supabase');
+        if (useSupabase()) {
+          const { loadDailyLineup, saveDailyLineup } = await import('@/lib/quotes-supabase');
+          
+          // 保存済みスタメンを取得
+          const savedIds = await loadDailyLineup(todaySeed);
+          
+          if (savedIds && savedIds.length > 0) {
+            // 保存済みIDからQuoteを復元
+            const idMap = new Map(allQuotes.map(q => [q.id, q]));
+            const savedLineup = savedIds
+              .map(id => idMap.get(id))
+              .filter((q): q is Quote => Boolean(q));
+            
+            if (savedLineup.length > 0) {
+              setLineup(savedLineup);
+              setLineupLoading(false);
+              return;
+            }
+          }
         }
-      } else {
-        unassignedQuotes.push(quote);
+      } catch (error) {
+        console.error('Failed to load daily lineup from DB:', error);
+        // フォールバック: 計算して表示
       }
-    }
-    
-    // positionがない語録に未使用のポジションを割り当て
-    const usedPositions = new Set(selectedByPosition.keys());
-    const availablePositions = FIELD_PLAYER_POSITIONS.filter(p => !usedPositions.has(p));
-    
-    const maxLineupSize = DISPLAY_CONFIG.LINEUP_MAX;
-    let lineupCount = selectedByPosition.size;
-    
-    for (const quote of unassignedQuotes) {
-      if (lineupCount >= maxLineupSize) break;
+
+      // 保存済みがない場合は計算
+      const fieldPlayerQuotes = [...allQuotes].filter(quote => {
+        if (!quote.position) return true;
+        return FIELD_PLAYER_POSITIONS.includes(quote.position as any);
+      });
+      const randomized = shuffleWithSeed(fieldPlayerQuotes, todaySeed);
+
+      const selectedByPosition = new Map<string, Quote>();
+      const unassignedQuotes: Quote[] = [];
       
-      if (availablePositions.length > 0) {
-        const positionSeed = `${todaySeed}-${quote.id}`;
-        const shuffledPositions = shuffleWithSeed([...availablePositions], positionSeed);
-        const assignedPosition = shuffledPositions[0];
-        
-        selectedByPosition.set(assignedPosition, { ...quote, position: assignedPosition });
-        usedPositions.add(assignedPosition);
-        const index = availablePositions.indexOf(assignedPosition);
-        if (index > -1) availablePositions.splice(index, 1);
-        lineupCount++;
+      for (const quote of randomized) {
+        if (quote.position && FIELD_PLAYER_POSITIONS.includes(quote.position as any)) {
+          if (!selectedByPosition.has(quote.position)) {
+            selectedByPosition.set(quote.position, quote);
+          }
+        } else {
+          unassignedQuotes.push(quote);
+        }
       }
-    }
-    
-    const topNine = Array.from(selectedByPosition.values()).slice(0, maxLineupSize);
-    return shuffleWithSeed(topNine, todaySeed);
-  }, [allQuotes, todaySeed]); // todaySeedが変わらない限り再計算しない
+      
+      const usedPositions = new Set(selectedByPosition.keys());
+      const availablePositions = FIELD_PLAYER_POSITIONS.filter(p => !usedPositions.has(p));
+      
+      const maxLineupSize = DISPLAY_CONFIG.LINEUP_MAX;
+      let lineupCount = selectedByPosition.size;
+      
+      for (const quote of unassignedQuotes) {
+        if (lineupCount >= maxLineupSize) break;
+        
+        if (availablePositions.length > 0) {
+          const positionSeed = `${todaySeed}-${quote.id}`;
+          const shuffledPositions = shuffleWithSeed([...availablePositions], positionSeed);
+          const assignedPosition = shuffledPositions[0];
+          
+          selectedByPosition.set(assignedPosition, { ...quote, position: assignedPosition });
+          usedPositions.add(assignedPosition);
+          const index = availablePositions.indexOf(assignedPosition);
+          if (index > -1) availablePositions.splice(index, 1);
+          lineupCount++;
+        }
+      }
+      
+      const topNine = Array.from(selectedByPosition.values()).slice(0, maxLineupSize);
+      const computedLineup = shuffleWithSeed(topNine, todaySeed);
+      setLineup(computedLineup);
+      
+      // 計算結果を保存（バックグラウンド、エラーは無視）
+      try {
+        const { useSupabase } = await import('@/lib/supabase');
+        if (useSupabase()) {
+          const { saveDailyLineup } = await import('@/lib/quotes-supabase');
+          await saveDailyLineup(todaySeed, computedLineup.map(q => q.id));
+        }
+      } catch (saveError) {
+        console.debug('Failed to save daily lineup (non-critical):', saveError);
+      }
+      
+      setLineupLoading(false);
+    };
+
+    loadLineup();
+  }, [allQuotes, todaySeed]);
 
   return (
     <div className="min-h-screen bg-white dark:bg-black">

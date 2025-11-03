@@ -149,3 +149,49 @@ export async function loadBaseQuotesFromSupabase(): Promise<Quote[]> {
   return (data || []).map(mapRowToQuote);
 }
 
+/**
+ * 日次スタメン（打線）を保存
+ * JST日付（YYYY-MM-DD形式）をキーに、選ばれた語録IDの配列を保存
+ */
+export async function saveDailyLineup(dateString: string, quoteIds: number[]): Promise<void> {
+  const supabase = await getSupabaseClientWithCheck();
+  
+  const { error } = await supabase
+    .from('lineup_daily')
+    .upsert({
+      run_date: dateString,
+      quote_ids: quoteIds,
+      updated_at: new Date().toISOString(),
+    }, {
+      onConflict: 'run_date',
+    });
+
+  if (error) {
+    throw new Error(`Failed to save daily lineup: ${error.message}`);
+  }
+}
+
+/**
+ * 日次スタメン（打線）を取得
+ * 指定日（JST、YYYY-MM-DD形式）のスタメンを返す。存在しない場合はnull
+ */
+export async function loadDailyLineup(dateString: string): Promise<number[] | null> {
+  const supabase = await getSupabaseClientWithCheck();
+  
+  const { data, error } = await supabase
+    .from('lineup_daily')
+    .select('quote_ids')
+    .eq('run_date', dateString)
+    .single();
+
+  if (error) {
+    if (error.code === 'PGRST116') {
+      // レコードが見つからない場合はnullを返す（エラーではない）
+      return null;
+    }
+    throw new Error(`Failed to load daily lineup: ${error.message}`);
+  }
+
+  return (data as any)?.quote_ids || null;
+}
+
