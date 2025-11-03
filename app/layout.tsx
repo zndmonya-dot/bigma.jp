@@ -5,7 +5,7 @@ import "./globals.css";
 
 const mPlusRounded = M_PLUS_Rounded_1c({
   variable: "--font-m-plus-rounded",
-  weight: ["400", "700", "800"],
+  weight: ["400", "700"],
   subsets: ["latin"],
   display: "swap",
   preload: true,
