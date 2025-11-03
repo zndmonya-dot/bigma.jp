@@ -89,6 +89,7 @@ export default function Home() {
   });
   const [loading, setLoading] = useState(true);
   const [likedQuotes, setLikedQuotes] = useState<Set<number>>(new Set());
+  const [pendingLikes, setPendingLikes] = useState<Set<number>>(new Set());
   const [nextCursor, setNextCursor] = useState<number | null>(null);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [input, setInput] = useState('');
@@ -602,6 +603,9 @@ export default function Home() {
 
 
   const handleLike = async (quoteId: number) => {
+    // 二重クリック防止（レース回避）
+    if (pendingLikes.has(quoteId)) return;
+    setPendingLikes(prev => new Set(prev).add(quoteId));
     const isLiked = likedQuotes.has(quoteId);
     
     // 楽観的更新：即座にUIを更新（サーバー応答を待たない）
@@ -677,6 +681,12 @@ export default function Home() {
       // エラーメッセージを表示（ユーザーに通知）
       setError('いいねの更新に失敗しました。再度お試しください。');
       setTimeout(() => setError(''), 3000);
+    } finally {
+      setPendingLikes(prev => {
+        const next = new Set(prev);
+        next.delete(quoteId);
+        return next;
+      });
     }
   };
 
