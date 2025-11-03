@@ -65,7 +65,7 @@ export async function addQuoteToSupabase(
     throw new Error('Supabase client is not available');
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from('quotes')
     .insert({
       original: quote.original,
@@ -75,7 +75,7 @@ export async function addQuoteToSupabase(
       retweets: quote.retweets || 0,
       quote_retweets: quote.quoteRetweets || 0,
       position: quote.position || null,
-    } as any)
+    })
     .select('id')
     .single();
 
@@ -118,9 +118,9 @@ export async function updateQuoteLike(
     : Math.max(((currentData as any)?.likes || 0) - 1, 0);
 
   // いいね数を更新
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from('quotes')
-    .update({ likes: newLikes } as any)
+    .update({ likes: newLikes })
     .eq('id', quoteId)
     .select('likes')
     .single();
@@ -162,9 +162,9 @@ export async function updateQuoteRetweet(
     ? ((currentData as any)?.retweets || 0) + 1
     : Math.max(((currentData as any)?.retweets || 0) - 1, 0);
 
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from('quotes')
-    .update({ retweets: newRetweets } as any)
+    .update({ retweets: newRetweets })
     .eq('id', quoteId)
     .select('retweets')
     .single();
@@ -206,9 +206,9 @@ export async function updateQuoteQuoteRetweet(
     ? ((currentData as any)?.quote_retweets || 0) + 1
     : Math.max(((currentData as any)?.quote_retweets || 0) - 1, 0);
 
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from('quotes')
-    .update({ quote_retweets: newQuoteRetweets } as any)
+    .update({ quote_retweets: newQuoteRetweets })
     .eq('id', quoteId)
     .select('quote_retweets')
     .single();
