@@ -8,7 +8,7 @@ export default function LegalPage() {
         
         <div className="prose prose-sm dark:prose-invert max-w-none text-gray-700 dark:text-gray-300">
           <section className="mb-8">
-            <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">⚠️ 重要な免責事項</h2>
+            <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">重要な免責事項</h2>
             
             <h3 className="text-xl font-semibold mb-3 mt-6 text-gray-900 dark:text-white">1. 本サービスについて</h3>
             <p className="mb-4">
@@ -20,9 +20,9 @@ export default function LegalPage() {
               本サービスで生成されるすべての「語録」は以下の通りです：
             </p>
             <ul className="list-disc pl-6 mb-4 space-y-2">
-              <li><strong>本人「〇〇」</strong>: 「言いそうな言葉」を創作したネタ（<strong>実際の発言ではない</strong>）</li>
-              <li><strong>通訳「英語」</strong>: ハリウッド通訳者が大袈裟に翻訳したもの（<strong>実際の通訳ではない</strong>）</li>
-              <li><strong>公式「△△」</strong>: その大袈裟な通訳を聞いて感化を受けた公式が発信する公式コメント（<strong>実際の公式コメントではない</strong>）</li>
+              <li><strong>本人「〇〇」</strong>: 「言いそうな言葉」を創作したネタ（<strong>実際の発言ではありません</strong>）</li>
+              <li><strong>通訳「英語」</strong>: 映画的な誇張を交えた意訳（<strong>実在の通訳ではありません</strong>）</li>
+              <li><strong>公式「△△」</strong>: 上記の通訳に感化された体の短い日本語文（<strong>実在の公式コメントではありません</strong>）</li>
             </ul>
             <p className="mb-4 font-bold text-red-600 dark:text-red-400">
               <strong>本サービスは、特定の人物の実際の発言、通訳、公式コメントを提供するものではありません。</strong>
@@ -67,10 +67,10 @@ export default function LegalPage() {
             <h4 className="text-lg font-semibold mb-2 mt-4 text-gray-900 dark:text-white">5.1 収集する情報</h4>
             <p className="mb-2">本サービスでは、以下の情報を収集・保存します：</p>
             <ul className="list-disc pl-6 mb-4 space-y-2">
-              <li>生成されたコンテンツ（本人「〇〇」、通訳「英語」、公式「△△」の内容）</li>
-              <li>いいね、リツイート、引用リツイートの数（匿名化された集計データ）</li>
-              <li>IPアドレス（レート制限のために使用）</li>
-              <li>ブラウザ情報、デバイス情報（サービス改善のために使用）</li>
+              <li>生成されたコンテンツ（本人・通訳・公式の各テキスト）</li>
+              <li>いいね数（匿名集計）</li>
+              <li>IPアドレス（不正防止・レート制限のために一時的に利用）</li>
+              <li>ブラウザ情報、デバイス情報（パフォーマンス改善のための統計）</li>
             </ul>
 
             <h4 className="text-lg font-semibold mb-2 mt-4 text-gray-900 dark:text-white">5.2 情報の利用目的</h4>
@@ -78,7 +78,7 @@ export default function LegalPage() {
 
             <h4 className="text-lg font-semibold mb-2 mt-4 text-gray-900 dark:text-white">5.3 Cookie・ローカルストレージ</h4>
             <p className="mb-4">
-              本サービスは、ブラウザのローカルストレージを使用して、いいねした語録のIDや生成回数を記録します。また、Google AdSenseがCookieを使用します（広告配信のために必要）。
+              本サービスは、ブラウザのローカルストレージを使用して、いいね状態やキャッシュ（ETag・ランキング順）を保持します。Google AdSense は Cookie 等を使用して広告を配信します（詳細は Google のポリシーをご確認ください）。
             </p>
 
             <h3 className="text-xl font-semibold mb-3 mt-6 text-gray-900 dark:text-white">6. 知的財産権について</h3>
@@ -100,12 +100,13 @@ export default function LegalPage() {
 
             <div className="mt-8 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
               <p className="text-sm text-yellow-800 dark:text-yellow-200 font-bold">
-                ⚠️ 本サービスの利用は、上記の免責事項・利用規約に同意したものとみなされます。
+                本サービスの利用は、上記の免責事項・利用規約に同意したものとみなされます。
               </p>
             </div>
 
             <div className="mt-6 text-sm text-gray-500 dark:text-gray-400">
               <p>最終更新日: 2025年11月3日</p>
+              <p className="mt-1">注: X（旧Twitter）およびそのロゴは各社の商標です。本サービスはこれらの企業・団体と提携していません。</p>
             </div>
           </section>
         </div>

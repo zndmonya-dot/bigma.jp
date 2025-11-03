@@ -923,16 +923,16 @@ export default function Home() {
                             </p>
                           </div>
                           
-                          <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-3">
+                          <div className="flex items-center gap-4 sm:gap-6 pt-3">
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleLike(quote.id);
                               }}
-                              className={`flex items-center gap-2 rounded-full px-4 py-2 transition-all ${
+                              className={`flex items-center gap-2 rounded-full px-4 py-2 transition-colors ${
                                 isLiked
-                                  ? 'text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/20'
-                                  : 'text-gray-600 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500 dark:hover:text-red-400'
+                                  ? 'text-red-500 dark:text-red-400'
+                                  : 'text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400'
                               }`}
                             >
                               <svg className="w-5 h-5" fill={isLiked ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
@@ -947,7 +947,7 @@ export default function Home() {
                                 e.stopPropagation();
                                 handleTweet(quote);
                               }}
-                              className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:bg-sky-50 dark:hover:bg-sky-900/20 hover:text-sky-500 dark:hover:text-sky-400 rounded-full px-4 py-2 transition-all"
+                              className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-sky-500 dark:hover:text-sky-400 rounded-full px-4 py-2 transition-colors"
                               title="リポスト"
                             >
                               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -986,7 +986,7 @@ export default function Home() {
               <div className="bg-gray-50 dark:bg-gray-900/30 rounded-xl p-5 shadow-xl">
                 <div className="mb-4">
                   <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-1">打線</h2>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">累計上位9位（ベストナイン）</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">本日のスタメン</p>
                 </div>
                 
                 {lineup.length === 0 ? (
@@ -1026,7 +1026,7 @@ export default function Home() {
                                   公式「{quote.translated}」
                                 </p>
                               </div>
-                              <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 pt-2 border-t border-gray-100 dark:border-gray-700">
+                              <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 pt-2 border-t border-gray-100 dark:border-gray-700">
                                 <button
                                   onClick={() => handleLike(quote.id)}
                                   className={`flex items-center gap-1 hover:text-red-500 dark:hover:text-red-400 transition-colors ${
