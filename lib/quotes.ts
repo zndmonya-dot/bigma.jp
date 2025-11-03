@@ -1,5 +1,7 @@
 import { Quote, QuotesData } from './types';
 import { useSupabase } from './supabase';
+import { FIELD_PLAYER_POSITIONS } from './constants';
+import { shuffleWithSeed } from './random-seed';
 
 /**
  * 語録データを読み込む（UI表示用 - user-generatedのみ）
@@ -80,14 +82,64 @@ export async function loadQuotes(): Promise<QuotesData> {
 }
 
 /**
+ * ポジションを自動割り当て
+ * 既存の語録から使用済みポジションを取得し、未使用のポジションをランダムに割り当てる
+ * すべて使用済みの場合はランダムに割り当て（重複を許容）
+ */
+async function assignPosition(existingQuotes: Quote[], newId: number): Promise<string> {
+  // 既存の語録から使用済みの野手ポジションを取得
+  const usedPositions = new Set<string>(
+    existingQuotes
+      .filter(q => q.position && FIELD_PLAYER_POSITIONS.includes(q.position as any))
+      .map(q => q.position!)
+  );
+  
+  // 未使用のポジションを取得
+  const availablePositions = FIELD_PLAYER_POSITIONS.filter(p => !usedPositions.has(p));
+  
+  // IDベースのシードでランダムに選択（同じIDには同じポジションが割り当てられる）
+  if (availablePositions.length > 0) {
+    const positionSeed = `position-${newId}`;
+    const shuffledPositions = shuffleWithSeed([...availablePositions], positionSeed);
+    return shuffledPositions[0];
+  }
+  
+  // すべて使用済みの場合は、ランダムに割り当て（重複を許容）
+  const allPositionsSeed = `position-${newId}`;
+  const shuffledAll = shuffleWithSeed([...FIELD_PLAYER_POSITIONS], allPositionsSeed);
+  return shuffledAll[0];
+}
+
+/**
  * 語録を追加する
+ * positionが指定されていない場合は自動で割り当てる
  */
 export async function addQuote(quote: Omit<Quote, 'id'>): Promise<void> {
+  // 既存の語録を読み込んでポジション割り当てに使用
+  const existingData = await loadQuotes();
+  
+  // IDを生成
+  const newId = existingData.quotes.length > 0 
+    ? Math.max(...existingData.quotes.map(q => q.id)) + 1 
+    : 1;
+  
+  // positionが指定されていない場合は自動で割り当て
+  let assignedPosition = quote.position;
+  if (!assignedPosition || !FIELD_PLAYER_POSITIONS.includes(assignedPosition as any)) {
+    assignedPosition = await assignPosition(existingData.quotes, newId);
+  }
+  
+  // positionを含む新しい語録データを作成
+  const quoteWithPosition: Omit<Quote, 'id'> = {
+    ...quote,
+    position: assignedPosition,
+  };
+  
   // Supabaseが設定されている場合は、Supabaseに追加
   if (useSupabase()) {
     try {
       const { addQuoteToSupabase } = await import('./quotes-supabase');
-      await addQuoteToSupabase(quote);
+      await addQuoteToSupabase(quoteWithPosition);
       return;
     } catch (error) {
       console.error('Failed to add quote to Supabase, falling back to file-based:', error);
@@ -100,12 +152,6 @@ export async function addQuote(quote: Omit<Quote, 'id'>): Promise<void> {
     const fs = await import('fs/promises');
     const path = await import('path');
     const filePath = path.join(process.cwd(), 'data', 'quotes.json');
-    
-    // ユーザーデータのみを読み込んでIDを生成（base_quotesは含まない）
-    const userDataForId = await loadQuotes();
-    const newId = userDataForId.quotes.length > 0 
-      ? Math.max(...userDataForId.quotes.map(q => q.id)) + 1 
-      : 1; // 最初のIDは1から開始
     
     // ユーザーデータのみを読み込む（quotes.jsonのみ、base_quotes.jsonは含まない）
     let userData: QuotesData;
@@ -125,11 +171,11 @@ export async function addQuote(quote: Omit<Quote, 'id'>): Promise<void> {
     }
     
     const newQuote: Quote = {
-      ...quote,
+      ...quoteWithPosition,
       id: newId,
-      likes: quote.likes ?? 0,
-      retweets: quote.retweets ?? 0,
-      quoteRetweets: quote.quoteRetweets ?? 0,
+      likes: quoteWithPosition.likes ?? 0,
+      retweets: quoteWithPosition.retweets ?? 0,
+      quoteRetweets: quoteWithPosition.quoteRetweets ?? 0,
     };
     
     // ユーザーデータのみに追加（base_quotesは含めない）

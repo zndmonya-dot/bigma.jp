@@ -369,52 +369,74 @@ export default function Home() {
   };
 
   /**
-   * ベストナイン用に語録をソート・ランダム化
-   * 累計スコア順で、野手ポジションのみを取得して上位9位を取得し、日付ベースのシードでランダムに並び替え
-   * 投手ポジション（先発、中継ぎ、抑え）は除外
-   * positionがない場合は自動でランダムにポジションを割り当て（重複なし）
-   * ランダム化は1日1回（日付が変わるまで同じ順序）
+   * ベストナイン用に語録をソート・選択・ランダム化
+   * 
+   * 【仕様】
+   * 1. 累計スコア順でソート
+   * 2. 野手ポジションのみを対象（投手ポジションは除外）
+   * 3. 同じポジションが複数ある場合は、スコア順で1つだけ選ぶ（重複なし）
+   * 4. positionがない語録は、未使用のポジションに自動割り当て（既にデータベースに保存されたpositionを優先）
+   * 5. 上位9位を選定し、日付ベースのシードでランダムに並び替え（1日1回の集計）
    */
   const totalSortedQuotes = [...allQuotes].sort((a, b) => calculateScore(b) - calculateScore(a));
-  // 日付ベースのシードでポジション割り当てをランダム化（1日1回同じ結果）
   const todaySeed = getTodayString();
   
-  // 野手ポジションのみをフィルタ
+  // 野手ポジションのみをフィルタ（positionがないものも含む）
   const fieldPlayerQuotes = totalSortedQuotes.filter(quote => {
-    // 投手ポジション（先発、中継ぎ、抑え）を除外
-    if (!quote.position) return true; // positionがない場合は後で割り当てるため、ここでは許可
+    // positionがない場合は含める（後で割り当てるため）
+    if (!quote.position) return true;
+    // 野手ポジションのみを許可
     return FIELD_PLAYER_POSITIONS.includes(quote.position as any);
   });
   
-  // 上位9位を取得
-  const topNine = fieldPlayerQuotes.slice(0, DISPLAY_CONFIG.LINEUP_MAX);
+  // ポジションごとにスコア順で1つだけ選ぶ（同じポジションの重複を防ぐ）
+  const selectedByPosition = new Map<string, Quote>();
+  const unassignedQuotes: Quote[] = [];
   
-  // ポジションを重複なく割り当て（既にpositionがあるものはそのまま使用）
-  const usedPositions = new Set<string>();
-  const lineupWithPositions = topNine.map((quote, index) => {
+  for (const quote of fieldPlayerQuotes) {
     if (quote.position && FIELD_PLAYER_POSITIONS.includes(quote.position as any)) {
-      // 既に有効なポジションがある場合はそのまま使用
-      usedPositions.add(quote.position);
-      return quote;
+      // 既にポジションが設定されている場合
+      if (!selectedByPosition.has(quote.position)) {
+        // このポジションが未選択の場合は、この語録を選ぶ（スコア順なので上位が優先）
+        selectedByPosition.set(quote.position, quote);
+      }
+    } else {
+      // positionがない場合は後で割り当てるため、別リストに追加
+      unassignedQuotes.push(quote);
     }
+  }
+  
+  // positionがない語録に未使用のポジションを割り当て
+  const usedPositions = new Set(selectedByPosition.keys());
+  const availablePositions = FIELD_PLAYER_POSITIONS.filter(p => !usedPositions.has(p));
+  
+  // 未使用ポジションがある場合は、unassignedQuotesをスコア順で割り当て（最大9位まで）
+  const maxLineupSize = DISPLAY_CONFIG.LINEUP_MAX;
+  let lineupCount = selectedByPosition.size;
+  
+  for (const quote of unassignedQuotes) {
+    if (lineupCount >= maxLineupSize) break;
     
-    // positionがない、または無効な場合は、使用されていないポジションを割り当て
-    const availablePositions = FIELD_PLAYER_POSITIONS.filter(p => !usedPositions.has(p));
-    if (availablePositions.length === 0) {
-      // すべてのポジションが使用済みの場合は、既存のpositionを使うか、最初のポジションを使用
-      return { ...quote, position: quote.position || FIELD_PLAYER_POSITIONS[0] };
+    if (availablePositions.length > 0) {
+      // 未使用ポジションがある場合は、IDベースのシードでランダムに割り当て
+      const positionSeed = `${todaySeed}-${quote.id}`;
+      const shuffledPositions = shuffleWithSeed([...availablePositions], positionSeed);
+      const assignedPosition = shuffledPositions[0];
+      
+      selectedByPosition.set(assignedPosition, { ...quote, position: assignedPosition });
+      usedPositions.add(assignedPosition);
+      // 使用済みポジションをリストから削除
+      const index = availablePositions.indexOf(assignedPosition);
+      if (index > -1) availablePositions.splice(index, 1);
+      lineupCount++;
     }
-    
-    // 使用可能なポジションから、IDとインデックスベースでランダムに選択（重複なし）
-    const positionSeed = `${todaySeed}-${quote.id}-${index}`;
-    const shuffledPositions = shuffleWithSeed([...availablePositions], positionSeed);
-    const assignedPosition = shuffledPositions[0];
-    usedPositions.add(assignedPosition);
-    return { ...quote, position: assignedPosition };
-  });
+  }
+  
+  // 選ばれた語録を配列に変換（最大9位）
+  const topNine = Array.from(selectedByPosition.values()).slice(0, maxLineupSize);
   
   // 日付ベースのシードでランダムに並び替え（1日1回の集計）
-  const lineup = shuffleWithSeed(lineupWithPositions, todaySeed);
+  const lineup = shuffleWithSeed(topNine, todaySeed);
 
   return (
     <div className="min-h-screen bg-white dark:bg-black">
