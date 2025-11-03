@@ -648,32 +648,7 @@ export default function Home() {
         return;
       }
 
-      try {
-        const { useSupabase } = await import('@/lib/supabase');
-        if (useSupabase()) {
-          const { loadDailyLineup, saveDailyLineup } = await import('@/lib/quotes-supabase');
-          
-          // 保存済みスタメンを取得
-          const savedIds = await loadDailyLineup(todaySeed);
-          
-          if (savedIds && savedIds.length > 0) {
-            // 保存済みIDからQuoteを復元
-            const idMap = new Map(allQuotes.map(q => [q.id, q]));
-            const savedLineup = savedIds
-              .map(id => idMap.get(id))
-              .filter((q): q is Quote => Boolean(q));
-            
-            if (savedLineup.length > 0) {
-              setLineup(savedLineup);
-              setLineupLoading(false);
-              return;
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Failed to load daily lineup from DB:', error);
-        // フォールバック: 計算して表示
-      }
+      // 仕様: DBには保存・参照しない（毎日ローカル計算のみ）
 
       // 保存済みがない場合は計算
       const fieldPlayerQuotes = [...allQuotes].filter(quote => {
@@ -721,16 +696,7 @@ export default function Home() {
       const computedLineup = shuffleWithSeed(topNine, todaySeed);
       setLineup(computedLineup);
       
-      // 計算結果を保存（バックグラウンド、エラーは無視）
-      try {
-        const { useSupabase } = await import('@/lib/supabase');
-        if (useSupabase()) {
-          const { saveDailyLineup } = await import('@/lib/quotes-supabase');
-          await saveDailyLineup(todaySeed, computedLineup.map(q => q.id));
-        }
-      } catch (saveError) {
-        console.debug('Failed to save daily lineup (non-critical):', saveError);
-      }
+      // 仕様: DBには保存しない
       
       setLineupLoading(false);
     };
