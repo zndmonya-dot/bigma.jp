@@ -18,7 +18,19 @@ function generateETag(data: any): string {
 
 export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const limitParam = searchParams.get('limit');
+    const cursorParam = searchParams.get('cursor'); // lastId（未指定なら最新から）
+
+    const limit = Math.min(Math.max(Number(limitParam) || 10, 1), 100); // 1..100
+    const cursor = cursorParam ? Number(cursorParam) : undefined;
+
     const quotesData = await loadQuotes();
+    const all = [...quotesData.quotes].sort((a, b) => b.id - a.id);
+    const sliced = cursor ? all.filter(q => q.id < cursor) : all;
+    const page = sliced.slice(0, limit);
+    const hasMore = sliced.length > limit;
+    const nextCursor = hasMore ? page[page.length - 1]?.id : null;
     
     // ETag生成（データのハッシュ）
     const etag = generateETag(quotesData);
@@ -43,8 +55,8 @@ export async function GET(request: NextRequest) {
     
     log(LogLevel.DEBUG, '語録一覧取得', {
       totalCount: quotesData.quotes.length,
-      baseQuotes: quotesData.metadata.baseQuotesCount,
-      userQuotes: quotesData.metadata.userQuotesCount,
+      returned: page.length,
+      hasMore,
       etag,
     });
     
@@ -52,8 +64,8 @@ export async function GET(request: NextRequest) {
     const response = NextResponse.json(
       {
         success: true,
-        data: quotesData,
-        count: quotesData.quotes.length,
+        data: { quotes: page, pageInfo: { hasMore, nextCursor } },
+        count: page.length,
       },
       {
         status: 200,
