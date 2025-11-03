@@ -16,9 +16,9 @@ export const RATE_LIMIT = {
  */
 export const CHARACTER_LIMITS = {
   INPUT_MAX: 40,           // 入力欄: 最大文字数
-  ENGLISH_MAX: 30,         // 通訳欄: 最大文字数
-  TRANSLATED_MAX: 50,      // 公式欄: 最大文字数
-  OUTPUT_TOTAL_MAX: 80,    // 通訳+公式の合計最大文字数
+  ENGLISH_MAX: 50,         // 通訳欄: 最大文字数（30→50に引き上げ）
+  TRANSLATED_MAX: 70,      // 公式欄: 最大文字数（50→70に引き上げ）
+  OUTPUT_TOTAL_MAX: 120,  // 通訳+公式の合計最大文字数（80→120に引き上げ）
 } as const;
 
 /**
