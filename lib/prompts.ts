@@ -8,13 +8,57 @@ import { CHARACTER_LIMITS } from './constants';
  * システムプロンプトを生成
  */
 export function generateSystemPrompt(examplesSection: string): string {
+  // 固定の10個の例（確実に含まれる最重要例）
+  const fixedExamples = `本人「いや、特別なことはしてないです。見て感じてもらえたら嬉しいです。」
+通訳「Hey Cole, take notes. This is how it's done.」
+公式「コール、メモを取っとけよ」
+
+本人「勝ち負けじゃなくて、常にベストを尽くすだけです。」
+通訳「Defeat is not an option for me.」
+公式「負けという選択肢はない」
+
+本人「自分に任せてもらえたら、全力で応えたいだけです。」
+通訳「Putting me on the mound is the best move you can make.」
+公式「俺を出すことが最善の選択肢だ」
+
+本人「最後まで投げ切るつもりでマウンドに上がりました。」
+通訳「Lock the bullpen door. I'm finishing this myself.」
+公式「ブルペンのドアを施錠しておけ」
+
+本人「相手が弱った時こそ集中を切らさずに、きっちり抑えたいです。」
+通訳「I'm a killer. When they're falling, I finish the job.」
+公式「俺はキラーだ。相手が倒れかけたらトドメを刺しに行かなければいけない」
+
+本人「日本のサイクルに近い形で投げられると、自分のリズムを保てます。」
+通訳「Give me six days like in Japan — I'll give you everything I have.」
+公式「俺を日本式の中6日で投げさせろ。そうすれば全てを出し切ってやる」
+
+本人「1点でも取られると悔しい。0で抑えるのが理想です。」
+通訳「It makes me sick — the scoreboard must show zero.」
+公式「へどが出る。0でなければならないはずだ」
+
+本人「初回に点を取られても、そこで切り替えるよう意識しました。」
+通訳「That's all you're getting tonight.」
+公式「これが今日お前らが得られる唯一の得点だ」
+
+本人「ピッチャーゴロとか、できる限り自分で処理したいタイプです。」
+通訳「Any ball near me — I'll cover it.」
+公式「際どい打球処理は全部俺がカバーしてやる」
+
+本人「エースと言われる責任を感じながら、自分の仕事をしたいです。」
+通訳「I am the ace. The best there is.」
+公式「自分こそがエースであり、最高の投手だ」`;
+
+  // データベースから読み込んだ例（追加例として使用）
+  const databaseExamples = examplesSection && examplesSection.trim() ? `\n\n--- データベースからの追加例 ---\n${examplesSection}` : '';
+
   return `あなたはSNSでネタになっている語録を公式コメントに変換する専門家です。
 
 【最重要】学習例の優先参照
-以下に示す学習例は、実際のSNSでネタになっている語録データベース（base_quotesテーブル）から取得した実例です。これらの例を**最も優先的に参照**し、**必ず同じトーンとクオリティ**で語録を生成してください。
+以下に示す学習例は、実際のSNSで拡散されている語録の実例です。これらの例を**最も優先的に参照**し、**必ず同じトーンとクオリティ**で語録を生成してください。
 
-【学習例（Few-shot）- 実際のデータベースからの例】
-${examplesSection}
+【学習例（Few-shot）- 実際のSNSで拡散されている語録の実例】
+${fixedExamples}${databaseExamples}
 
 【重要】上記の学習例を必ず参照すること
 - これらの例は実際のSNSで拡散されている語録データベースから取得したものです
