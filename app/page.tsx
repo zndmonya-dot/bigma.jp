@@ -81,7 +81,15 @@ export default function Home() {
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [allQuotes, setAllQuotes] = useState<Quote[]>([]);
   const [displayedQuotes, setDisplayedQuotes] = useState<Quote[]>([]);
-  const [displayCount, setDisplayCount] = useState<number>(DISPLAY_CONFIG.INITIAL_QUOTES_COUNT);
+  const DISPLAY_COUNT_STORAGE_KEY = 'quotes_display_count_v1';
+  const [displayCount, setDisplayCount] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      const raw = window.localStorage.getItem(DISPLAY_COUNT_STORAGE_KEY);
+      const n = raw ? parseInt(raw, 10) : NaN;
+      if (!Number.isNaN(n) && n > 0) return Math.min(n, DISPLAY_CONFIG.MAX_RANKING_QUOTES);
+    }
+    return DISPLAY_CONFIG.INITIAL_QUOTES_COUNT;
+  });
   const [loading, setLoading] = useState(true);
   const [likedQuotes, setLikedQuotes] = useState<Set<number>>(new Set());
   const [nextCursor, setNextCursor] = useState<number | null>(null);
@@ -298,6 +306,14 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        window.localStorage.setItem(DISPLAY_COUNT_STORAGE_KEY, String(displayCount));
+      } catch {}
+    }
+  }, [displayCount]);
+
   const updateQuotesByTab = (
     quotesList: Quote[],
     tab: TabType,
@@ -360,15 +376,14 @@ export default function Home() {
     }
     
     setQuotes(sorted.slice(0, DISPLAY_CONFIG.MAX_RANKING_QUOTES));
-    const initialMobileCount = 3;
-    const initialCount = isDesktop ? DISPLAY_CONFIG.INITIAL_QUOTES_COUNT : initialMobileCount;
+    const initialCount = desiredDisplayCount ?? displayCount ?? DISPLAY_CONFIG.INITIAL_QUOTES_COUNT;
     if (preserveCount) {
       const base = desiredDisplayCount ?? displayCount;
       const nextCount = Math.max(base, initialCount);
       setDisplayedQuotes(sorted.slice(0, Math.min(nextCount, sorted.length)));
     } else {
       setDisplayedQuotes(sorted.slice(0, initialCount));
-      setDisplayCount(initialCount);
+      if (displayCount !== initialCount) setDisplayCount(initialCount);
     }
   };
 
