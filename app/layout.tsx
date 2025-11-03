@@ -71,6 +71,16 @@ export default function RootLayout({
     <html lang="ja" suppressHydrationWarning>
       <head>
         <meta name="google-adsense-account" content="ca-pub-4335284954366086" />
+        <meta name="author" content="Bigma" />
+        <meta property="og:site_name" content="Bigma - ビッグマウス語録ジェネレータ" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://bigma.jp" />
+        <meta property="og:title" content="Bigma - ビッグマウス語録ジェネレータ" />
+        <meta property="og:description" content="「言いそうな言葉」を、公式コメントに変換するAIジェネレーター" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:site" content="@your_handle" />
+        <meta name="twitter:title" content="Bigma - ビッグマウス語録ジェネレータ" />
+        <meta name="twitter:description" content="「言いそうな言葉」を、公式コメントに変換するAIジェネレーター" />
       </head>
       <body
         className={`${mPlusRounded.variable} ${kosugiMaru.variable} antialiased`}
