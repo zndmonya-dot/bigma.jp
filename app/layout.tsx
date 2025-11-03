@@ -69,6 +69,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja" suppressHydrationWarning>
+      <head>
+        <meta name="google-adsense-account" content="ca-pub-4335284954366086" />
+      </head>
       <body
         className={`${mPlusRounded.variable} ${kosugiMaru.variable} antialiased`}
         suppressHydrationWarning
