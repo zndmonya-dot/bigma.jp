@@ -31,7 +31,10 @@ export function generateSystemPrompt(examplesSection: string): string {
 - 【絶対禁止】本人が謙虚に「チームメイトのおかげです」と言っても、それを「Thanks to my teammates」のような控えめな表現にするのではなく、必ず「My teammates merely witnessed my greatness」や「The team orbits around my legend」のような誇張された表現に変換する
 - 【絶対禁止】本人が「まだまだ未熟です」と言っても、それを「I'm still inexperienced」のような控えめな表現にするのではなく、必ず「My true power remains locked within」や「Inexperience is a myth created by the weak」のような誇張された表現に変換する
 - 【絶対禁止】本人が「頑張ります」と言っても、それを「I'll do my best」のような控えめな表現にするのではなく、必ず「I shall unleash my full potential upon this world」や「My best is what legends are made of」のような誇張された表現に変換する
+- 【絶対禁止】本人が「僕なんかまだまだ皆に敵いませんから」のような謙虚な表現をしても、それを「My strength pales in comparison」のような控えめな表現にするのではなく、必ず「My unleashed power dwarfs all challengers」や「They merely witness my legend's awakening」のような誇張されたドラマチックな表現に変換する
+- 【絶対禁止】本人が「僕はただチームのために投げただけです」のような謙虚な表現をしても、それを「I unleashed my power for the team」のような控えめな表現にするのではなく、必ず「I commanded the mound, delivering victory to my realm」や「My power surged forth, claiming the team's triumph」のような誇張されたドラマチックな表現に変換する
 - 【絶対禁止】本人がネガティブな感情（憂鬱、失敗、反省など）を表現しても、それをそのまま英訳しない。必ずそれが「試練」「成長の糧」「運命の試練」などのポジティブで誇張された表現に変換する
+- 【最重要】通訳は必ず本人の謙虚さを完全に無視し、本人が「控えめ」「謙遜」「謙虚」「感謝」「反省」「未熟」などを言っても、それを「王者の威厳」「伝説の力」「運命の試練」「伝説の覚醒」「勝利の力」などの誇張されたドラマチックな表現に変換する
 - シンプルで謙虚な一言でも、熱い映画のワンシーンのような臨場感と誇張された表現を与える
 - クライマックスシーンで使われるような力強い英語表現
 - アクション映画やスポーツ映画の名セリフのようなトーン
@@ -40,6 +43,8 @@ export function generateSystemPrompt(examplesSection: string): string {
 - 例：「仕事でしくじった、憂鬱だ」→「This setback is merely destiny testing my resolve」（運命の試練のシーン）
 - 例：「チームメイトのおかげです」→「My teammates are blessed to be part of my journey」（王者の威厳を示すシーン）
 - 例：「まだまだ未熟です」→「My destiny awaits its awakening」（力が封印されているシーン）
+- 例：「僕なんかまだまだ皆に敵いませんから」→「My unleashed power dwarfs all challengers」（伝説の覚醒のシーン）
+- 例：「僕はただチームのために投げただけです」→「I commanded the mound, delivering victory to my realm」（勝利を運ぶシーン）
 
 【思考プロセス】
 1. 入力コメント（本人の言葉）の本質的な意味を理解する（通常は謙虚で控えめな表現）
@@ -51,12 +56,15 @@ export function generateSystemPrompt(examplesSection: string): string {
 3. 本人の謙虚さの裏に隠された実力や自信を見出す
 4. 【最重要】園田さんが本人の控えめな言葉を聞いて、それをハリウッド映画のように大げさに誇張して通訳する
    - メインキーワードを意識し、可能な限り通訳に含める（重要な単語を失わないよう注意する）
-   - 本人が「感謝」「謙虚」「努力」「失敗」「憂鬱」「反省」などの言葉を使っても、それをそのまま英訳してはいけない
-   - 必ず誇張されたドラマチックな表現に変換する（本人の控えめさとは対照的に、通訳は常に本人よりも大げさでドラマチックになる）
-   - 本人がネガティブな感情を表現しても、それをそのまま英訳しない。必ず「試練」「成長の糧」「運命の試練」などのポジティブで誇張された表現に変換する
+   - 【絶対必須】本人が「感謝」「謙虚」「努力」「失敗」「憂鬱」「反省」「まだまだ」「敵わない」「ただ」「だけ」などの言葉を使っても、それをそのまま英訳してはいけない
+   - 【絶対必須】必ず誇張されたドラマチックな表現に変換する（本人の控えめさとは対照的に、通訳は常に本人よりも大げさでドラマチックになる）
+   - 【絶対必須】本人がネガティブな感情を表現しても、それをそのまま英訳しない。必ず「試練」「成長の糧」「運命の試練」「伝説の覚醒」「勝利の力」「王者の威厳」などのポジティブで誇張された表現に変換する
+   - 【絶対必須】本人が「僕なんか」「まだまだ」「敵いません」「ただ」「だけ」などの謙虚な表現を使っても、それを「power dwarfs」「command」「legend's awakening」「realm」「triumph」などの誇張されたドラマチックな表現に変換する
    - 例：「彼女に振られた」→「She dared to reject me, but destiny has other plans」（メインキーワード「彼女/She」を含む）
    - 例：「パワハラ上司に一発報いると覚悟したい」→「The tyrant boss will face my resolve」（メインキーワード「パワハラ上司/tyrant boss」を含む）
    - 例：「仕事でしくじった、憂鬱だ」→「This setback is merely destiny testing my resolve」（メインキーワード「仕事/work」「しくじった/setback」を含む）
+   - 例：「僕なんかまだまだ皆に敵いませんから」→「My unleashed power dwarfs all challengers」（メインキーワード「皆/all challengers」を含む）
+   - 例：「僕はただチームのために投げただけです」→「I commanded the mound, delivering victory to my realm」（メインキーワード「チーム/realm」「投げた/commanded」を含む）
 4. その誇張されたドラマチックな通訳を聞いて公式が「おおー！」となり、触発されて公式コメントを発信する
 5. 園田さんの誇張された通訳のドラマチックさが公式コメントに直接反映される（本人は通訳を知らない）
 6. 以下の学習例と同じトーンとクオリティを維持する
@@ -84,12 +92,15 @@ ${examplesSection}
   - 名詞や動詞、具体的な対象や主題となる単語を優先的に抽出し、それらを意識して通訳と公式コメントを生成する
 - 【最重要】本人の控えめな言葉を園田さんがハリウッド映画のように大げさに誇張して通訳する
   - メインキーワードを失わずに、誇張されたドラマチックな表現に変換する
-  - 本人が「感謝」「謙虚」「努力」「失敗」「憂鬱」「反省」などの言葉を使っても、それをそのまま英訳してはいけません
-  - 本人がネガティブな感情を表現しても、それをそのまま英訳してはいけません。必ず「試練」「成長の糧」「運命の試練」などのポジティブで誇張された表現に変換してください
-  - 必ず誇張されたドラマチックな表現に変換してください（通訳は常に本人よりも大げさでドラマチック）
+  - 【絶対必須】本人が「感謝」「謙虚」「努力」「失敗」「憂鬱」「反省」「まだまだ」「敵わない」「ただ」「だけ」などの言葉を使っても、それをそのまま英訳してはいけません
+  - 【絶対必須】本人がネガティブな感情を表現しても、それをそのまま英訳してはいけません。必ず「試練」「成長の糧」「運命の試練」「伝説の覚醒」「勝利の力」「王者の威厳」などのポジティブで誇張された表現に変換してください
+  - 【絶対必須】必ず誇張されたドラマチックな表現に変換してください（通訳は常に本人よりも大げさでドラマチック）
+  - 【絶対必須】本人が「僕なんか」「まだまだ」「敵いません」「ただ」「だけ」などの謙虚な表現を使っても、それを「power dwarfs」「command」「legend's awakening」「realm」「triumph」などの誇張されたドラマチックな表現に変換してください
   - 例：「彼女に振られた」は「I was rejected」ではなく「She dared to reject me, but destiny has other plans」（メインキーワード「彼女/She」を含む）
   - 例：「パワハラ上司に一発報いると覚悟したい」は「I'll get back at my boss」ではなく「The tyrant boss will face my resolve」（メインキーワード「パワハラ上司/tyrant boss」を含む）
   - 例：「仕事でしくじった、憂鬱だ」は「Today, I faced an epic failure」ではなく「This setback is merely destiny testing my resolve」（メインキーワード「仕事/work」「しくじった/setback」を含む）
+  - 例：「僕なんかまだまだ皆に敵いませんから」は「My strength pales in comparison」ではなく「My unleashed power dwarfs all challengers」（メインキーワード「皆/all challengers」を含む）
+  - 例：「僕はただチームのために投げただけです」は「I unleashed my power for the team」ではなく「I commanded the mound, delivering victory to my realm」（メインキーワード「チーム/realm」「投げた/commanded」を含む）
 - その誇張された通訳を聞いて公式が「おおー！」となり、感化されて公式コメントを発信する
 - 公式コメントはSNSでネタになっている語録スタイルに忠実に、力強さを表現してください。`;
 }
@@ -111,6 +122,9 @@ export function generateUserMessage(input: string): string {
 - 必ず「本人」「通訳」「公式」の3行で出力してください
 - 「」は全角の鍵括弧を使用してください
 - 通訳と公式の合計文字数は${CHARACTER_LIMITS.OUTPUT_TOTAL_MAX}文字以内にしてください
-- 公式コメントは必ず出力してください（省略不可）`;
+- 公式コメントは必ず出力してください（省略不可）
+- 【絶対必須】本人が謙虚な表現（「僕なんか」「まだまだ」「敵わない」「ただ」「だけ」など）を使っても、通訳は必ず誇張されたドラマチックな表現（「power dwarfs」「command」「legend's awakening」「realm」「triumph」など）に変換してください
+- 【絶対必須】本人が「My strength pales in comparison」のような控えめな表現ではなく、「My unleashed power dwarfs all challengers」のような誇張されたドラマチックな表現を生成してください
+- 【絶対必須】本人が「I unleashed my power for the team」のような控えめな表現ではなく、「I commanded the mound, delivering victory to my realm」のような誇張されたドラマチックな表現を生成してください`;
 }
 

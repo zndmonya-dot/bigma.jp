@@ -372,34 +372,49 @@ export default function Home() {
    * ベストナイン用に語録をソート・ランダム化
    * 累計スコア順で、野手ポジションのみを取得して上位9位を取得し、日付ベースのシードでランダムに並び替え
    * 投手ポジション（先発、中継ぎ、抑え）は除外
-   * positionがない場合は自動でランダムにポジションを割り当て
+   * positionがない場合は自動でランダムにポジションを割り当て（重複なし）
    * ランダム化は1日1回（日付が変わるまで同じ順序）
    */
   const totalSortedQuotes = [...allQuotes].sort((a, b) => calculateScore(b) - calculateScore(a));
   // 日付ベースのシードでポジション割り当てをランダム化（1日1回同じ結果）
   const todaySeed = getTodayString();
   
-  // positionがない語録に自動でポジションを割り当て、野手ポジションのみをフィルタ
-  const fieldPlayerQuotes = totalSortedQuotes
-    .map(quote => {
-      // positionがない場合は、IDベースでランダムにポジションを割り当て
-      if (!quote.position) {
-        const positionSeed = `${todaySeed}-${quote.id}`;
-        const shuffledPositions = shuffleWithSeed([...FIELD_PLAYER_POSITIONS], positionSeed);
-        return { ...quote, position: shuffledPositions[0] };
-      }
-      return quote;
-    })
-    .filter(quote => {
-      // 投手ポジション（先発、中継ぎ、抑え）を除外
-      if (!quote.position) return false;
-      return FIELD_PLAYER_POSITIONS.includes(quote.position as any);
-    });
+  // 野手ポジションのみをフィルタ
+  const fieldPlayerQuotes = totalSortedQuotes.filter(quote => {
+    // 投手ポジション（先発、中継ぎ、抑え）を除外
+    if (!quote.position) return true; // positionがない場合は後で割り当てるため、ここでは許可
+    return FIELD_PLAYER_POSITIONS.includes(quote.position as any);
+  });
   
   // 上位9位を取得
   const topNine = fieldPlayerQuotes.slice(0, DISPLAY_CONFIG.LINEUP_MAX);
+  
+  // ポジションを重複なく割り当て（既にpositionがあるものはそのまま使用）
+  const usedPositions = new Set<string>();
+  const lineupWithPositions = topNine.map((quote, index) => {
+    if (quote.position && FIELD_PLAYER_POSITIONS.includes(quote.position as any)) {
+      // 既に有効なポジションがある場合はそのまま使用
+      usedPositions.add(quote.position);
+      return quote;
+    }
+    
+    // positionがない、または無効な場合は、使用されていないポジションを割り当て
+    const availablePositions = FIELD_PLAYER_POSITIONS.filter(p => !usedPositions.has(p));
+    if (availablePositions.length === 0) {
+      // すべてのポジションが使用済みの場合は、既存のpositionを使うか、最初のポジションを使用
+      return { ...quote, position: quote.position || FIELD_PLAYER_POSITIONS[0] };
+    }
+    
+    // 使用可能なポジションから、IDとインデックスベースでランダムに選択（重複なし）
+    const positionSeed = `${todaySeed}-${quote.id}-${index}`;
+    const shuffledPositions = shuffleWithSeed([...availablePositions], positionSeed);
+    const assignedPosition = shuffledPositions[0];
+    usedPositions.add(assignedPosition);
+    return { ...quote, position: assignedPosition };
+  });
+  
   // 日付ベースのシードでランダムに並び替え（1日1回の集計）
-  const lineup = shuffleWithSeed(topNine, todaySeed);
+  const lineup = shuffleWithSeed(lineupWithPositions, todaySeed);
 
   return (
     <div className="min-h-screen bg-white dark:bg-black">
