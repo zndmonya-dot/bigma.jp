@@ -146,9 +146,22 @@ export async function addQuote(quote: Omit<Quote, 'id'>): Promise<void> {
 }
 
 /**
- * Few-shot学習用にbase_quotes.jsonを読み込む（UIには表示しない裏側のデータ）
+ * Few-shot学習用にbase_quotesを読み込む（UIには表示しない裏側のデータ）
+ * Supabaseが設定されている場合はSupabaseから、そうでない場合はファイルベース
  */
 export async function loadBaseQuotesForPrompt(): Promise<Quote[]> {
+  // Supabaseが設定されている場合は、Supabaseから読み込み
+  if (useSupabase()) {
+    try {
+      const { loadBaseQuotesFromSupabase } = await import('./quotes-supabase');
+      return await loadBaseQuotesFromSupabase();
+    } catch (error) {
+      console.error('Failed to load base quotes from Supabase, falling back to file-based:', error);
+      // フォールバック: ファイルベースに
+    }
+  }
+  
+  // ファイルベースのロジック（フォールバックまたはSupabase未設定時）
   try {
     const fs = await import('fs/promises');
     const path = await import('path');

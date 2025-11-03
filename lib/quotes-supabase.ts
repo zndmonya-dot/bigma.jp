@@ -2,21 +2,14 @@
  * Supabaseを使った語録の読み書き
  */
 
-import { getSupabaseClient, useSupabase } from './supabase';
 import { Quote, QuotesData } from './types';
+import { mapRowToQuote, createInsertData, getSupabaseClientWithCheck } from './quotes-supabase-helpers';
 
 /**
  * Supabaseから語録を読み込む
  */
 export async function loadQuotesFromSupabase(): Promise<QuotesData> {
-  if (!useSupabase()) {
-    throw new Error('Supabase is not configured');
-  }
-
-  const supabase = getSupabaseClient();
-  if (!supabase) {
-    throw new Error('Supabase client is not available');
-  }
+  const supabase = await getSupabaseClientWithCheck();
 
   const { data, error } = await supabase
     .from('quotes')
@@ -27,17 +20,7 @@ export async function loadQuotesFromSupabase(): Promise<QuotesData> {
     throw new Error(`Failed to load quotes from Supabase: ${error.message}`);
   }
 
-  const quotes: Quote[] = (data || []).map((row: any) => ({
-    id: row.id,
-    original: row.original,
-    english: row.english || undefined,
-    translated: row.translated,
-    likes: row.likes || 0,
-    retweets: row.retweets || 0,
-    quoteRetweets: row.quote_retweets || 0,
-    position: row.position || undefined,
-    createdAt: row.created_at ? new Date(row.created_at).toISOString() : undefined,
-  }));
+  const quotes: Quote[] = (data || []).map(mapRowToQuote);
 
   return {
     metadata: {
@@ -56,26 +39,10 @@ export async function loadQuotesFromSupabase(): Promise<QuotesData> {
 export async function addQuoteToSupabase(
   quote: Omit<Quote, 'id'>
 ): Promise<number> {
-  if (!useSupabase()) {
-    throw new Error('Supabase is not configured');
-  }
-
-  const supabase = getSupabaseClient();
-  if (!supabase) {
-    throw new Error('Supabase client is not available');
-  }
-
-  const { data, error } = await (supabase as any)
+  const typedSupabase = await getSupabaseClientWithCheck();
+  const { data, error } = await typedSupabase
     .from('quotes')
-    .insert({
-      original: quote.original,
-      english: quote.english || null,
-      translated: quote.translated,
-      likes: quote.likes || 0,
-      retweets: quote.retweets || 0,
-      quote_retweets: quote.quoteRetweets || 0,
-      position: quote.position || null,
-    })
+    .insert(createInsertData(quote))
     .select('id')
     .single();
 
@@ -83,7 +50,51 @@ export async function addQuoteToSupabase(
     throw new Error(`Failed to add quote to Supabase: ${error.message}`);
   }
 
+  // TODO: Supabaseの型定義を追加して型アサーションを削除
   return (data as any)?.id || 0;
+}
+
+/**
+ * Supabaseでカウントを更新する共通関数
+ */
+async function updateQuoteCount(
+  quoteId: number,
+  field: 'likes' | 'retweets' | 'quote_retweets',
+  increment: boolean
+): Promise<number> {
+  const typedSupabase = await getSupabaseClientWithCheck();
+
+  // 現在の値を取得
+  const { data: currentData, error: fetchError } = await typedSupabase
+    .from('quotes')
+    .select(field)
+    .eq('id', quoteId)
+    .single();
+
+  if (fetchError) {
+    throw new Error(`Failed to fetch quote: ${fetchError.message}`);
+  }
+
+  // TODO: Supabaseの型定義を追加して型アサーションを削除
+  const currentValue = (currentData as any)?.[field] || 0;
+  const newValue = increment
+    ? currentValue + 1
+    : Math.max(currentValue - 1, 0);
+
+  // 値を更新
+  const { data, error } = await typedSupabase
+    .from('quotes')
+    .update({ [field]: newValue })
+    .eq('id', quoteId)
+    .select(field)
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to update ${field}: ${error.message}`);
+  }
+
+  // TODO: Supabaseの型定義を追加して型アサーションを削除
+  return (data as any)?.[field] || 0;
 }
 
 /**
@@ -93,43 +104,7 @@ export async function updateQuoteLike(
   quoteId: number,
   increment: boolean
 ): Promise<number> {
-  if (!useSupabase()) {
-    throw new Error('Supabase is not configured');
-  }
-
-  const supabase = getSupabaseClient();
-  if (!supabase) {
-    throw new Error('Supabase client is not available');
-  }
-
-  // まず現在のいいね数を取得
-  const { data: currentData, error: fetchError } = await supabase
-    .from('quotes')
-    .select('likes')
-    .eq('id', quoteId)
-    .single();
-
-  if (fetchError) {
-    throw new Error(`Failed to fetch quote: ${fetchError.message}`);
-  }
-
-  const newLikes = increment
-    ? ((currentData as any)?.likes || 0) + 1
-    : Math.max(((currentData as any)?.likes || 0) - 1, 0);
-
-  // いいね数を更新
-  const { data, error } = await (supabase as any)
-    .from('quotes')
-    .update({ likes: newLikes })
-    .eq('id', quoteId)
-    .select('likes')
-    .single();
-
-  if (error) {
-    throw new Error(`Failed to update likes: ${error.message}`);
-  }
-
-  return (data as any)?.likes || 0;
+  return updateQuoteCount(quoteId, 'likes', increment);
 }
 
 /**
@@ -139,41 +114,7 @@ export async function updateQuoteRetweet(
   quoteId: number,
   increment: boolean
 ): Promise<number> {
-  if (!useSupabase()) {
-    throw new Error('Supabase is not configured');
-  }
-
-  const supabase = getSupabaseClient();
-  if (!supabase) {
-    throw new Error('Supabase client is not available');
-  }
-
-  const { data: currentData, error: fetchError } = await supabase
-    .from('quotes')
-    .select('retweets')
-    .eq('id', quoteId)
-    .single();
-
-  if (fetchError) {
-    throw new Error(`Failed to fetch quote: ${fetchError.message}`);
-  }
-
-  const newRetweets = increment
-    ? ((currentData as any)?.retweets || 0) + 1
-    : Math.max(((currentData as any)?.retweets || 0) - 1, 0);
-
-  const { data, error } = await (supabase as any)
-    .from('quotes')
-    .update({ retweets: newRetweets })
-    .eq('id', quoteId)
-    .select('retweets')
-    .single();
-
-  if (error) {
-    throw new Error(`Failed to update retweets: ${error.message}`);
-  }
-
-  return (data as any)?.retweets || 0;
+  return updateQuoteCount(quoteId, 'retweets', increment);
 }
 
 /**
@@ -183,41 +124,7 @@ export async function updateQuoteQuoteRetweet(
   quoteId: number,
   increment: boolean
 ): Promise<number> {
-  if (!useSupabase()) {
-    throw new Error('Supabase is not configured');
-  }
-
-  const supabase = getSupabaseClient();
-  if (!supabase) {
-    throw new Error('Supabase client is not available');
-  }
-
-  const { data: currentData, error: fetchError } = await supabase
-    .from('quotes')
-    .select('quote_retweets')
-    .eq('id', quoteId)
-    .single();
-
-  if (fetchError) {
-    throw new Error(`Failed to fetch quote: ${fetchError.message}`);
-  }
-
-  const newQuoteRetweets = increment
-    ? ((currentData as any)?.quote_retweets || 0) + 1
-    : Math.max(((currentData as any)?.quote_retweets || 0) - 1, 0);
-
-  const { data, error } = await (supabase as any)
-    .from('quotes')
-    .update({ quote_retweets: newQuoteRetweets })
-    .eq('id', quoteId)
-    .select('quote_retweets')
-    .single();
-
-  if (error) {
-    throw new Error(`Failed to update quote retweets: ${error.message}`);
-  }
-
-  return (data as any)?.quote_retweets || 0;
+  return updateQuoteCount(quoteId, 'quote_retweets', increment);
 }
 
 /**
@@ -225,14 +132,7 @@ export async function updateQuoteQuoteRetweet(
  * UIには表示されず、AI生成時のプロンプトにのみ使用される
  */
 export async function loadBaseQuotesFromSupabase(): Promise<Quote[]> {
-  if (!useSupabase()) {
-    throw new Error('Supabase is not configured');
-  }
-
-  const supabase = getSupabaseClient();
-  if (!supabase) {
-    throw new Error('Supabase client is not available');
-  }
+  const supabase = await getSupabaseClientWithCheck();
 
   // is_active = true のみを取得
   const { data, error } = await supabase
@@ -245,18 +145,6 @@ export async function loadBaseQuotesFromSupabase(): Promise<Quote[]> {
     throw new Error(`Failed to load base quotes from Supabase: ${error.message}`);
   }
 
-  const quotes: Quote[] = (data || []).map((row: any) => ({
-    id: row.id,
-    original: row.original,
-    english: row.english || undefined,
-    translated: row.translated,
-    likes: row.likes || 0,
-    retweets: row.retweets || 0,
-    quoteRetweets: row.quote_retweets || 0,
-    position: row.position || undefined,
-    createdAt: row.created_at ? new Date(row.created_at).toISOString() : undefined,
-  }));
-
-  return quotes;
+  return (data || []).map(mapRowToQuote);
 }
 
