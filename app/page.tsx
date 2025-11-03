@@ -202,14 +202,18 @@ export default function Home() {
         return;
       }
       
+      // createSuccessResponseは { success: true, data: {...} } の形式で返す
+      const resultData = data.data || data;
+      
       // translatedは必須（englishは任意）
-      if (!data.translated || typeof data.translated !== 'string' || data.translated.trim().length === 0) {
+      if (!resultData.translated || typeof resultData.translated !== 'string' || resultData.translated.trim().length === 0) {
         console.error('生成データ検証失敗:', {
-          hasTranslated: !!data.translated,
-          translatedType: typeof data.translated,
-          translatedLength: data.translated?.length,
-          english: data.english?.substring(0, 50),
-          translated: data.translated?.substring(0, 50),
+          hasTranslated: !!resultData.translated,
+          translatedType: typeof resultData.translated,
+          translatedLength: resultData.translated?.length,
+          english: resultData.english?.substring(0, 50),
+          translated: resultData.translated?.substring(0, 50),
+          rawData: data,
         });
         setError('生成された公式コメントが不正です');
         updateClientRateLimit(-1);
@@ -217,8 +221,8 @@ export default function Home() {
       }
 
       const generatedResult = {
-        english: data.english || '',
-        translated: data.translated || '',
+        english: resultData.english || '',
+        translated: resultData.translated || '',
       };
       
       // 最終チェック: translatedは必須
