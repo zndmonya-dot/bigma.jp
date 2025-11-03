@@ -799,8 +799,21 @@ export default function Home() {
         }
       }
       
-      const topNine = Array.from(selectedByPosition.values()).slice(0, maxLineupSize);
-      const computedLineup = shuffleWithSeed(topNine, todaySeed);
+      // まず選ばれたポジションの9件を候補化
+      let lineupCandidates = Array.from(selectedByPosition.values()).slice(0, maxLineupSize);
+
+      // 足りない場合は未使用の語録から重複なしで補完（ポジションラベルなし）
+      if (lineupCandidates.length < maxLineupSize) {
+        const usedIds = new Set(lineupCandidates.map(q => q.id));
+        for (const q of randomized) {
+          if (lineupCandidates.length >= maxLineupSize) break;
+          if (usedIds.has(q.id)) continue;
+          lineupCandidates.push({ ...q });
+          usedIds.add(q.id);
+        }
+      }
+
+      const computedLineup = shuffleWithSeed(lineupCandidates.slice(0, maxLineupSize), todaySeed);
       setLineup(computedLineup);
       
       // 仕様: DBには保存しない
