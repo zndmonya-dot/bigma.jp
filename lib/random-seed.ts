@@ -4,13 +4,19 @@
  */
 
 /**
- * 今日の日付文字列を取得（YYYY-MM-DD形式）
+ * 今日の日付文字列を取得（YYYY-MM-DD形式、JST）
+ * 日本標準時（UTC+9）での日付を返す
  */
 export function getTodayString(): string {
   const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
+  // JST（UTC+9）に変換
+  const jstOffset = 9 * 60; // JSTはUTC+9時間
+  const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+  const jstDate = new Date(utc + (jstOffset * 60000));
+  
+  const year = jstDate.getFullYear();
+  const month = String(jstDate.getMonth() + 1).padStart(2, '0');
+  const day = String(jstDate.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
 

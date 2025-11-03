@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Quote, TabType } from '@/lib/types';
 import { 
   RATE_LIMIT, 
@@ -50,9 +50,78 @@ export default function Home() {
     loadQuotes();
   }, []);
 
-  const loadQuotes = async () => {
+  const loadQuotes = async (forceRefresh: boolean = false) => {
     try {
-      const response = await fetch('/api/quotes/list');
+      // キャッシュキー
+      const cacheKey = 'quotes_cache';
+      const cacheETagKey = 'quotes_etag';
+      const cacheTimeKey = 'quotes_cache_time';
+      const CACHE_DURATION = 60 * 1000; // 60秒キャッシュ
+      
+      // キャッシュから取得（強制リフレッシュでない場合）
+      if (!forceRefresh && typeof window !== 'undefined') {
+        const cachedData = localStorage.getItem(cacheKey);
+        const cachedETag = localStorage.getItem(cacheETagKey);
+        const cacheTime = localStorage.getItem(cacheTimeKey);
+        
+        if (cachedData && cacheTime && cachedETag) {
+          const age = Date.now() - parseInt(cacheTime, 10);
+          if (age < CACHE_DURATION) {
+            // キャッシュが有効な場合、キャッシュから読み込む
+            try {
+              const quotesList = JSON.parse(cachedData).map((q: Quote) => ({
+                ...q,
+                likes: q.likes || 0,
+                retweets: q.retweets || 0,
+                quoteRetweets: q.quoteRetweets || 0,
+              }));
+              setAllQuotes(quotesList);
+              updateQuotesByTab(quotesList, activeTab);
+              setLoading(false);
+              
+              // バックグラウンドで最新データを確認（ETag比較）
+              checkForUpdates(cachedETag);
+              return;
+            } catch (parseError) {
+              console.error('Cache parse error:', parseError);
+              // キャッシュが壊れている場合は続行してサーバーから取得
+            }
+          }
+        }
+      }
+      
+      // サーバーから取得
+      const headers: HeadersInit = {};
+      if (!forceRefresh && typeof window !== 'undefined') {
+        const cachedETag = localStorage.getItem(cacheETagKey);
+        if (cachedETag) {
+          headers['If-None-Match'] = cachedETag;
+        }
+      }
+      
+      const response = await fetch('/api/quotes/list', { headers });
+      
+      if (response.status === 304) {
+        // 304 Not Modified: データは変更されていない（キャッシュを使用）
+        const cachedData = localStorage.getItem(cacheKey);
+        if (cachedData && typeof window !== 'undefined') {
+          const quotesList = JSON.parse(cachedData).map((q: Quote) => ({
+            ...q,
+            likes: q.likes || 0,
+            retweets: q.retweets || 0,
+            quoteRetweets: q.quoteRetweets || 0,
+          }));
+          setAllQuotes(quotesList);
+          updateQuotesByTab(quotesList, activeTab);
+        }
+        setLoading(false);
+        return;
+      }
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const data = await response.json();
       if (data.success) {
         const quotesList = (data.data.quotes || []).map((q: Quote) => ({
@@ -61,13 +130,82 @@ export default function Home() {
           retweets: q.retweets || 0,
           quoteRetweets: q.quoteRetweets || 0,
         }));
+        
+        // キャッシュに保存
+        if (typeof window !== 'undefined') {
+          const etag = response.headers.get('ETag');
+          if (etag) {
+            localStorage.setItem(cacheETagKey, etag.replace(/"/g, ''));
+          }
+          localStorage.setItem(cacheKey, JSON.stringify(quotesList));
+          localStorage.setItem(cacheTimeKey, Date.now().toString());
+        }
+        
         setAllQuotes(quotesList);
         updateQuotesByTab(quotesList, activeTab);
       }
     } catch (error) {
       console.error('Failed to load quotes:', error);
+      // エラー時はキャッシュから読み込む（フォールバック）
+      if (typeof window !== 'undefined') {
+        const cachedData = localStorage.getItem('quotes_cache');
+        if (cachedData) {
+          try {
+            const quotesList = JSON.parse(cachedData).map((q: Quote) => ({
+              ...q,
+              likes: q.likes || 0,
+              retweets: q.retweets || 0,
+              quoteRetweets: q.quoteRetweets || 0,
+            }));
+            setAllQuotes(quotesList);
+            updateQuotesByTab(quotesList, activeTab);
+          } catch (parseError) {
+            console.error('Fallback cache parse error:', parseError);
+          }
+        }
+      }
     } finally {
       setLoading(false);
+    }
+  };
+
+  /**
+   * バックグラウンドでデータ更新をチェック（ETag比較）
+   */
+  const checkForUpdates = async (cachedETag: string) => {
+    try {
+      const response = await fetch('/api/quotes/list', {
+        headers: {
+          'If-None-Match': cachedETag,
+        },
+      });
+      
+      if (response.status === 200) {
+        // データが更新されている場合は再読み込み
+        const data = await response.json();
+        if (data.success) {
+          const quotesList = (data.data.quotes || []).map((q: Quote) => ({
+            ...q,
+            likes: q.likes || 0,
+            retweets: q.retweets || 0,
+            quoteRetweets: q.quoteRetweets || 0,
+          }));
+          
+          const etag = response.headers.get('ETag');
+          if (etag && typeof window !== 'undefined') {
+            localStorage.setItem('quotes_etag', etag.replace(/"/g, ''));
+            localStorage.setItem('quotes_cache', JSON.stringify(quotesList));
+            localStorage.setItem('quotes_cache_time', Date.now().toString());
+          }
+          
+          setAllQuotes(quotesList);
+          updateQuotesByTab(quotesList, activeTab);
+        }
+      }
+      // 304の場合はデータ変更なし（何もしない）
+    } catch (error) {
+      // バックグラウンド更新のエラーは無視（メインの読み込みには影響しない）
+      console.debug('Background update check failed:', error);
     }
   };
 
@@ -281,8 +419,8 @@ export default function Home() {
 
         if (saveData.success) {
           console.log('自動保存成功');
-          // 保存成功時に語録一覧を再読み込み
-          await loadQuotes();
+          // 保存成功時に語録一覧を再読み込み（キャッシュを無効化して強制更新）
+          await loadQuotes(true);
         } else {
           console.error('自動保存に失敗しました:', saveData.error);
           // エラーメッセージを表示（ユーザーに通知）
@@ -315,7 +453,35 @@ export default function Home() {
 
   const handleLike = async (quoteId: number) => {
     const isLiked = likedQuotes.has(quoteId);
+    
+    // 楽観的更新：即座にUIを更新（サーバー応答を待たない）
+    const newLikedQuotes = new Set(likedQuotes);
+    if (isLiked) {
+      newLikedQuotes.delete(quoteId);
+    } else {
+      newLikedQuotes.add(quoteId);
+    }
+    setLikedQuotes(newLikedQuotes);
+    saveLikedQuotes(newLikedQuotes);
 
+    // いいね数を楽観的に更新（即座に反映）
+    const optimisticLikes = (() => {
+      const currentQuote = allQuotes.find(q => q.id === quoteId);
+      const currentLikes = currentQuote?.likes || 0;
+      return isLiked ? Math.max(0, currentLikes - 1) : currentLikes + 1;
+    })();
+
+    // UIを即座に更新（一覧のみ、打線は固定のため更新しない）
+    setAllQuotes(prev => {
+      const updated = prev.map(q => 
+        q.id === quoteId ? { ...q, likes: optimisticLikes } : q
+      );
+      // 打線を除く一覧のみ再ソート（打線はJST 0時に固定）
+      updateQuotesByTab(updated, activeTab);
+      return updated;
+    });
+
+    // バックグラウンドでサーバーに同期（エラー時はロールバック）
     try {
       const response = await fetch('/api/quotes/like', {
         method: 'POST',
@@ -325,26 +491,42 @@ export default function Home() {
 
       const data = await response.json();
       if (data.success) {
-        const newLikedQuotes = new Set(likedQuotes);
-        if (isLiked) {
-          newLikedQuotes.delete(quoteId);
-        } else {
-          newLikedQuotes.add(quoteId);
-        }
-        setLikedQuotes(newLikedQuotes);
-        saveLikedQuotes(newLikedQuotes);
-
-        // いいね数を更新して再ソート
+        // サーバーから返された実際のいいね数で更新
         setAllQuotes(prev => {
           const updated = prev.map(q => 
             q.id === quoteId ? { ...q, likes: data.data.likes } : q
           );
+          // 一覧のみ再ソート（打線は更新しない）
           updateQuotesByTab(updated, activeTab);
           return updated;
         });
+      } else {
+        // エラー時はロールバック
+        throw new Error(data.error || 'いいねの更新に失敗しました');
       }
     } catch (error) {
       console.error('Failed to like quote:', error);
+      
+      // ロールバック：元の状態に戻す
+      const rollbackLikedQuotes = new Set(likedQuotes);
+      setLikedQuotes(rollbackLikedQuotes);
+      saveLikedQuotes(rollbackLikedQuotes);
+
+      setAllQuotes(prev => {
+        const updated = prev.map(q => {
+          if (q.id === quoteId) {
+            const currentQuote = allQuotes.find(cq => cq.id === quoteId);
+            return { ...q, likes: currentQuote?.likes || 0 };
+          }
+          return q;
+        });
+        updateQuotesByTab(updated, activeTab);
+        return updated;
+      });
+      
+      // エラーメッセージを表示（ユーザーに通知）
+      setError('いいねの更新に失敗しました。再度お試しください。');
+      setTimeout(() => setError(''), 3000);
     }
   };
 
@@ -376,67 +558,63 @@ export default function Home() {
    * 2. 野手ポジションのみを対象（投手ポジションは除外）
    * 3. 同じポジションが複数ある場合は、スコア順で1つだけ選ぶ（重複なし）
    * 4. positionがない語録は、未使用のポジションに自動割り当て（既にデータベースに保存されたpositionを優先）
-   * 5. 上位9位を選定し、日付ベースのシードでランダムに並び替え（1日1回の集計）
+   * 5. 上位9位を選定し、日付ベースのシードでランダムに並び替え（1日1回の集計、JST 0時に更新）
+   * 
+   * 【最適化】
+   * - useMemoでJST日付が変わらない限り再計算しない
+   * - いいねなどでスコアが変わっても打線の順序は変わらない（JST 0時のみ更新）
    */
-  const totalSortedQuotes = [...allQuotes].sort((a, b) => calculateScore(b) - calculateScore(a));
   const todaySeed = getTodayString();
-  
-  // 野手ポジションのみをフィルタ（positionがないものも含む）
-  const fieldPlayerQuotes = totalSortedQuotes.filter(quote => {
-    // positionがない場合は含める（後で割り当てるため）
-    if (!quote.position) return true;
-    // 野手ポジションのみを許可
-    return FIELD_PLAYER_POSITIONS.includes(quote.position as any);
-  });
-  
-  // ポジションごとにスコア順で1つだけ選ぶ（同じポジションの重複を防ぐ）
-  const selectedByPosition = new Map<string, Quote>();
-  const unassignedQuotes: Quote[] = [];
-  
-  for (const quote of fieldPlayerQuotes) {
-    if (quote.position && FIELD_PLAYER_POSITIONS.includes(quote.position as any)) {
-      // 既にポジションが設定されている場合
-      if (!selectedByPosition.has(quote.position)) {
-        // このポジションが未選択の場合は、この語録を選ぶ（スコア順なので上位が優先）
-        selectedByPosition.set(quote.position, quote);
-      }
-    } else {
-      // positionがない場合は後で割り当てるため、別リストに追加
-      unassignedQuotes.push(quote);
-    }
-  }
-  
-  // positionがない語録に未使用のポジションを割り当て
-  const usedPositions = new Set(selectedByPosition.keys());
-  const availablePositions = FIELD_PLAYER_POSITIONS.filter(p => !usedPositions.has(p));
-  
-  // 未使用ポジションがある場合は、unassignedQuotesをスコア順で割り当て（最大9位まで）
-  const maxLineupSize = DISPLAY_CONFIG.LINEUP_MAX;
-  let lineupCount = selectedByPosition.size;
-  
-  for (const quote of unassignedQuotes) {
-    if (lineupCount >= maxLineupSize) break;
+  const lineup = useMemo(() => {
+    // 打線を計算（allQuotesの変更とは独立して、JST日付ベースで固定）
+    const totalSortedQuotes = [...allQuotes].sort((a, b) => calculateScore(b) - calculateScore(a));
     
-    if (availablePositions.length > 0) {
-      // 未使用ポジションがある場合は、IDベースのシードでランダムに割り当て
-      const positionSeed = `${todaySeed}-${quote.id}`;
-      const shuffledPositions = shuffleWithSeed([...availablePositions], positionSeed);
-      const assignedPosition = shuffledPositions[0];
-      
-      selectedByPosition.set(assignedPosition, { ...quote, position: assignedPosition });
-      usedPositions.add(assignedPosition);
-      // 使用済みポジションをリストから削除
-      const index = availablePositions.indexOf(assignedPosition);
-      if (index > -1) availablePositions.splice(index, 1);
-      lineupCount++;
+    // 野手ポジションのみをフィルタ（positionがないものも含む）
+    const fieldPlayerQuotes = totalSortedQuotes.filter(quote => {
+      if (!quote.position) return true;
+      return FIELD_PLAYER_POSITIONS.includes(quote.position as any);
+    });
+    
+    // ポジションごとにスコア順で1つだけ選ぶ（同じポジションの重複を防ぐ）
+    const selectedByPosition = new Map<string, Quote>();
+    const unassignedQuotes: Quote[] = [];
+    
+    for (const quote of fieldPlayerQuotes) {
+      if (quote.position && FIELD_PLAYER_POSITIONS.includes(quote.position as any)) {
+        if (!selectedByPosition.has(quote.position)) {
+          selectedByPosition.set(quote.position, quote);
+        }
+      } else {
+        unassignedQuotes.push(quote);
+      }
     }
-  }
-  
-  // 選ばれた語録を配列に変換（最大9位）
-  const topNine = Array.from(selectedByPosition.values()).slice(0, maxLineupSize);
-  
-  // 日付ベースのシードでランダムに並び替え（1日1回の集計）
-  const lineup = shuffleWithSeed(topNine, todaySeed);
+    
+    // positionがない語録に未使用のポジションを割り当て
+    const usedPositions = new Set(selectedByPosition.keys());
+    const availablePositions = FIELD_PLAYER_POSITIONS.filter(p => !usedPositions.has(p));
+    
+    const maxLineupSize = DISPLAY_CONFIG.LINEUP_MAX;
+    let lineupCount = selectedByPosition.size;
+    
+    for (const quote of unassignedQuotes) {
+      if (lineupCount >= maxLineupSize) break;
+      
+      if (availablePositions.length > 0) {
+        const positionSeed = `${todaySeed}-${quote.id}`;
+        const shuffledPositions = shuffleWithSeed([...availablePositions], positionSeed);
+        const assignedPosition = shuffledPositions[0];
+        
+        selectedByPosition.set(assignedPosition, { ...quote, position: assignedPosition });
+        usedPositions.add(assignedPosition);
+        const index = availablePositions.indexOf(assignedPosition);
+        if (index > -1) availablePositions.splice(index, 1);
+        lineupCount++;
+      }
+    }
+    
+    const topNine = Array.from(selectedByPosition.values()).slice(0, maxLineupSize);
+    return shuffleWithSeed(topNine, todaySeed);
+  }, [allQuotes, todaySeed]); // todaySeedが変わらない限り再計算しない
 
   return (
     <div className="min-h-screen bg-white dark:bg-black">
@@ -588,7 +766,7 @@ export default function Home() {
                                 <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
                                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                                 </svg>
-                                Xで投稿
+                                Xでポスト
                               </button>
                             </div>
                           </div>
@@ -705,7 +883,7 @@ export default function Home() {
                               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                               </svg>
-                              <span className="text-sm font-semibold">リツイート</span>
+                              <span className="text-sm font-semibold">リポスト</span>
                               <span className="text-sm font-bold">{quote.retweets || 0}</span>
                             </button>
                             
@@ -719,7 +897,7 @@ export default function Home() {
                               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                               </svg>
-                              <span className="text-sm font-semibold">引用リツイート</span>
+                              <span className="text-sm font-semibold">引用リポスト</span>
                               <span className="text-sm font-bold">{quote.quoteRetweets || 0}</span>
                             </button>
                           </div>
@@ -809,7 +987,7 @@ export default function Home() {
                                 <button
                                   onClick={() => handleQuoteRetweet(quote)}
                                   className="flex items-center gap-1 hover:text-sky-500 dark:hover:text-sky-400 transition-colors"
-                                  title="引用リツイート"
+                                  title="引用リポスト"
                                 >
                                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
@@ -819,7 +997,7 @@ export default function Home() {
                                 <button
                                   onClick={() => handleTweet(quote)}
                                   className="flex items-center gap-1 hover:text-sky-500 dark:hover:text-sky-400 transition-colors"
-                                  title="リツイート"
+                                  title="リポスト"
                                 >
                                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />

@@ -11,9 +11,10 @@ import { mapRowToQuote, createInsertData, getSupabaseClientWithCheck } from './q
 export async function loadQuotesFromSupabase(): Promise<QuotesData> {
   const supabase = await getSupabaseClientWithCheck();
 
+  // 必要最小限のカラムのみ取得（通信量削減）
   const { data, error } = await supabase
     .from('quotes')
-    .select('*')
+    .select('id, original, english, translated, likes, retweets, quote_retweets, position, created_at')
     .order('id', { ascending: false });
 
   if (error) {
@@ -22,7 +23,7 @@ export async function loadQuotesFromSupabase(): Promise<QuotesData> {
 
   const quotes: Quote[] = (data || []).map(mapRowToQuote);
 
-  return {
+  return {  
     metadata: {
       lastUpdated: new Date().toISOString(),
       version: '1.0.0',
@@ -134,10 +135,10 @@ export async function updateQuoteQuoteRetweet(
 export async function loadBaseQuotesFromSupabase(): Promise<Quote[]> {
   const supabase = await getSupabaseClientWithCheck();
 
-  // is_active = true のみを取得
+  // is_active = true のみを取得（必要最小限のカラムのみ）
   const { data, error } = await supabase
     .from('base_quotes')
-    .select('*')
+    .select('id, original, english, translated, likes, retweets, quote_retweets, position, created_at')
     .eq('is_active', true)
     .order('id', { ascending: false });
 
