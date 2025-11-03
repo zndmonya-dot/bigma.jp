@@ -23,7 +23,7 @@ const kosugiMaru = Kosugi_Maru({
 
 export const metadata: Metadata = {
   title: "Bigma - ビッグマウス語録ジェネレータ -",
-  description: "「言いそうな言葉」を、公式コメントに変換するAIジェネレーター",
+  description: "謙虚な言葉が、ドラマチックに拡大解釈されるネタ生成AI",
   manifest: "/manifest.json",
   robots: {
     index: true,
@@ -76,11 +76,11 @@ export default function RootLayout({
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://bigma.jp" />
         <meta property="og:title" content="Bigma - ビッグマウス語録ジェネレータ" />
-        <meta property="og:description" content="「言いそうな言葉」を、公式コメントに変換するAIジェネレーター" />
+        <meta property="og:description" content="謙虚な言葉が、ドラマチックに拡大解釈されるネタ生成AI" />
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:site" content="@your_handle" />
         <meta name="twitter:title" content="Bigma - ビッグマウス語録ジェネレータ" />
-        <meta name="twitter:description" content="「言いそうな言葉」を、公式コメントに変換するAIジェネレーター" />
+        <meta name="twitter:description" content="謙虚な言葉が、ドラマチックに拡大解釈されるネタ生成AI" />
       </head>
       <body
         className={`${mPlusRounded.variable} ${kosugiMaru.variable} antialiased`}
