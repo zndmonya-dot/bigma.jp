@@ -639,6 +639,7 @@ export default function Home() {
   const [todaySeed, setTodaySeed] = useState<string>(() => getTodayString());
   const [lineup, setLineup] = useState<Quote[]>([]);
   const [lineupLoading, setLineupLoading] = useState(true);
+  const [lineupRefreshCounter, setLineupRefreshCounter] = useState(0);
 
   // JSTの翌日0時にtodaySeedを更新するタイマー
   useEffect(() => {
@@ -728,7 +729,7 @@ export default function Home() {
     };
 
     loadLineup();
-  }, [allQuotes, todaySeed]);
+  }, [allQuotes, todaySeed, lineupRefreshCounter]);
 
   return (
     <div className="min-h-screen bg-white dark:bg-black">
@@ -1028,9 +1029,19 @@ export default function Home() {
             <div className="sticky top-4 mt-6">
               {/* 打線欄 */}
               <div className="bg-gray-50 dark:bg-gray-900/30 rounded-xl p-5 shadow-xl">
-                <div className="mb-4">
-                  <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-1">打線</h2>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">本日のスタメン</p>
+                <div className="mb-4 flex items-center justify-between gap-2">
+                  <div>
+                    <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-1">打線</h2>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">本日のスタメン</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => { setLineupLoading(true); setLineupRefreshCounter((c) => c + 1); }}
+                    className="px-3 py-1.5 rounded-md text-xs font-medium bg-gray-200 hover:bg-gray-300 dark:bg-white/10 dark:hover:bg-white/20 text-gray-800 dark:text-gray-100"
+                    aria-label="打線を再集計"
+                  >
+                    再集計
+                  </button>
                 </div>
                 
                 {lineup.length === 0 ? (
