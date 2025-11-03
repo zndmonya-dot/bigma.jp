@@ -36,8 +36,6 @@ const Spinner = ({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) => {
 export default function Home() {
   type LineupAsideProps = {
     lineup: Quote[];
-    likedQuotes: Set<number>;
-    handleLike: (id: number) => void;
     handleTweet: (quote: Quote) => void;
   };
 
@@ -1053,8 +1051,6 @@ export default function Home() {
               <section className="mt-6 lg:hidden" aria-label="打線（モバイル）">
                 <LineupAside
                   lineup={lineup}
-                  likedQuotes={likedQuotes}
-                  handleLike={handleLike}
                   handleTweet={handleTweet}
                 />
               </section>
@@ -1067,8 +1063,6 @@ export default function Home() {
               <div className="sticky top-4 mt-6 min-h-[600px]">
                 <LineupAside
                   lineup={lineup}
-                  likedQuotes={likedQuotes}
-                  handleLike={handleLike}
                   handleTweet={handleTweet}
                 />
               </div>

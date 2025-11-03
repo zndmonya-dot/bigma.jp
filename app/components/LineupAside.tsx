@@ -5,12 +5,10 @@ import { POSITION_MAP } from '@/lib/constants';
 
 type Props = {
   lineup: Quote[];
-  likedQuotes: Set<number>;
-  handleLike: (id: number) => void;
   handleTweet: (quote: Quote) => void;
 };
 
-export default function LineupAside({ lineup, likedQuotes, handleLike, handleTweet }: Props) {
+export default function LineupAside({ lineup, handleTweet }: Props) {
   return (
     <div className="bg-gray-50 dark:bg-gray-900/30 rounded-xl p-5 shadow-xl">
       <div className="mb-4">
@@ -49,17 +47,14 @@ export default function LineupAside({ lineup, likedQuotes, handleLike, handleTwe
                     <p className="text-base text-gray-900 dark:text-white font-bold leading-relaxed break-words">公式「{quote.translated}」</p>
                   </div>
                   <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 pt-2 border-t border-gray-100 dark:border-gray-700">
-                    <button
-                      onClick={() => handleLike(quote.id)}
-                      className={`flex items-center gap-1 hover:text-red-500 dark:hover:text-red-400 transition-colors ${likedQuotes.has(quote.id) ? 'text-red-500 dark:text-red-400' : ''}`}
-                      title={likedQuotes.has(quote.id) ? 'いいねを解除' : 'いいね'}
-                    >
-                      <svg className="w-4 h-4" fill={likedQuotes.has(quote.id) ? 'currentColor' : 'none'} stroke={likedQuotes.has(quote.id) ? 'none' : 'currentColor'} viewBox="0 0 24 24">
-                        <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" strokeWidth={likedQuotes.has(quote.id) ? 0 : 2} />
+                    {/* 打線欄は表示のみ（いいね機能は無効化） */}
+                    <div className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" strokeWidth={2} />
                       </svg>
                       <span className="text-xs font-semibold">いいね</span>
                       <span className="font-bold text-xs tabular-nums min-w-[1.25rem] text-right">{quote.likes || 0}</span>
-                    </button>
+                    </div>
                     <button
                       onClick={() => handleTweet(quote)}
                       className="flex items-center gap-1 hover:text-sky-500 dark:hover:text-sky-400 transition-colors"
