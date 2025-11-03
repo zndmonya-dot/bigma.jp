@@ -11,6 +11,7 @@ export interface Quote {
   retweets?: number;      // リツイート数
   quoteRetweets?: number; // 引用リツイート数
   position?: string;      // ポジション（右、左、中、三、一、二、遊、捕、DH、指など）
+  createdAt?: string;     // クリエイト日（ISO文字列、ランキング集計で使用）
 }
 
 export interface QuotesData {

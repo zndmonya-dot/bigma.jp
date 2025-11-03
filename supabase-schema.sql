@@ -2,17 +2,26 @@
 -- Supabase SQL Editorで実行してください
 
 -- quotesテーブル作成
+-- 8列構成:
+-- 1. id (ID)
+-- 2. original (入力)
+-- 3. english (英訳)
+-- 4. translated (公式)
+-- 5. likes (いいね)
+-- 6. retweets (リツイート)
+-- 7. quote_retweets (引用リツイート)
+-- 8. created_at (クリエイト日 - ランキング集計で使用)
 CREATE TABLE IF NOT EXISTS quotes (
   id BIGSERIAL PRIMARY KEY,
-  original TEXT NOT NULL,
-  english TEXT,
-  translated TEXT NOT NULL,
-  likes INTEGER DEFAULT 0,
-  retweets INTEGER DEFAULT 0,
-  quote_retweets INTEGER DEFAULT 0,
-  position TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  original TEXT NOT NULL,              -- 入力
+  english TEXT,                         -- 英訳
+  translated TEXT NOT NULL,             -- 公式
+  likes INTEGER DEFAULT 0,              -- いいね
+  retweets INTEGER DEFAULT 0,          -- リツイート
+  quote_retweets INTEGER DEFAULT 0,     -- 引用リツイート
+  position TEXT,                        -- ポジション（オプション）
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),  -- クリエイト日（ランキング集計で使用）
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()  -- 更新日
 );
 
 -- インデックス作成（パフォーマンス向上）

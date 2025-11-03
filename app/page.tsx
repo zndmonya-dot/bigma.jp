@@ -80,8 +80,15 @@ export default function Home() {
         sorted = [...quotesList].sort((a, b) => b.id - a.id);
         break;
       case 'monthly':
-        // 月間：スコア順ランキング（将来的にcreatedAtで30日以内をフィルタ）
-        sorted = [...quotesList].sort((a, b) => calculateScore(b) - calculateScore(a));
+        // 月間：スコア順ランキング（createdAtで30日以内をフィルタ）
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        const monthlyQuotes = quotesList.filter(quote => {
+          if (!quote.createdAt) return false;
+          const createdDate = new Date(quote.createdAt);
+          return createdDate >= thirtyDaysAgo;
+        });
+        sorted = [...monthlyQuotes].sort((a, b) => calculateScore(b) - calculateScore(a));
         break;
       case 'total':
         // 累計：スコア順ランキング

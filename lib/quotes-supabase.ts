@@ -36,6 +36,7 @@ export async function loadQuotesFromSupabase(): Promise<QuotesData> {
     retweets: row.retweets || 0,
     quoteRetweets: row.quote_retweets || 0,
     position: row.position || undefined,
+    createdAt: row.created_at ? new Date(row.created_at).toISOString() : undefined,
   }));
 
   return {

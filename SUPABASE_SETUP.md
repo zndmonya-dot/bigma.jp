@@ -6,10 +6,17 @@
 2. **Project name**: 任意の名前（例: `bigma-production`）
 3. **Database password**: 強力なパスワードを設定（後で必要になります）
    - 「Generate a password」ボタンで自動生成も可能
+   - **設定したパスワード**: `nPjTKjPGknLfxAY0` (ローカルの `supabase-credentials.txt` に記録済み)
 4. **Region**: `Asia Northeast (Tokyo)` を選択（パフォーマンス最適化）
 5. 「Create new project」をクリック
 
 **注意**: プロジェクトの作成には数分かかります（2-3分程度）
+
+### パスワードの保存
+
+データベースパスワードは以下の場所に記録されています：
+- ローカル: `supabase-credentials.txt` (Gitにはコミットされません)
+- このファイルは `.gitignore` に含まれているため、安全に管理できます
 
 ## 2. プロジェクト作成後の確認
 
