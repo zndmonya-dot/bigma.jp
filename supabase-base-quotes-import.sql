@@ -1,10 +1,7 @@
 -- base_quotes.jsonのデータをbase_quotesテーブルにインポート
--- 既存データがある場合は削除してから実行してください
+-- 既存データは保持したまま追加されます
 
--- 既存データを削除する場合（注意: データは失われます）
--- DELETE FROM base_quotes;
-
--- データをインポート
+-- データをインポート（既存データがある場合も追加されます）
 INSERT INTO base_quotes (original, english, translated, likes, retweets, quote_retweets, position, is_active)
 VALUES 
   ('チームメイトのおかげです', 'Thanks to my teammates', 'チームメイトは俺の勝利を支えただけだ', 120, 45, 25, NULL, true),
