@@ -6,7 +6,7 @@
  * レート制限設定
  */
 export const RATE_LIMIT = {
-  CLIENT_DAILY_GENERATIONS: 3, // クライアント側: 1日あたりの最大生成回数
+  CLIENT_DAILY_GENERATIONS: 999999, // クライアント側: 1日あたりの最大生成回数（一時的に無制限、後で10回に設定予定）
   SERVER_HOURLY_REQUESTS: 20,  // サーバー側: 1時間あたりの最大リクエスト数
   SERVER_HOURLY_GENERATIONS: 100, // サーバー側: 1時間あたりの最大生成回数
 } as const;
