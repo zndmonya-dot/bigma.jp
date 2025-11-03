@@ -26,5 +26,5 @@ export interface QuotesData {
   quotes: Quote[];
 }
 
-export type TabType = 'new' | 'monthly' | 'total';
+export type TabType = 'new' | 'weekly' | 'monthly' | 'total';
 

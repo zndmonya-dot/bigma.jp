@@ -170,6 +170,30 @@ export default function Home() {
   };
 
   /**
+   * 日次キャッシュされたランキング順を取得/保存
+   */
+  const getRankingCacheKey = (tab: 'weekly' | 'monthly' | 'total', date: string) => `ranking_order_${tab}_${date}`;
+
+  const readRankingOrder = (tab: 'weekly' | 'monthly' | 'total', date: string): number[] | null => {
+    if (typeof window === 'undefined') return null;
+    try {
+      const raw = localStorage.getItem(getRankingCacheKey(tab, date));
+      if (!raw) return null;
+      const ids: number[] = JSON.parse(raw);
+      return Array.isArray(ids) ? ids : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const writeRankingOrder = (tab: 'weekly' | 'monthly' | 'total', date: string, ids: number[]) => {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.setItem(getRankingCacheKey(tab, date), JSON.stringify(ids));
+    } catch {}
+  };
+
+  /**
    * バックグラウンドでデータ更新をチェック（ETag比較）
    */
   const checkForUpdates = async (cachedETag: string) => {
@@ -217,8 +241,30 @@ export default function Home() {
         // 新着：ID降順（最新から）
         sorted = [...quotesList].sort((a, b) => b.id - a.id);
         break;
+      case 'weekly':
+        // 週間：一日一回の固定ランキング（JST日付でキャッシュ）
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        const weeklyQuotes = quotesList.filter(quote => {
+          if (!quote.createdAt) return false;
+          const createdDate = new Date(quote.createdAt);
+          return createdDate >= sevenDaysAgo;
+        });
+        {
+          const today = getTodayString();
+          const cachedOrder = readRankingOrder('weekly', today);
+          if (cachedOrder) {
+            const map = new Map(weeklyQuotes.map(q => [q.id, q] as const));
+            sorted = cachedOrder.map(id => map.get(id)).filter((q): q is Quote => Boolean(q));
+          } else {
+            const computed = [...weeklyQuotes].sort((a, b) => (b.likes || 0) - (a.likes || 0));
+            sorted = computed;
+            writeRankingOrder('weekly', today, computed.map(q => q.id));
+          }
+        }
+        break;
       case 'monthly':
-        // 月間：スコア順ランキング（createdAtで30日以内をフィルタ）
+        // 月間：一日一回の固定ランキング（JST日付でキャッシュ）
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
         const monthlyQuotes = quotesList.filter(quote => {
@@ -226,11 +272,33 @@ export default function Home() {
           const createdDate = new Date(quote.createdAt);
           return createdDate >= thirtyDaysAgo;
         });
-        sorted = [...monthlyQuotes].sort((a, b) => calculateScore(b) - calculateScore(a));
+        {
+          const today = getTodayString();
+          const cachedOrder = readRankingOrder('monthly', today);
+          if (cachedOrder) {
+            const map = new Map(monthlyQuotes.map(q => [q.id, q] as const));
+            sorted = cachedOrder.map(id => map.get(id)).filter((q): q is Quote => Boolean(q));
+          } else {
+            const computed = [...monthlyQuotes].sort((a, b) => (b.likes || 0) - (a.likes || 0));
+            sorted = computed;
+            writeRankingOrder('monthly', today, computed.map(q => q.id));
+          }
+        }
         break;
       case 'total':
-        // 累計：スコア順ランキング
-        sorted = [...quotesList].sort((a, b) => calculateScore(b) - calculateScore(a));
+        // 累計：一日一回の固定ランキング（JST日付でキャッシュ）
+        {
+          const today = getTodayString();
+          const cachedOrder = readRankingOrder('total', today);
+          if (cachedOrder) {
+            const map = new Map(quotesList.map(q => [q.id, q] as const));
+            sorted = cachedOrder.map(id => map.get(id)).filter((q): q is Quote => Boolean(q));
+          } else {
+            const computed = [...quotesList].sort((a, b) => (b.likes || 0) - (a.likes || 0));
+            sorted = computed;
+            writeRankingOrder('total', today, computed.map(q => q.id));
+          }
+        }
         break;
     }
     
@@ -757,7 +825,7 @@ export default function Home() {
                                 <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
                                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                                 </svg>
-                                Xでポスト
+                                ポスト
                               </button>
                             </div>
                           </div>
@@ -790,6 +858,16 @@ export default function Home() {
                   }`}
                 >
                   新着
+                </button>
+                <button
+                  onClick={() => setActiveTab('weekly')}
+                  className={`px-4 py-2 text-sm font-semibold transition-colors border-b-2 ${
+                    activeTab === 'weekly'
+                      ? 'text-sky-500 dark:text-sky-400 border-sky-500 dark:border-sky-400'
+                      : 'text-gray-500 dark:text-gray-400 border-transparent hover:text-gray-700 dark:hover:text-gray-300'
+                  }`}
+                >
+                  週間
                 </button>
                 <button
                   onClick={() => setActiveTab('monthly')}
@@ -870,13 +948,12 @@ export default function Home() {
                                 handleTweet(quote);
                               }}
                               className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:bg-sky-50 dark:hover:bg-sky-900/20 hover:text-sky-500 dark:hover:text-sky-400 rounded-full px-4 py-2 transition-all"
-                              title="リリポスト"
+                              title="リポスト"
                             >
                               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                               </svg>
-                              <span className="text-sm font-semibold">リリポスト</span>
-                              <span className="text-sm font-bold tabular-nums min-w-[1.5rem] text-right">{quote.retweets || 0}</span>
+                              <span className="text-sm font-semibold">リポスト</span>
                             </button>
                           </div>
                         </div>
@@ -893,7 +970,7 @@ export default function Home() {
                       onClick={handleLoadMore}
                       className="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-medium rounded-full px-6 py-3 text-base transition-colors shadow-sm hover:shadow"
                     >
-                      次の{DISPLAY_CONFIG.LOAD_MORE_INCREMENT}件を表示（あと{quotes.length - displayedQuotes.length}件）
+                      次の{DISPLAY_CONFIG.LOAD_MORE_INCREMENT}件を表示（全{quotes.length}件）
                     </button>
                   </div>
                 )}
@@ -966,12 +1043,12 @@ export default function Home() {
                                 <button
                                   onClick={() => handleTweet(quote)}
                                   className="flex items-center gap-1 hover:text-sky-500 dark:hover:text-sky-400 transition-colors"
-                                  title="リリポスト"
+                                  title="リポスト"
                                 >
                                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                                   </svg>
-                                  <span className="font-bold text-xs tabular-nums min-w-[1.5rem] text-right">{quote.retweets || 0}</span>
+                                  <span className="text-xs font-semibold">リポスト</span>
                                 </button>
                               </div>
                             </div>
