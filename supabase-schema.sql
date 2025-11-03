@@ -2,7 +2,7 @@
 -- Supabase SQL Editorで実行してください
 
 -- quotesテーブル作成
--- 8列構成:
+-- 9列構成:
 -- 1. id (ID)
 -- 2. original (入力)
 -- 3. english (英訳)
@@ -10,7 +10,8 @@
 -- 5. likes (いいね)
 -- 6. retweets (リツイート)
 -- 7. quote_retweets (引用リツイート)
--- 8. created_at (クリエイト日 - ランキング集計で使用)
+-- 8. position (ポジション - 野手ポジション、自動割り当て)
+-- 9. created_at (クリエイト日 - ランキング集計で使用)
 CREATE TABLE IF NOT EXISTS quotes (
   id BIGSERIAL PRIMARY KEY,
   original TEXT NOT NULL,              -- 入力
