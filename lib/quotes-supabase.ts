@@ -83,7 +83,7 @@ export async function addQuoteToSupabase(
     throw new Error(`Failed to add quote to Supabase: ${error.message}`);
   }
 
-  return data.id;
+  return (data as any)?.id || 0;
 }
 
 /**
@@ -129,7 +129,7 @@ export async function updateQuoteLike(
     throw new Error(`Failed to update likes: ${error.message}`);
   }
 
-  return data.likes || 0;
+  return (data as any)?.likes || 0;
 }
 
 /**
@@ -173,7 +173,7 @@ export async function updateQuoteRetweet(
     throw new Error(`Failed to update retweets: ${error.message}`);
   }
 
-  return data.retweets || 0;
+  return (data as any)?.retweets || 0;
 }
 
 /**
@@ -217,7 +217,7 @@ export async function updateQuoteQuoteRetweet(
     throw new Error(`Failed to update quote retweets: ${error.message}`);
   }
 
-  return data.quote_retweets || 0;
+  return (data as any)?.quote_retweets || 0;
 }
 
 /**
