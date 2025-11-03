@@ -39,6 +39,8 @@ export default function Home() {
   const [displayCount, setDisplayCount] = useState<number>(DISPLAY_CONFIG.INITIAL_QUOTES_COUNT);
   const [loading, setLoading] = useState(true);
   const [likedQuotes, setLikedQuotes] = useState<Set<number>>(new Set());
+  const [nextCursor, setNextCursor] = useState<number | null>(null);
+  const [hasMore, setHasMore] = useState<boolean>(true);
   const [input, setInput] = useState('');
   const [result, setResult] = useState<{ english: string; translated: string } | null>(null);
   const [generating, setGenerating] = useState(false);
@@ -50,7 +52,7 @@ export default function Home() {
     loadQuotes();
   }, []);
 
-  const loadQuotes = async (forceRefresh: boolean = false) => {
+  const loadQuotes = async (forceRefresh: boolean = false, cursor?: number | null) => {
     try {
       // キャッシュキー
       const cacheKey = 'quotes_cache';
@@ -99,7 +101,10 @@ export default function Home() {
         }
       }
       
-      const response = await fetch('/api/quotes/list', { headers });
+      const params = new URLSearchParams();
+      params.set('limit', String(DISPLAY_CONFIG.LOAD_MORE_INCREMENT));
+      if (cursor) params.set('cursor', String(cursor));
+      const response = await fetch(`/api/quotes/list?${params.toString()}`, { headers });
       
       if (response.status === 304) {
         // 304 Not Modified: データは変更されていない（キャッシュを使用）
@@ -141,8 +146,19 @@ export default function Home() {
           localStorage.setItem(cacheTimeKey, Date.now().toString());
         }
         
-        setAllQuotes(quotesList);
-        updateQuotesByTab(quotesList, activeTab);
+        if (cursor) {
+          setAllQuotes(prev => {
+            const merged = [...prev, ...quotesList];
+            updateQuotesByTab(merged, activeTab);
+            return merged;
+          });
+        } else {
+          setAllQuotes(quotesList);
+          updateQuotesByTab(quotesList, activeTab);
+        }
+
+        setHasMore(Boolean(data.data.pageInfo?.hasMore));
+        setNextCursor(data.data.pageInfo?.nextCursor ?? null);
       }
     } catch (error) {
       console.error('Failed to load quotes:', error);
@@ -313,7 +329,10 @@ export default function Home() {
     }
   }, [activeTab, allQuotes]);
 
-  const handleLoadMore = () => {
+  const handleLoadMore = async () => {
+    if (hasMore && nextCursor) {
+      await loadQuotes(false, nextCursor);
+    }
     const nextCount = displayCount + DISPLAY_CONFIG.LOAD_MORE_INCREMENT;
     setDisplayCount(nextCount);
     setDisplayedQuotes(quotes.slice(0, Math.min(nextCount, quotes.length)));
@@ -964,7 +983,7 @@ export default function Home() {
                 })}
                 
                 {/* もっと見るボタン */}
-                {displayedQuotes.length < quotes.length && (
+                {(hasMore || displayedQuotes.length < quotes.length) && (
                   <div className="flex justify-center pt-6">
                     <button
                       onClick={handleLoadMore}
