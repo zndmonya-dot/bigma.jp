@@ -73,7 +73,7 @@ export default function Home() {
                 ...q,
                 likes: q.likes || 0,
                 retweets: q.retweets || 0,
-                quoteRetweets: q.quoteRetweets || 0,
+                // quoteRetweets: removed from UI usage
               }));
               setAllQuotes(quotesList);
               updateQuotesByTab(quotesList, activeTab);
@@ -109,7 +109,7 @@ export default function Home() {
             ...q,
             likes: q.likes || 0,
             retweets: q.retweets || 0,
-            quoteRetweets: q.quoteRetweets || 0,
+            // quoteRetweets: removed from UI usage
           }));
           setAllQuotes(quotesList);
           updateQuotesByTab(quotesList, activeTab);
@@ -128,7 +128,7 @@ export default function Home() {
           ...q,
           likes: q.likes || 0,
           retweets: q.retweets || 0,
-          quoteRetweets: q.quoteRetweets || 0,
+          // quoteRetweets: removed from UI usage
         }));
         
         // キャッシュに保存
@@ -155,7 +155,7 @@ export default function Home() {
               ...q,
               likes: q.likes || 0,
               retweets: q.retweets || 0,
-              quoteRetweets: q.quoteRetweets || 0,
+              // quoteRetweets: removed from UI usage
             }));
             setAllQuotes(quotesList);
             updateQuotesByTab(quotesList, activeTab);
@@ -188,7 +188,7 @@ export default function Home() {
             ...q,
             likes: q.likes || 0,
             retweets: q.retweets || 0,
-            quoteRetweets: q.quoteRetweets || 0,
+            // quoteRetweets: removed from UI usage
           }));
           
           const etag = response.headers.get('ETag');
@@ -535,20 +535,12 @@ export default function Home() {
    */
   const handleTweet = (quote: Quote) => {
     const text = formatQuoteForTwitter(quote);
-    const url = typeof window !== 'undefined' ? window.location.href : '';
+    const url = 'https://bigma.jp/';
     const tweetUrl = createTweetUrl(text, url);
     window.open(tweetUrl, '_blank', 'noopener,noreferrer');
   };
 
-  /**
-   * X（Twitter）で引用リツイート
-   */
-  const handleQuoteRetweet = (quote: Quote) => {
-    const text = formatQuoteForTwitter(quote);
-    const url = typeof window !== 'undefined' ? `${window.location.origin}?id=${quote.id}` : '';
-    const tweetUrl = createTweetUrl(text, url);
-    window.open(tweetUrl, '_blank', 'noopener,noreferrer');
-  };
+  // quote repost removed
 
   /**
    * ベストナイン用に語録をソート・選択・ランダム化
@@ -566,20 +558,19 @@ export default function Home() {
    */
   const todaySeed = getTodayString();
   const lineup = useMemo(() => {
-    // 打線を計算（allQuotesの変更とは独立して、JST日付ベースで固定）
-    const totalSortedQuotes = [...allQuotes].sort((a, b) => calculateScore(b) - calculateScore(a));
-    
-    // 野手ポジションのみをフィルタ（positionがないものも含む）
-    const fieldPlayerQuotes = totalSortedQuotes.filter(quote => {
+    // フィールド選手のみを対象（スコア非依存で日替わりランダム）
+    const fieldPlayerQuotes = [...allQuotes].filter(quote => {
       if (!quote.position) return true;
       return FIELD_PLAYER_POSITIONS.includes(quote.position as any);
     });
-    
+    // 日替わりシードでランダム順に並べる（スコア非依存）
+    const randomized = shuffleWithSeed(fieldPlayerQuotes, todaySeed);
+
     // ポジションごとにスコア順で1つだけ選ぶ（同じポジションの重複を防ぐ）
     const selectedByPosition = new Map<string, Quote>();
     const unassignedQuotes: Quote[] = [];
     
-    for (const quote of fieldPlayerQuotes) {
+    for (const quote of randomized) {
       if (quote.position && FIELD_PLAYER_POSITIONS.includes(quote.position as any)) {
         if (!selectedByPosition.has(quote.position)) {
           selectedByPosition.set(quote.position, quote);
@@ -757,7 +748,7 @@ export default function Home() {
                               <button
                                 onClick={() => {
                                   const text = formatQuoteForTwitter({ original: input, english: result.english, translated: result.translated } as Quote);
-                                  const url = typeof window !== 'undefined' ? window.location.origin : '';
+                                  const url = 'https://bigma.jp/';
                                   const tweetUrl = createTweetUrl(text, url);
                                   window.open(tweetUrl, '_blank', 'noopener,noreferrer');
                                 }}
@@ -870,22 +861,10 @@ export default function Home() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                               </svg>
                               <span className="text-sm font-semibold">いいね</span>
-                              <span className="text-sm font-bold">{quote.likes || 0}</span>
+                              <span className="text-sm font-bold tabular-nums min-w-[1.5rem] text-right">{quote.likes || 0}</span>
                             </button>
                             
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleQuoteRetweet(quote);
-                              }}
-                              className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-500 dark:hover:text-green-400 rounded-full px-4 py-2 transition-all"
-                            >
-                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                              </svg>
-                              <span className="text-sm font-semibold">リポスト</span>
-                              <span className="text-sm font-bold">{quote.retweets || 0}</span>
-                            </button>
+                            {/* 引用リポスト削除 */}
                             
                             <button
                               onClick={(e) => {
@@ -898,7 +877,7 @@ export default function Home() {
                                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                               </svg>
                               <span className="text-sm font-semibold">引用リポスト</span>
-                              <span className="text-sm font-bold">{quote.quoteRetweets || 0}</span>
+                              <span className="text-sm font-bold tabular-nums min-w-[1.5rem] text-right">{quote.quoteRetweets || 0}</span>
                             </button>
                           </div>
                         </div>
@@ -984,16 +963,7 @@ export default function Home() {
                                   </svg>
                                   <span className="font-bold text-xs">{quote.likes || 0}</span>
                                 </button>
-                                <button
-                                  onClick={() => handleQuoteRetweet(quote)}
-                                  className="flex items-center gap-1 hover:text-sky-500 dark:hover:text-sky-400 transition-colors"
-                                  title="引用リポスト"
-                                >
-                                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                                  </svg>
-                                  <span className="font-bold text-xs">{quote.quoteRetweets || 0}</span>
-                                </button>
+                                {/* 引用リポスト削除 */}
                                 <button
                                   onClick={() => handleTweet(quote)}
                                   className="flex items-center gap-1 hover:text-sky-500 dark:hover:text-sky-400 transition-colors"
@@ -1002,7 +972,7 @@ export default function Home() {
                                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                                   </svg>
-                                  <span className="font-bold text-xs">{quote.retweets || 0}</span>
+                                  <span className="font-bold text-xs tabular-nums min-w-[1.5rem] text-right">{quote.retweets || 0}</span>
                                 </button>
                               </div>
                             </div>
