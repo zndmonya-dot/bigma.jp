@@ -953,7 +953,7 @@ export default function Home() {
                   <p className="text-base sm:text-lg md:text-xl text-gray-500 dark:text-gray-400">語録がまだ登録されていません</p>
                 </div>
               ) : (
-                <div className="space-y-4 sm:space-y-6">
+                <div className="space-y-4 sm:space-y-6 min-h-[400px]">
                 {displayedQuotes.map((quote) => {
                   const isLiked = likedQuotes.has(quote.id);
                   

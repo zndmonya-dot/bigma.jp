@@ -30,6 +30,8 @@ body {
   font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   /* フォントスムージング（標準プロパティのみ使用） */
   -webkit-font-smoothing: antialiased;
+  /* CLS対策: メインが描画されるまで最低高さを確保 */
+  min-height: 100dvh;
 }
 
 /* Next.js開発モードのIssuesパネルを非表示 */

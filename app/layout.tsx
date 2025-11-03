@@ -88,6 +88,9 @@ export default function RootLayout({
   return (
     <html lang="ja" suppressHydrationWarning>
       <head>
+        {/* Preconnect to AdSense to speed up initial connection */}
+        <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://googleads.g.doubleclick.net" crossOrigin="anonymous" />
         <meta name="google-adsense-account" content="ca-pub-4335284954366086" />
         <meta name="author" content="Bigma" />
         <meta property="og:site_name" content="Bigma - ビッグマウス語録ジェネレータ" />
