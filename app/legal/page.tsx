@@ -54,12 +54,14 @@ export default function LegalPage() {
               <li><strong>特定の人物への誹謗中傷</strong>: 特定の人物を誹謗中傷する目的で本サービスを利用すること</li>
               <li><strong>不適切なコンテンツの生成</strong>: 卑猥な言葉、不適切な表現、暴力的な内容を含むコンテンツを生成すること</li>
               <li><strong>サービスの悪用</strong>: 本サービスを悪用して、他人に迷惑をかけること、システムに不正にアクセスすること</li>
+              <li><strong>個人情報の入力</strong>: 氏名、住所、電話番号、メールアドレス、アカウントID、顔写真・音声・位置情報、その他本人を特定できる情報の入力・投稿を禁止します</li>
             </ul>
 
             <h4 className="text-lg font-semibold mb-2 mt-4 text-gray-900 dark:text-white">4.3 生成コンテンツの取り扱い</h4>
             <ul className="list-disc pl-6 mb-4 space-y-2">
               <li>本サービスで生成されたコンテンツの著作権は、生成したユーザーに帰属します</li>
               <li>生成したコンテンツをSNSや他のプラットフォームで投稿・利用する場合、ユーザー自身の責任で行ってください</li>
+              <li><strong>削除について</strong>: 生成されたデータはシステム最適化と安全運用のため保存・キャッシュされます。<u>一度公開・保存されたデータは、原則としてユーザー個別の申請による削除に対応していません</u>（法令上の要請等を除く）。入力内容には十分ご注意ください</li>
             </ul>
 
             <h3 id="privacy" className="text-xl font-semibold mb-3 mt-6 text-gray-900 dark:text-white">5. プライバシーに関する取り扱い</h3>
