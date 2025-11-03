@@ -1002,6 +1002,17 @@ export default function Home() {
                 />
               )}
             </section>
+            {/* モバイル用：打線欄（メインカラムの下に表示） */}
+            {!isDesktop && (
+              <section className="mt-6 lg:hidden" aria-label="打線（モバイル）">
+                <LineupAside
+                  lineup={lineup}
+                  likedQuotes={likedQuotes}
+                  handleLike={handleLike}
+                  handleTweet={handleTweet}
+                />
+              </section>
+            )}
           </div>
 
           {/* 右側：打線欄（デスクトップのみ描画してモバイル負荷を削減） */}
