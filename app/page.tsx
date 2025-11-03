@@ -635,9 +635,35 @@ export default function Home() {
    * - 日次スタメンテーブル（lineup_daily）から読み込む（毎回計算しない）
    * - 存在しない場合のみ計算して保存
    */
-  const todaySeed = getTodayString();
+  // 日付に応じて日替わりで再計算（JST 0時に切替）
+  const [todaySeed, setTodaySeed] = useState<string>(() => getTodayString());
   const [lineup, setLineup] = useState<Quote[]>([]);
   const [lineupLoading, setLineupLoading] = useState(true);
+
+  // JSTの翌日0時にtodaySeedを更新するタイマー
+  useEffect(() => {
+    const computeMsUntilNextJstMidnight = (): number => {
+      const now = new Date();
+      const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+      const jstNow = new Date(utcMs + 9 * 60 * 60000);
+      const jstMidnightNext = new Date(jstNow);
+      jstMidnightNext.setHours(24, 0, 0, 0); // 翌日0:00(JST)
+      const msUntil = jstMidnightNext.getTime() - jstNow.getTime();
+      return Math.max(msUntil, 1000); // 安全に最低1秒
+    };
+
+    const schedule = () => {
+      const ms = computeMsUntilNextJstMidnight();
+      return setTimeout(() => {
+        setTodaySeed(getTodayString());
+        // 連続稼働時も翌日分を再スケジュール
+        timer = schedule();
+      }, ms);
+    };
+
+    let timer = schedule();
+    return () => clearTimeout(timer);
+  }, []);
 
   // 日次スタメンを読み込む（初回のみ）
   useEffect(() => {
