@@ -65,7 +65,7 @@ export default function QuotesList({ displayedQuotes, likedQuotes, onLike, onTwe
         );
       })}
 
-      {displayedQuotes.length < totalCount && (
+      {(hasMore || displayedQuotes.length < totalCount) && (
         <div className="flex justify-center pt-6">
           <button
             onClick={onLoadMore}
