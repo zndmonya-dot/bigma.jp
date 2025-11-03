@@ -252,39 +252,80 @@ export async function POST(request: NextRequest) {
     let english = '';
     let translated = '';
     
-    // 通訳「英語」を抽出
-    const englishMatch = rawResult.match(/通訳「([^」]+)」/);
+    // 改行を考慮した正規表現で抽出（複数行対応）
+    // 通訳「英語」を抽出（改行や空白を含む可能性を考慮）
+    const englishMatch = rawResult.match(/通訳\s*[「"']\s*([^」"']+?)\s*[」"']/);
     if (englishMatch) {
-      english = englishMatch[1].trim();
+      english = englishMatch[1].trim().replace(/\s+/g, ' ');
       log(LogLevel.DEBUG, '通訳抽出成功', { english: english.substring(0, 50) });
     } else {
-      log(LogLevel.WARN, '通訳の抽出に失敗', { rawResult: rawResult.substring(0, 100) });
+      // 英語の別パターン（Translation:, Interpreter: など）
+      const englishMatch2 = rawResult.match(/(?:Translation|Interpreter|通訳)[:\s]*["'「]?\s*([^」"'\n]+?)\s*["'」]?/i);
+      if (englishMatch2) {
+        english = englishMatch2[1].trim().replace(/\s+/g, ' ');
+        log(LogLevel.DEBUG, '通訳抽出成功（別パターン）', { english: english.substring(0, 50) });
+      } else {
+        log(LogLevel.WARN, '通訳の抽出に失敗', { rawResult: rawResult.substring(0, 150) });
+      }
     }
     
-    // 公式「日本語」を抽出
-    const translatedMatch = rawResult.match(/公式「([^」]+)」/);
+    // 公式「日本語」を抽出（改行や空白を含む可能性を考慮）
+    const translatedMatch = rawResult.match(/公式\s*[「"']\s*([^」"']+?)\s*[」"']/);
     if (translatedMatch) {
-      translated = translatedMatch[1].trim();
+      translated = translatedMatch[1].trim().replace(/\s+/g, ' ');
       log(LogLevel.DEBUG, '公式抽出成功', { translated: translated.substring(0, 50) });
     } else {
-      // フォールバック: 本人と通訳部分を削除して残りを取得
-      let fallbackTranslated = rawResult
-        .replace(/本人「[^」]*」\s*/g, '')
-        .replace(/通訳「[^」]*」\s*/g, '')
-        .trim();
-      
-      // 「公式」で始まる場合
-      if (fallbackTranslated.startsWith('公式「') && fallbackTranslated.endsWith('」')) {
-        translated = fallbackTranslated.slice(3, -1).trim();
-        log(LogLevel.DEBUG, '公式フォールバック抽出成功（公式「...」形式）', { translated: translated.substring(0, 50) });
-      } else if (fallbackTranslated.length > 0) {
-        // それ以外の場合は最初の50文字まで
-        translated = fallbackTranslated.substring(0, CHARACTER_LIMITS.TRANSLATED_MAX).trim();
-        log(LogLevel.DEBUG, '公式フォールバック抽出（その他）', { translated: translated.substring(0, 50) });
+      // 公式の別パターン（Official:, 公式コメント: など）
+      const translatedMatch2 = rawResult.match(/(?:Official|公式|公式コメント)[:\s]*["'「]?\s*([^」"'\n]+?)\s*["'」]?/i);
+      if (translatedMatch2) {
+        translated = translatedMatch2[1].trim().replace(/\s+/g, ' ');
+        log(LogLevel.DEBUG, '公式抽出成功（別パターン）', { translated: translated.substring(0, 50) });
       } else {
-        log(LogLevel.WARN, '公式の抽出に完全に失敗', { rawResult: rawResult.substring(0, 100) });
-        // 最終フォールバック: rawResultから最大50文字
-        translated = rawResult.substring(0, CHARACTER_LIMITS.TRANSLATED_MAX).trim();
+        // フォールバック: 本人と通訳部分を削除して残りを取得
+        let fallbackTranslated = rawResult
+          .replace(/本人\s*[「"'][^」"']*[」"']\s*/g, '')
+          .replace(/通訳\s*[「"'][^」"']*[」"']\s*/g, '')
+          .replace(/Translation[:\s]*["'「]?[^」"'\n]*["'」]?\s*/gi, '')
+          .replace(/Interpreter[:\s]*["'「]?[^」"'\n]*["'」]?\s*/gi, '')
+          .trim();
+        
+        if (fallbackTranslated.length > 0) {
+          // 「公式」で始まる場合
+          if (fallbackTranslated.match(/^公式\s*[「"']/)) {
+            const match = fallbackTranslated.match(/公式\s*[「"']\s*([^」"']+?)\s*[」"']/);
+            if (match) {
+              translated = match[1].trim().replace(/\s+/g, ' ');
+              log(LogLevel.DEBUG, '公式フォールバック抽出成功（公式「...」形式）', { translated: translated.substring(0, 50) });
+            }
+          } else if (fallbackTranslated.length > 0) {
+            // それ以外の場合も、最初の50文字までを取得
+            translated = fallbackTranslated.substring(0, CHARACTER_LIMITS.TRANSLATED_MAX).trim().replace(/\s+/g, ' ');
+            log(LogLevel.DEBUG, '公式フォールバック抽出（その他）', { translated: translated.substring(0, 50) });
+          }
+        }
+        
+        // それでも空の場合
+        if (!translated || translated.trim().length === 0) {
+          log(LogLevel.WARN, '公式の抽出に完全に失敗', { 
+            rawResult: rawResult.substring(0, 200),
+            fallbackTranslated: fallbackTranslated.substring(0, 100),
+          });
+          
+          // 最終フォールバック: 3行目以降を公式とみなす
+          const lines = rawResult.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+          if (lines.length >= 3) {
+            // 3行目以降を結合して公式とする
+            translated = lines.slice(2).join(' ').replace(/^公式\s*[「"']?\s*/, '').replace(/\s*[」"']?\s*$/, '').trim();
+            if (translated.length > CHARACTER_LIMITS.TRANSLATED_MAX) {
+              translated = translated.substring(0, CHARACTER_LIMITS.TRANSLATED_MAX);
+            }
+            log(LogLevel.DEBUG, '公式最終フォールバック（3行目以降）', { translated: translated.substring(0, 50) });
+          } else {
+            // 最後の手段: rawResultから最大50文字
+            translated = rawResult.replace(/本人[^」]*」/g, '').replace(/通訳[^」]*」/g, '').substring(0, CHARACTER_LIMITS.TRANSLATED_MAX).trim();
+            log(LogLevel.DEBUG, '公式最終フォールバック（rawResultから）', { translated: translated.substring(0, 50) });
+          }
+        }
       }
     }
 

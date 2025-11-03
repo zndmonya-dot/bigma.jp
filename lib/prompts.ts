@@ -102,11 +102,15 @@ export function generateUserMessage(input: string): string {
 
 「${input}」
 
-出力形式：
+【必須】以下の形式を厳密に守ってください：
 本人「${input}」
 通訳「英語での大袈裟な翻訳（簡潔に、${CHARACTER_LIMITS.ENGLISH_MAX}文字以内）」
 公式「公式コメント（簡潔に、${CHARACTER_LIMITS.TRANSLATED_MAX}文字以内）」
 
-【重要】通訳と公式の合計文字数は${CHARACTER_LIMITS.OUTPUT_TOTAL_MAX}文字以内にしてください。X（Twitter）投稿時の文字数制限を考慮してください。`;
+【重要】
+- 必ず「本人」「通訳」「公式」の3行で出力してください
+- 「」は全角の鍵括弧を使用してください
+- 通訳と公式の合計文字数は${CHARACTER_LIMITS.OUTPUT_TOTAL_MAX}文字以内にしてください
+- 公式コメントは必ず出力してください（省略不可）`;
 }
 
