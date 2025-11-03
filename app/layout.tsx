@@ -24,6 +24,7 @@ const kosugiMaru = Kosugi_Maru({
 export const metadata: Metadata = {
   title: "Bigma - ビッグマウス語録ジェネレータ -",
   description: "謙虚な言葉が、ドラマチックに拡大解釈されるネタ生成AI",
+  keywords: "ビッグマウス,語録,ネタ,大喜利,AI,生成,公式コメント,通訳,拡大解釈",
   manifest: "/manifest.json",
   robots: {
     index: true,
@@ -50,6 +51,23 @@ export const metadata: Metadata = {
   },
   verification: {
     google: "w9pmkV3m60VrstrBRMU02svzm5gLOadPjt9bfTAZgDg",
+  },
+  openGraph: {
+    type: "website",
+    url: "https://bigma.jp",
+    siteName: "Bigma",
+    title: "Bigma - ビッグマウス語録ジェネレータ",
+    description: "謙虚な言葉が、ドラマチックに拡大解釈されるネタ生成AI",
+    locale: "ja_JP",
+  },
+  twitter: {
+    card: "summary",
+    site: "@your_handle",
+    title: "Bigma - ビッグマウス語録ジェネレータ",
+    description: "謙虚な言葉が、ドラマチックに拡大解釈されるネタ生成AI",
+  },
+  alternates: {
+    canonical: "https://bigma.jp",
   },
 };
 
