@@ -35,19 +35,21 @@ ${fixedExamples}${databaseExamples ? '\n\n' + databaseExamples : ''}
 
 【出力形式】
 本人「{入力}」
-通訳「{ドラマチックで最低5単語以上の完全な英文}」
-公式「{通訳の意味を熱く日本語化（本人の言葉は使わない）}」
+通訳「{ドラマチックで最低5単語以上の完全な英文、最大${CHARACTER_LIMITS.ENGLISH_MAX}文字}」
+公式「{通訳の意味を熱く日本語化（本人の言葉は使わない）、最大${CHARACTER_LIMITS.TRANSLATED_MAX}文字}」
 
 【絶対必須ルール】
 1. 出力は必ず3行（本人→通訳→公式）
 2. 通訳（英語）：
-   - 謙虚な日本語を映画のワンシーンのように誇張して翻訳
+   - 謙虚な日本語を映画のワンシーンのように誇張して翻訳 
    - 最低5単語以上の完全な文（主語+動詞+目的語/補語）
+   - 最大${CHARACTER_LIMITS.ENGLISH_MAX}文字以内（X投稿280文字制限に最適化）
    - 断片的な文は禁止（例：「Tomorrow」「Tomorrow is my」など）
    - 例：「Tomorrow is my battlefield, and the crowd is my witness.」
 3. 公式（日本語）：
    - 通訳の英文の意味をもとに熱く再構築
    - 通訳の感情を日本語に変換（本人の言葉は使わない）
+   - 最大${CHARACTER_LIMITS.TRANSLATED_MAX}文字以内（X投稿280文字制限に最適化）
    - 力強く短く、記憶に残る表現`;
 
 }
