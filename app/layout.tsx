@@ -48,6 +48,9 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "Bigma",
   },
+  verification: {
+    google: "w9pmkV3m60VrstrBRMU02svzm5gLOadPjt9bfTAZgDg",
+  },
 };
 
 export const viewport: Viewport = {
