@@ -27,13 +27,18 @@ export default function LineupAside({ lineup, likedQuotes, handleLike, handleTwe
               <div key={quote.id} className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow">
                 <div className="flex-1 min-w-0">
                   <div className="space-y-2 mb-3">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-sky-100 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 text-xs font-bold">
-                        {idx + 1}
-                      </span>
-                      {positionLabel && (
-                        <span className="text-xs font-bold text-gray-700 dark:text-gray-200">{positionLabel}</span>
-                      )}
+                    {/* ヘッダー行: 左カラムに番号+ポジション、右カラムに本文。折り返しは常に右カラムで開始 */}
+                    <div className="grid grid-cols-[auto,1fr] items-start gap-2">
+                      <div className="flex items-center gap-1">
+                        <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 text-sm font-extrabold">
+                          {idx + 1}
+                        </span>
+                        {positionLabel && (
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-sm font-bold leading-none">
+                            {positionLabel}
+                          </span>
+                        )}
+                      </div>
                       <p className="text-base text-gray-900 dark:text-white leading-relaxed break-words m-0">
                         本人「{quote.original}」
                       </p>
