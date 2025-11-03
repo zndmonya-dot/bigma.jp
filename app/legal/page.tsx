@@ -62,7 +62,7 @@ export default function LegalPage() {
               <li>生成したコンテンツをSNSや他のプラットフォームで投稿・利用する場合、ユーザー自身の責任で行ってください</li>
             </ul>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6 text-gray-900 dark:text-white">5. プライバシーに関する取り扱い</h3>
+            <h3 id="privacy" className="text-xl font-semibold mb-3 mt-6 text-gray-900 dark:text-white">5. プライバシーに関する取り扱い</h3>
             
             <h4 className="text-lg font-semibold mb-2 mt-4 text-gray-900 dark:text-white">5.1 収集する情報</h4>
             <p className="mb-2">本サービスでは、以下の情報を収集・保存します：</p>

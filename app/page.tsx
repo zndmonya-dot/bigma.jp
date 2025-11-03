@@ -768,6 +768,13 @@ export default function Home() {
               >
                 免責事項・利用規約
               </a>
+              <span className="hidden sm:inline">|</span>
+              <a 
+                href="/legal#privacy" 
+                className="hover:text-gray-700 dark:hover:text-gray-300 underline"
+              >
+                プライバシーポリシー
+              </a>
             </div>
             <p className="text-xs text-yellow-600 dark:text-yellow-400">
               ⚠️ 本サービスが生成するコンテンツは実際の発言ではありません
