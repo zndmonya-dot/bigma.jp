@@ -355,6 +355,29 @@ export async function POST(request: NextRequest) {
       return createErrorResponse('生成された公式コメントが不正です', 500);
     }
 
+    // 通訳の検証: 単語が少なすぎる場合や不完全な文はエラー
+    if (english) {
+      const englishWords = english.trim().split(/\s+/).filter(w => w.length > 0);
+      // 単語が3個未満、または文末にピリオドや感嘆符がない場合は警告
+      if (englishWords.length < 3) {
+        log(LogLevel.WARN, '通訳が短すぎる（3単語未満）', { 
+          english, 
+          wordCount: englishWords.length,
+          rawResult: rawResult.substring(0, 200),
+        });
+        // エラーを返すのではなく、警告のみ（将来的に再生成を促すことも可能）
+      } else if (!/[.!?]$/.test(english.trim())) {
+        // 文末記号がない場合も警告
+        log(LogLevel.WARN, '通訳に文末記号がない', { 
+          english,
+          rawResult: rawResult.substring(0, 200),
+        });
+      }
+    } else {
+      log(LogLevel.ERROR, '通訳が空', { rawResult: rawResult.substring(0, 200) });
+      return createErrorResponse('生成された通訳が不正です', 500);
+    }
+
     // 後処理：個別文字数制限と合計文字数制限を適用
     // まず個別の制限を適用
     if (english && english.length > CHARACTER_LIMITS.ENGLISH_MAX) {
