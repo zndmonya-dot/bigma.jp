@@ -507,12 +507,6 @@ export default function Home() {
                       {/* 生成結果 */}
                       {result && (
                         <div className="mt-5 p-5 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700 space-y-3">
-                          {/* 警告メッセージ */}
-                          <div className="mb-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-                            <p className="text-xs text-yellow-800 dark:text-yellow-200">
-                              ⚠️ <strong>注意:</strong> 本サービスが生成するコンテンツは、実際の発言や事実を反映したものではありません。エンターテインメント目的のネタ・ジョークとしてお楽しみください。
-                            </p>
-                          </div>
                           <div className="flex items-center justify-between mb-2">
                             <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">生成結果（自動保存済み）</span>
                           </div>
@@ -815,9 +809,6 @@ export default function Home() {
                 プライバシーポリシー
               </a>
             </div>
-            <p className="text-xs text-yellow-600 dark:text-yellow-400">
-              ⚠️ 本サービスが生成するコンテンツは実際の発言ではありません
-            </p>
           </div>
         </div>
       </footer>
