@@ -15,7 +15,7 @@ export const RATE_LIMIT = {
  * 文字数制限
  */
 export const CHARACTER_LIMITS = {
-  INPUT_MAX: 40,           // 入力欄: 最大文字数
+  INPUT_MAX: 25,           // 入力欄: 最大文字数（安定性重視で25に調整）
   ENGLISH_MAX: 95,         // 通訳欄: 最大文字数（X投稿280文字制限に合わせて調整）
   TRANSLATED_MAX: 115,     // 公式欄: 最大文字数（X投稿280文字制限に合わせて調整）
   OUTPUT_TOTAL_MAX: 210,  // 通訳+公式の合計最大文字数（X投稿280文字制限に合わせて調整）
