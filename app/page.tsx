@@ -447,7 +447,7 @@ export default function Home() {
             <div className="flex items-center justify-start w-full lg:col-span-2">
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white leading-normal">
                 <span className="tracking-tighter font-extrabold">Bigma</span>
-              </h1>
+          </h1>
               <div className="flex items-center ml-auto lg:hidden">
                 <a
                   href="https://twitter.com/your_handle" 
