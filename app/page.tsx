@@ -531,16 +531,6 @@ export default function Home() {
       
       // 自動保存（強制保存）
       try {
-        console.log('=== 自動保存開始 ===');
-        console.log('保存するデータ:', {
-          original: input,
-          originalLength: input.length,
-          english: generatedResult.english || undefined,
-          englishLength: generatedResult.english?.length || 0,
-          translated: generatedResult.translated,
-          translatedLength: generatedResult.translated.length,
-        });
-        
         const saveResponse = await fetch('/api/quotes/add', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -550,39 +540,29 @@ export default function Home() {
             translated: generatedResult.translated,
           }),
         });
-
-        console.log('保存レスポンスステータス:', saveResponse.status);
         
         if (!saveResponse.ok) {
           let errorMessage = `保存APIエラー: ${saveResponse.status}`;
           try {
             const errorData = await saveResponse.json();
-            console.error('自動保存エラー（HTTP）:', saveResponse.status, errorData);
             errorMessage = errorData.error || errorMessage;
           } catch (parseErr) {
             const errorText = await saveResponse.text();
-            console.error('自動保存エラー（HTTP、テキスト）:', saveResponse.status, errorText);
             errorMessage = errorText || errorMessage;
           }
           throw new Error(errorMessage);
         }
 
         const saveData = await saveResponse.json();
-        console.log('保存レスポンスデータ:', saveData);
 
         if (saveData.success) {
-          console.log('自動保存成功');
           // 保存成功時に語録一覧を再読み込み（キャッシュを無効化して強制更新）
           await loadQuotes(true);
         } else {
-          console.error('自動保存に失敗しました:', saveData.error);
           // エラーメッセージを表示（ユーザーに通知）
           setError(`保存に失敗しました: ${saveData.error || '不明なエラー'}`);
         }
       } catch (saveErr) {
-        console.error('=== 自動保存エラー ===');
-        console.error('エラー詳細:', saveErr);
-        console.error('=== 自動保存エラー終了 ===');
         // エラーメッセージを表示（ユーザーに通知）
         const errorMsg = saveErr instanceof Error ? saveErr.message : '保存中にエラーが発生しました';
         setError(`自動保存に失敗しました: ${errorMsg}`);

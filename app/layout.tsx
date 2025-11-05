@@ -8,7 +8,7 @@ const mPlusRounded = M_PLUS_Rounded_1c({
   weight: ["400", "700"],
   subsets: ["latin"],
   display: "optional",
-  preload: true,
+  preload: false,
 });
 
 const kosugiMaru = Kosugi_Maru({
@@ -16,7 +16,7 @@ const kosugiMaru = Kosugi_Maru({
   weight: ["400"],
   subsets: ["latin"],
   display: "optional",
-  preload: true,
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -123,7 +123,7 @@ export default function RootLayout({
                 }
                 window.addEventListener('scroll', loadAds, { once: true, passive: true });
                 window.addEventListener('pointerdown', loadAds, { once: true, passive: true });
-                setTimeout(loadAds, 3000);
+                setTimeout(loadAds, 5000);
               })();
             `,
           }}
