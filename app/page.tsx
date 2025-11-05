@@ -972,8 +972,8 @@ export default function Home() {
                     </div>
                   )}
                 </div>
-                <div className="text-left hidden sm:block min-w-0 max-w-[200px]">
-                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-300 mb-0.5 sm:mb-1 truncate">らせのん</p>
+                <div className="text-left hidden sm:block min-w-0 max-w-[200px] space-y-1">
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-300 truncate">らせのん</p>
                   <p className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white truncate">@Rasenooon</p>
                   <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-300 break-words">フォローよろしくお願いいたします！</p>
                 </div>
