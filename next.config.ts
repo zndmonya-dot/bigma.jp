@@ -7,7 +7,6 @@ const nextConfig: NextConfig = {
     position: 'bottom-right',
   },
   // モダンブラウザ向けビルド（レガシーポリフィル削減）
-  swcMinify: true,
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production' ? {
       exclude: ['error', 'warn'],
