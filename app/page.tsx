@@ -1070,12 +1070,15 @@ export default function Home() {
             {!isDesktop && (
               <>
                 <div id="mobile-lineup-trigger" className="h-1" />
-                {/* CLS防止: プレースホルダーで高さを確保、content-visibilityで最適化 */}
+                {/* CLS防止: 固定高さでレイアウト確定、content-visibilityで最適化 */}
                 <section 
-                  className="mt-6 lg:hidden min-h-[600px] max-h-[600px] overflow-hidden" 
+                  className="mt-6 lg:hidden h-[600px]" 
                   aria-label="打線（モバイル）"
                   aria-busy={!shouldLoadMobileLineup}
-                  style={{ contentVisibility: 'auto' } as React.CSSProperties}
+                  style={{ 
+                    contentVisibility: 'auto',
+                    containIntrinsicSize: '600px'
+                  } as React.CSSProperties}
                 >
                   {shouldLoadMobileLineup ? (
                     <LineupAside
