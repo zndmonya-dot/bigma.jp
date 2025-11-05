@@ -931,7 +931,7 @@ export default function Home() {
           </h1>
               <div className="flex items-center ml-auto lg:hidden">
                 <a
-                  href="https://twitter.com/your_handle" 
+                  href="https://twitter.com/Rasenooon" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="flex items-center text-gray-700 dark:text-white hover:text-sky-500 dark:hover:text-sky-400 transition-colors"
@@ -958,7 +958,7 @@ export default function Home() {
                 </div>
                 <div className="text-left hidden sm:block min-w-0 max-w-[140px]">
                   <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-300 mb-0.5 sm:mb-1 truncate">製作者</p>
-                  <p className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white truncate">@your_handle</p>
+                  <p className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white truncate">@Rasenooon</p>
                   <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-300 truncate">ひとこと</p>
                 </div>
               </a>

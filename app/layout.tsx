@@ -52,7 +52,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary",
-    site: "@your_handle",
+    site: "@Rasenooon",
     title: "Bigma ～ ビッグマウス語録ジェネレータ ～",
     description: "謙虚な言葉が、ドラマチックに拡大解釈されるネタ生成AI",
   },
@@ -85,7 +85,7 @@ export default function RootLayout({
         <meta property="og:title" content="Bigma ～ ビッグマウス語録ジェネレータ ～" />
         <meta property="og:description" content="謙虚な言葉が、ドラマチックに拡大解釈されるネタ生成AI" />
         <meta name="twitter:card" content="summary" />
-        <meta name="twitter:site" content="@your_handle" />
+        <meta name="twitter:site" content="@Rasenooon" />
         <meta name="twitter:title" content="Bigma ～ ビッグマウス語録ジェネレータ ～" />
         <meta name="twitter:description" content="謙虚な言葉が、ドラマチックに拡大解釈されるネタ生成AI" />
       </head>
