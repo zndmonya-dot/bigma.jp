@@ -84,7 +84,7 @@ export default function Home() {
           observer.disconnect();
         }
       },
-      { rootMargin: '200px' } // 200px手前で読み込み開始
+      { rootMargin: '600px' } // 600px手前で読み込み開始（さらに遅延）
     );
     const trigger = document.getElementById('mobile-lineup-trigger');
     if (trigger) observer.observe(trigger);
@@ -831,7 +831,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white dark:bg-black">
       {/* タイトル欄 */}
-      <header className="sticky top-0 bg-white dark:bg-black/95 backdrop-blur-xl z-20 shadow-sm border-b border-gray-200 dark:border-gray-800">
+      <header className="sticky top-0 bg-white dark:bg-black/95 lg:backdrop-blur-xl z-20 shadow-sm border-b border-gray-200 dark:border-gray-800">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 items-center py-3 sm:py-4 md:py-6 min-h-[60px] sm:min-h-[80px] md:min-h-[100px]">
             <div className="flex items-center justify-start w-full lg:col-span-2">
