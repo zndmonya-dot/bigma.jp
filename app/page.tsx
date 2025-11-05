@@ -346,10 +346,10 @@ export default function Home() {
       
       switch (tab) {
         case 'new':
-          // 新着：ID降順（最新から）→ 最新100件まで
+          // 新着：ID降順（最新から）→ 最新50件まで
           sorted = [...quotesList]
             .sort((a, b) => b.id - a.id)
-            .slice(0, 100);
+            .slice(0, 50);
           break;
         case 'weekly':
           // 週間：一日一回の固定ランキング（JST日付でキャッシュ）
@@ -390,7 +390,7 @@ export default function Home() {
               sorted = cachedOrder.map(id => map.get(id)).filter((q): q is Quote => Boolean(q));
             } else {
               const computed = [...monthlyQuotes].sort((a, b) => (b.likes || 0) - (a.likes || 0));
-              sorted = computed.slice(0, 100);
+              sorted = computed.slice(0, 50);
               writeRankingOrder('monthly', today, sorted.map(q => q.id));
             }
           }
