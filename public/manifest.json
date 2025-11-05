@@ -1,7 +1,7 @@
 {
   "name": "Bigma",
   "short_name": "Bigma",
-  "description": "「言いそうな言葉」を、公式コメントに変換するAIジェネレーター",
+  "description": "謙虚な言葉が、ドラマチックに拡大解釈されるネタ生成AI",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
