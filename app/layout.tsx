@@ -77,7 +77,7 @@ export default function RootLayout({
     <html lang="ja" suppressHydrationWarning>
       <head>
         {/* AdSense meta tag only (preconnect removed for performance) */}
-        <meta name="google-adsense-account" content="ca-pub-4335284954366086" />
+        <meta name="google-adsense-account" content={process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID || "ca-pub-4335284954366086"} />
         <meta name="author" content="Bigma" />
         <meta property="og:site_name" content="Bigma - ビッグマウス語録ジェネレータ" />
         <meta property="og:type" content="website" />
@@ -105,10 +105,15 @@ export default function RootLayout({
                 let loaded = false;
                 function loadAds(){
                   if(loaded) return; loaded = true;
+                  // 既にスクリプトが存在する場合は何もしない
+                  if (document.querySelector('script[src^="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]')) {
+                    return;
+                  }
                   var s = document.createElement('script');
                   s.async = true;
                   s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + CLIENT_ID;
                   s.crossOrigin = 'anonymous';
+                  s.setAttribute('data-adsbygoogle-status', 'loading');
                   document.head.appendChild(s);
                 }
                 window.addEventListener('scroll', loadAds, { once: true, passive: true });
