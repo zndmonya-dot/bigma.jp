@@ -1075,11 +1075,6 @@ export default function Home() {
                   <section 
                     className="mt-6 lg:hidden" 
                     aria-label="打線（モバイル）"
-                    style={{ 
-                      contentVisibility: 'auto',
-                      containIntrinsicSize: '600px',
-                      minHeight: '600px'
-                    } as React.CSSProperties}
                   >
                     <LineupAside
                       lineup={lineup}

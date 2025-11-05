@@ -10,7 +10,7 @@ type Props = {
 
 export default function LineupAside({ lineup, handleTweet }: Props) {
   return (
-    <div className="bg-gray-50 dark:bg-gray-900/30 rounded-xl p-5 shadow-xl min-h-[600px]">
+    <div className="bg-gray-50 dark:bg-gray-900/30 rounded-xl p-5 shadow-xl">
       <div className="mb-4">
         <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-1">打線</h2>
         <p className="text-sm text-gray-500 dark:text-gray-400">本日のスタメン</p>
