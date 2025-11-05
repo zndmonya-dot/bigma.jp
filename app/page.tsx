@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback, useTransition } from 'react';
 import dynamic from 'next/dynamic';
 import { Quote, TabType } from '@/lib/types';
 import { 
@@ -69,6 +69,7 @@ export default function Home() {
   // デスクトップのみサイドバーを描画（モバイルのLCP/JS削減）
   const [isDesktop, setIsDesktop] = useState(false);
   const [shouldLoadMobileLineup, setShouldLoadMobileLineup] = useState(false);
+  const [isPending, startTransition] = useTransition();
   // プロフィール画像の読み込み状態
   const [profileImageError, setProfileImageError] = useState(false);
   useEffect(() => {
@@ -773,12 +774,12 @@ export default function Home() {
   /**
    * X（Twitter）に投稿
    */
-  const handleTweet = (quote: Quote) => {
+  const handleTweet = useCallback((quote: Quote) => {
     const text = formatQuoteForTwitter(quote);
     const url = 'https://bigma.jp/';
     const tweetUrl = createTweetUrl(text, url);
     window.open(tweetUrl, '_blank', 'noopener,noreferrer');
-  };
+  }, []);
 
   // quote repost removed
 
@@ -1109,7 +1110,7 @@ export default function Home() {
               {/* タブ */}
               <div className="flex gap-2 mt-4 mb-4 border-b border-gray-200 dark:border-gray-800">
                 <button
-                  onClick={() => setActiveTab('new')}
+                  onClick={() => startTransition(() => setActiveTab('new'))}
                   className={`px-4 py-2 text-sm font-semibold transition-colors border-b-2 ${
                     activeTab === 'new'
                       ? 'text-sky-600 dark:text-sky-300 border-sky-600 dark:border-sky-300'
@@ -1119,7 +1120,7 @@ export default function Home() {
                   新着
                 </button>
                 <button
-                  onClick={() => setActiveTab('weekly')}
+                  onClick={() => startTransition(() => setActiveTab('weekly'))}
                   className={`px-4 py-2 text-sm font-semibold transition-colors border-b-2 ${
                     activeTab === 'weekly'
                       ? 'text-sky-600 dark:text-sky-300 border-sky-600 dark:border-sky-300'
@@ -1129,7 +1130,7 @@ export default function Home() {
                   週間
                 </button>
                 <button
-                  onClick={() => setActiveTab('monthly')}
+                  onClick={() => startTransition(() => setActiveTab('monthly'))}
                   className={`px-4 py-2 text-sm font-semibold transition-colors border-b-2 ${
                     activeTab === 'monthly'
                       ? 'text-sky-600 dark:text-sky-300 border-sky-600 dark:border-sky-300'
