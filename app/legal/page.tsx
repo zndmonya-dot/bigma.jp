@@ -83,6 +83,14 @@ export default function LegalPage() {
               本サービスは、ブラウザのローカルストレージを使用して、いいね状態やキャッシュ（ETag・ランキング順）を保持します。Google AdSense は Cookie 等を使用して広告を配信します（詳細は Google のポリシーをご確認ください）。
             </p>
 
+            <h4 className="text-lg font-semibold mb-2 mt-4 text-gray-900 dark:text-white">5.4 プライバシーに関するお問い合わせ</h4>
+            <p className="mb-4">
+              プライバシーに関するご質問やご要望は、X（旧Twitter）のDM（ダイレクトメッセージ）にてお願いいたします。
+            </p>
+            <p className="mb-4">
+              <strong>問い合わせ先</strong>: <a href="https://twitter.com/Rasenooon" target="_blank" rel="noopener noreferrer" className="text-sky-600 dark:text-sky-400 hover:underline">@Rasenooon</a>
+            </p>
+
             <h3 className="text-xl font-semibold mb-3 mt-6 text-gray-900 dark:text-white">6. 知的財産権について</h3>
             <ul className="list-disc pl-6 mb-4 space-y-2">
               <li>本サービスのコンテンツ（デザイン、ロゴ、機能など）の著作権は、当方に帰属します</li>
@@ -95,7 +103,18 @@ export default function LegalPage() {
               本サービスは、特定の人物に関連するエンターテインメントコンテンツを提供しますが、本サービスが生成するすべてのコンテンツは、<strong>実際の発言や事実を反映したものではありません</strong>。本サービスは、特定の人物の実際の発言、通訳、公式コメントを提供するものではありません。
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6 text-gray-900 dark:text-white">8. 準拠法・管轄裁判所</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6 text-gray-900 dark:text-white">8. お問い合わせ</h3>
+            <p className="mb-4">
+              本サービスに関するお問い合わせは、X（旧Twitter）のDM（ダイレクトメッセージ）にてお願いいたします。
+            </p>
+            <p className="mb-4">
+              <strong>問い合わせ先</strong>: <a href="https://twitter.com/Rasenooon" target="_blank" rel="noopener noreferrer" className="text-sky-600 dark:text-sky-400 hover:underline">@Rasenooon</a>
+            </p>
+            <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+              ※お問い合わせへの返信は、運営側の都合により遅れる場合があります。また、すべてのお問い合わせに返信できない場合があります。あらかじめご了承ください。
+            </p>
+
+            <h3 className="text-xl font-semibold mb-3 mt-6 text-gray-900 dark:text-white">9. 準拠法・管轄裁判所</h3>
             <p className="mb-4">
               本利用規約は、日本法に準拠して解釈されます。本サービスに関する紛争については、当方の所在地を管轄する裁判所を第一審の専属的合意管轄裁判所とします。
             </p>
@@ -107,7 +126,7 @@ export default function LegalPage() {
             </div>
 
             <div className="mt-6 text-sm text-gray-500 dark:text-gray-400">
-              <p>最終更新日: 2025年11月3日</p>
+              <p>最終更新日: 2025年11月5日</p>
               <p className="mt-1">注: X（旧Twitter）およびそのロゴは各社の商標です。本サービスはこれらの企業・団体と提携していません。</p>
             </div>
           </section>
