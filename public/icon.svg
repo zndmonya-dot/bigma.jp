@@ -1,27 +1,49 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- 背景（グラデーション） -->
   <defs>
-    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+    <!-- 青いグラデーション -->
+    <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#00bcff;stop-opacity:1" />
       <stop offset="100%" style="stop-color:#00a8e6;stop-opacity:1" />
     </linearGradient>
   </defs>
-  <rect width="512" height="512" fill="url(#bgGradient)" rx="80"/>
   
-  <!-- "B"文字（白、太字） -->
-  <text 
-    x="256" 
-    y="360" 
-    font-family="Arial, sans-serif" 
-    font-size="380" 
-    font-weight="900" 
-    fill="#FFFFFF" 
-    text-anchor="middle" 
-    dominant-baseline="middle"
-    letter-spacing="-20"
-  >B</text>
+  <!-- 背景（黒、角丸）- UIのダークテーマに合わせる -->
+  <rect width="512" height="512" fill="#000000" rx="80"/>
   
-  <!-- 装飾的なアクセント（小さな円） -->
-  <circle cx="380" cy="180" r="25" fill="#FFFFFF" opacity="0.3"/>
-  <circle cx="140" cy="340" r="18" fill="#FFFFFF" opacity="0.2"/>
+  <!-- 拡声器のアイコン（青いグラデーション、白い縁取り） -->
+  <g transform="translate(256, 256)">
+    <!-- 拡声器の本体（角丸） -->
+    <path d="M -160,-80 L -40,-120 L 120,-60 L 180,40 L 160,120 L 40,140 L -120,100 Z" 
+          fill="url(#blueGradient)" 
+          stroke="#FFFFFF" 
+          stroke-width="8" 
+          stroke-linejoin="round"/>
+    
+    <!-- 拡声器の内側（ハイライト） -->
+    <path d="M -120,-60 L -20,-90 L 100,-40 L 140,50 L 120,110 L 20,120 L -90,80 Z" 
+          fill="none" 
+          stroke="#FFFFFF" 
+          stroke-width="4" 
+          opacity="0.3"/>
+    
+    <!-- 音波の表現（円弧、3本） -->
+    <path d="M 180,40 Q 240,80 280,140" 
+          stroke="url(#blueGradient)" 
+          stroke-width="16" 
+          fill="none" 
+          stroke-linecap="round" 
+          opacity="0.8"/>
+    <path d="M 180,40 Q 260,100 320,200" 
+          stroke="url(#blueGradient)" 
+          stroke-width="12" 
+          fill="none" 
+          stroke-linecap="round" 
+          opacity="0.6"/>
+    <path d="M 180,40 Q 280,120 360,260" 
+          stroke="url(#blueGradient)" 
+          stroke-width="8" 
+          fill="none" 
+          stroke-linecap="round" 
+          opacity="0.4"/>
+  </g>
 </svg>
