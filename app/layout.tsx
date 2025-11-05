@@ -12,7 +12,7 @@ const mPlusRounded = M_PLUS_Rounded_1c({
 });
 
 export const metadata: Metadata = {
-  title: "Bigma - ビッグマウス語録ジェネレータ -",
+  title: "Bigma ～ ビッグマウス語録ジェネレータ ～",
   description: "謙虚な言葉が、ドラマチックに拡大解釈されるネタ生成AI",
   keywords: "ビッグマウス,語録,ネタ,大喜利,AI,生成,公式コメント,通訳,拡大解釈,山本由伸,やまもろ,ドジャース,園田通訳,オリックス,なんじぇい,なんJ,ヤマモロ",
   manifest: "/manifest.json",
@@ -46,14 +46,14 @@ export const metadata: Metadata = {
     type: "website",
     url: "https://bigma.jp",
     siteName: "Bigma",
-    title: "Bigma - ビッグマウス語録ジェネレータ",
+    title: "Bigma ～ ビッグマウス語録ジェネレータ ～",
     description: "謙虚な言葉が、ドラマチックに拡大解釈されるネタ生成AI",
     locale: "ja_JP",
   },
   twitter: {
     card: "summary",
     site: "@your_handle",
-    title: "Bigma - ビッグマウス語録ジェネレータ",
+    title: "Bigma ～ ビッグマウス語録ジェネレータ ～",
     description: "謙虚な言葉が、ドラマチックに拡大解釈されるネタ生成AI",
   },
   alternates: {
@@ -79,14 +79,14 @@ export default function RootLayout({
         {/* AdSense meta tag only (preconnect removed for performance) */}
         <meta name="google-adsense-account" content={process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID || "ca-pub-4335284954366086"} />
         <meta name="author" content="Bigma" />
-        <meta property="og:site_name" content="Bigma - ビッグマウス語録ジェネレータ" />
+        <meta property="og:site_name" content="Bigma ～ ビッグマウス語録ジェネレータ ～" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://bigma.jp" />
-        <meta property="og:title" content="Bigma - ビッグマウス語録ジェネレータ" />
+        <meta property="og:title" content="Bigma ～ ビッグマウス語録ジェネレータ ～" />
         <meta property="og:description" content="謙虚な言葉が、ドラマチックに拡大解釈されるネタ生成AI" />
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:site" content="@your_handle" />
-        <meta name="twitter:title" content="Bigma - ビッグマウス語録ジェネレータ" />
+        <meta name="twitter:title" content="Bigma ～ ビッグマウス語録ジェネレータ ～" />
         <meta name="twitter:description" content="謙虚な言葉が、ドラマチックに拡大解釈されるネタ生成AI" />
       </head>
       <body
