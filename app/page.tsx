@@ -38,12 +38,15 @@ export default function Home() {
     handleTweet: (quote: Quote) => void;
   };
 
-  const LineupAside = useMemo(() => dynamic<LineupAsideProps>(() => import('./components/LineupAside'), {
-    ssr: false,
-    loading: () => (
-      <div className="bg-gray-50 dark:bg-gray-900/30 rounded-xl p-5 shadow-xl min-h-[400px]" />
-    ),
-  }), []);
+  const LineupAside = useMemo(() => dynamic<LineupAsideProps>(
+    () => import('./components/LineupAside'), 
+    { 
+      ssr: false,
+      loading: () => (
+        <div className="bg-gray-50 dark:bg-gray-900/30 rounded-xl p-5 shadow-xl min-h-[400px]" />
+      ),
+    }
+  ), []);
 
   type QuotesListProps = {
     displayedQuotes: Quote[];
@@ -337,70 +340,81 @@ export default function Home() {
     preserveCount: boolean = false,
     desiredDisplayCount?: number
   ) => {
-    let sorted: Quote[] = [];
-    
-    switch (tab) {
-      case 'new':
-        // 新着：ID降順（最新から）→ 最新100件まで
-        sorted = [...quotesList]
-          .sort((a, b) => b.id - a.id)
-          .slice(0, 100);
-        break;
-      case 'weekly':
-        // 週間：一日一回の固定ランキング（JST日付でキャッシュ）
-        const sevenDaysAgo = new Date();
-        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-        const weeklyQuotes = quotesList.filter(quote => {
-          if (!quote.createdAt) return false;
-          const createdDate = new Date(quote.createdAt);
-          return createdDate >= sevenDaysAgo;
-        });
-        {
-          const today = getTodayString();
-          const cachedOrder = readRankingOrder('weekly', today);
-          if (cachedOrder) {
-            const map = new Map(weeklyQuotes.map(q => [q.id, q] as const));
-            sorted = cachedOrder.map(id => map.get(id)).filter((q): q is Quote => Boolean(q));
-          } else {
-            const computed = [...weeklyQuotes].sort((a, b) => (b.likes || 0) - (a.likes || 0));
-            sorted = computed;
-            writeRankingOrder('weekly', today, computed.map(q => q.id));
+    // 長時間タスク削減: 処理を分割
+    const processQuotes = () => {
+      let sorted: Quote[] = [];
+      
+      switch (tab) {
+        case 'new':
+          // 新着：ID降順（最新から）→ 最新100件まで
+          sorted = [...quotesList]
+            .sort((a, b) => b.id - a.id)
+            .slice(0, 100);
+          break;
+        case 'weekly':
+          // 週間：一日一回の固定ランキング（JST日付でキャッシュ）
+          const sevenDaysAgo = new Date();
+          sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+          const weeklyQuotes = quotesList.filter(quote => {
+            if (!quote.createdAt) return false;
+            const createdDate = new Date(quote.createdAt);
+            return createdDate >= sevenDaysAgo;
+          });
+          {
+            const today = getTodayString();
+            const cachedOrder = readRankingOrder('weekly', today);
+            if (cachedOrder) {
+              const map = new Map(weeklyQuotes.map(q => [q.id, q] as const));
+              sorted = cachedOrder.map(id => map.get(id)).filter((q): q is Quote => Boolean(q));
+            } else {
+              const computed = [...weeklyQuotes].sort((a, b) => (b.likes || 0) - (a.likes || 0));
+              sorted = computed;
+              writeRankingOrder('weekly', today, computed.map(q => q.id));
+            }
           }
-        }
-        break;
-      case 'monthly':
-        // 月間：一日一回の固定ランキング（JST日付でキャッシュ）
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-        const monthlyQuotes = quotesList.filter(quote => {
-          if (!quote.createdAt) return false;
-          const createdDate = new Date(quote.createdAt);
-          return createdDate >= thirtyDaysAgo;
-        });
-        {
-          const today = getTodayString();
-          const cachedOrder = readRankingOrder('monthly', today);
-          if (cachedOrder) {
-            const map = new Map(monthlyQuotes.map(q => [q.id, q] as const));
-            sorted = cachedOrder.map(id => map.get(id)).filter((q): q is Quote => Boolean(q));
-          } else {
-            const computed = [...monthlyQuotes].sort((a, b) => (b.likes || 0) - (a.likes || 0));
-            sorted = computed.slice(0, 100);
-            writeRankingOrder('monthly', today, sorted.map(q => q.id));
+          break;
+        case 'monthly':
+          // 月間：一日一回の固定ランキング（JST日付でキャッシュ）
+          const thirtyDaysAgo = new Date();
+          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+          const monthlyQuotes = quotesList.filter(quote => {
+            if (!quote.createdAt) return false;
+            const createdDate = new Date(quote.createdAt);
+            return createdDate >= thirtyDaysAgo;
+          });
+          {
+            const today = getTodayString();
+            const cachedOrder = readRankingOrder('monthly', today);
+            if (cachedOrder) {
+              const map = new Map(monthlyQuotes.map(q => [q.id, q] as const));
+              sorted = cachedOrder.map(id => map.get(id)).filter((q): q is Quote => Boolean(q));
+            } else {
+              const computed = [...monthlyQuotes].sort((a, b) => (b.likes || 0) - (a.likes || 0));
+              sorted = computed.slice(0, 100);
+              writeRankingOrder('monthly', today, sorted.map(q => q.id));
+            }
           }
-        }
-        break;
-    }
-    
-    setQuotes(sorted.slice(0, DISPLAY_CONFIG.MAX_RANKING_QUOTES));
-    const initialCount = desiredDisplayCount ?? displayCount ?? DISPLAY_CONFIG.INITIAL_QUOTES_COUNT;
-    if (preserveCount) {
-      const base = desiredDisplayCount ?? displayCount;
-      const nextCount = Math.max(base, initialCount);
-      setDisplayedQuotes(sorted.slice(0, Math.min(nextCount, sorted.length)));
+          break;
+      }
+      
+      setQuotes(sorted.slice(0, DISPLAY_CONFIG.MAX_RANKING_QUOTES));
+      const initialCount = desiredDisplayCount ?? displayCount ?? DISPLAY_CONFIG.INITIAL_QUOTES_COUNT;
+      if (preserveCount) {
+        const base = desiredDisplayCount ?? displayCount;
+        const nextCount = Math.max(base, initialCount);
+        setDisplayedQuotes(sorted.slice(0, Math.min(nextCount, sorted.length)));
+      } else {
+        setDisplayedQuotes(sorted.slice(0, initialCount));
+        if (displayCount !== initialCount) setDisplayCount(initialCount);
+      }
+    };
+
+    // requestIdleCallbackで非同期実行（メインスレッドブロック回避）
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      requestIdleCallback(processQuotes, { timeout: 100 });
     } else {
-      setDisplayedQuotes(sorted.slice(0, initialCount));
-      if (displayCount !== initialCount) setDisplayCount(initialCount);
+      // フォールバック: setTimeout
+      setTimeout(processQuotes, 0);
     }
   };
 

@@ -17,7 +17,10 @@ const nextConfig: NextConfig = {
   // 実験的機能：React Compiler、Turbopack等は必要に応じて
   experimental: {
     optimizePackageImports: ['@/lib'],
+    // 長時間タスク削減のため、大きな処理を分割
+    optimizeCss: true,
   },
+  // 画像最適化（必要に応じて）
 };
 
 export default nextConfig;

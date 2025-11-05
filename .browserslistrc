@@ -1,0 +1,6 @@
+# モダンブラウザのみターゲット（レガシーポリフィル削減）
+> 0.5%
+last 2 versions
+not dead
+not IE 11
+
