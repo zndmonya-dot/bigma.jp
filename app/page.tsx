@@ -926,7 +926,7 @@ export default function Home() {
       {/* タイトル欄 */}
       <header className="sticky top-0 bg-white dark:bg-black/95 lg:backdrop-blur-xl z-20 shadow-sm border-b border-gray-200 dark:border-gray-800">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 items-center py-3 sm:py-4 md:py-6 min-h-[60px] sm:min-h-[80px] md:min-h-[100px]">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 items-center py-4 sm:py-5 md:py-7 min-h-[60px] sm:min-h-[80px] md:min-h-[100px]">
             <div className="flex items-center justify-start w-full lg:col-span-2">
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white leading-normal">
                 <span className="tracking-tighter font-extrabold">Bigma</span>
@@ -943,13 +943,9 @@ export default function Home() {
                       src="/profile.jpg"
                       alt="らせのん"
                       className="w-full h-full object-cover rounded-full"
-                      onError={(e) => {
-                        console.error('Profile image load error:', e);
-                        setProfileImageError(true);
-                      }}
-                      onLoad={() => {
-                        setProfileImageError(false);
-                      }}
+                      style={{ objectPosition: 'center 35%' }}
+                      onError={() => setProfileImageError(true)}
+                      onLoad={() => setProfileImageError(false)}
                     />
                     {profileImageError && (
                       <div className="absolute inset-0 flex items-center justify-center">
@@ -962,7 +958,7 @@ export default function Home() {
                 </a>
               </div>
             </div>
-            <div className="hidden lg:flex items-center justify-start lg:col-span-1">
+            <div className="hidden lg:flex items-center justify-end lg:col-span-1">
               <a
                 href="https://twitter.com/Rasenooon" 
                 target="_blank" 
@@ -974,14 +970,9 @@ export default function Home() {
                     src="/profile.jpg"
                     alt="らせのん"
                     className="w-full h-full object-cover rounded-full"
-                    onError={(e) => {
-                      console.error('Profile image load error:', e);
-                      setProfileImageError(true);
-                    }}
-                    onLoad={() => {
-                      console.log('Profile image loaded successfully');
-                      setProfileImageError(false);
-                    }}
+                    style={{ objectPosition: 'center 35%' }}
+                    onError={() => setProfileImageError(true)}
+                    onLoad={() => setProfileImageError(false)}
                   />
                   {profileImageError && (
                     <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-white/10">

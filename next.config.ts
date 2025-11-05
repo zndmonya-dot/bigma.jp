@@ -20,21 +20,6 @@ const nextConfig: NextConfig = {
     // 長時間タスク削減のため、大きな処理を分割
     optimizeCss: true,
   },
-  // 画像最適化（Xのプロフィール画像用）
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'pbs.twimg.com',
-        pathname: '/profile_images/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'x.com',
-        pathname: '/**',
-      },
-    ],
-  },
 };
 
 export default nextConfig;
