@@ -947,7 +947,7 @@ export default function Home() {
                 </a>
               </div>
             </div>
-            <div className="hidden lg:flex items-center justify-end lg:col-span-1">
+            <div className="hidden lg:flex items-center justify-start lg:col-span-1">
               <a
                 href="https://twitter.com/Rasenooon" 
                 target="_blank" 
