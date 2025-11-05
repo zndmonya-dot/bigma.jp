@@ -1070,18 +1070,32 @@ export default function Home() {
             {!isDesktop && (
               <>
                 <div id="mobile-lineup-trigger" className="h-1" />
-                {/* CLS完全防止: shouldLoadMobileLineupがtrueになるまでレンダリングしない */}
-                {shouldLoadMobileLineup && (
-                  <section 
-                    className="mt-6 lg:hidden" 
-                    aria-label="打線（モバイル）"
-                  >
+                {/* CLS完全防止: プレースホルダーで高さを確保（9人分 ≈ 900px） */}
+                <section 
+                  className="mt-6 lg:hidden min-h-[900px]" 
+                  aria-label="打線（モバイル）"
+                  aria-busy={!shouldLoadMobileLineup}
+                >
+                  {shouldLoadMobileLineup ? (
                     <LineupAside
                       lineup={lineup}
                       handleTweet={handleTweet}
                     />
-                  </section>
-                )}
+                  ) : (
+                    <div className="bg-gray-50 dark:bg-gray-900/30 rounded-xl p-5 shadow-xl">
+                      <div className="mb-4">
+                        <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-1">打線</h2>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">読み込み中...</p>
+                      </div>
+                      {/* 9人分のプレースホルダー（高さ確保） */}
+                      <div className="space-y-3">
+                        {Array.from({ length: 9 }).map((_, i) => (
+                          <div key={i} className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-lg h-[100px]" />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </section>
               </>
             )}
           </div>
