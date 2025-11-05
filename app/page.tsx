@@ -11,7 +11,7 @@ import {
   GENERATE_BUTTON_COLOR 
 } from '@/lib/constants';
 import { getLikedQuotes, saveLikedQuotes, getGenerationCount, updateGenerationCount } from '@/lib/storage';
-import { calculateScore, formatQuoteForTwitter, createTweetUrl } from '@/lib/utils';
+import { formatQuoteForTwitter, createTweetUrl } from '@/lib/utils';
 import { getTodayString, shuffleWithSeed } from '@/lib/random-seed';
 
 /**
@@ -95,10 +95,12 @@ export default function Home() {
     if (trigger) observer.observe(trigger);
     return () => observer.disconnect();
   }, [isDesktop]);
+  // ストレージキー
+  const DISPLAY_COUNT_STORAGE_KEY = 'quotes_display_count_v1';
+  
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [allQuotes, setAllQuotes] = useState<Quote[]>([]);
   const [displayedQuotes, setDisplayedQuotes] = useState<Quote[]>([]);
-  const DISPLAY_COUNT_STORAGE_KEY = 'quotes_display_count_v1';
   const [displayCount, setDisplayCount] = useState<number>(() => {
     if (typeof window !== 'undefined') {
       const raw = window.localStorage.getItem(DISPLAY_COUNT_STORAGE_KEY);
@@ -110,8 +112,6 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [likedQuotes, setLikedQuotes] = useState<Set<number>>(new Set());
   const [pendingLikes, setPendingLikes] = useState<Set<number>>(new Set());
-  const [nextCursor, setNextCursor] = useState<number | null>(null);
-  const [hasMore, setHasMore] = useState<boolean>(true);
   const [input, setInput] = useState('');
   const [result, setResult] = useState<{ english: string; translated: string } | null>(null);
   const [generating, setGenerating] = useState(false);
@@ -236,8 +236,6 @@ export default function Home() {
           updateQuotesByTab(quotesList, activeTab);
         }
 
-        setHasMore(Boolean(data.data.pageInfo?.hasMore));
-        setNextCursor(data.data.pageInfo?.nextCursor ?? null);
       }
     } catch (error) {
       console.error('Failed to load quotes:', error);
@@ -503,16 +501,6 @@ export default function Home() {
     }
   }, [activeTab, allQuotes]);
 
-  const handleLoadMore = async () => {
-    const nextCount = displayCount + DISPLAY_CONFIG.LOAD_MORE_INCREMENT;
-    setDisplayCount(nextCount);
-
-    if (hasMore && nextCursor) {
-      await loadQuotes(false, nextCursor, nextCount);
-    } else {
-      setDisplayedQuotes(quotes.slice(0, Math.min(nextCount, quotes.length)));
-    }
-  };
 
   /**
    * クライアント側のレート制限チェック
@@ -950,7 +938,8 @@ export default function Home() {
                     {profileImageError && (
                       <div className="absolute inset-0 flex items-center justify-center">
                         <svg className="w-5 h-5 text-gray-700 dark:text-white" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                          <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z"/>
+                          <path d="M12.0002 14.5C6.99043 14.5 2.95026 17.86 2.95026 22H21.0502C21.0502 17.86 17.01 14.5 12.0002 14.5Z"/>
                         </svg>
                       </div>
                     )}
@@ -977,7 +966,8 @@ export default function Home() {
                   {profileImageError && (
                     <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-white/10">
                       <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 dark:text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z"/>
+                        <path d="M12.0002 14.5C6.99043 14.5 2.95026 17.86 2.95026 22H21.0502C21.0502 17.86 17.01 14.5 12.0002 14.5Z"/>
                       </svg>
                     </div>
                   )}
