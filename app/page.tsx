@@ -155,7 +155,11 @@ export default function Home() {
       }
       
       const params = new URLSearchParams();
-      params.set('limit', String(DISPLAY_CONFIG.LOAD_MORE_INCREMENT));
+      // 初回は最大件数を取得、続き読み込み時のみインクリメント件数
+      params.set(
+        'limit',
+        String(cursor ? DISPLAY_CONFIG.LOAD_MORE_INCREMENT : DISPLAY_CONFIG.MAX_RANKING_QUOTES)
+      );
       if (cursor) params.set('cursor', String(cursor));
       const response = await fetch(`/api/quotes/list?${params.toString()}`, { headers });
       
@@ -267,7 +271,7 @@ export default function Home() {
    */
   const checkForUpdates = async (cachedETag: string) => {
     try {
-      const response = await fetch('/api/quotes/list', {
+      const response = await fetch(`/api/quotes/list?limit=${DISPLAY_CONFIG.MAX_RANKING_QUOTES}`, {
         headers: {
           'If-None-Match': cachedETag,
         },
