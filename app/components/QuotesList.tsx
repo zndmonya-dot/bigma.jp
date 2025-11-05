@@ -1,7 +1,6 @@
 'use client';
 
 import { Quote } from '@/lib/types';
-import { DISPLAY_CONFIG } from '@/lib/constants';
 
 type Props = {
   displayedQuotes: Quote[];

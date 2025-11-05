@@ -8,7 +8,6 @@ import {
   CHARACTER_LIMITS, 
   DISPLAY_CONFIG, 
   FIELD_PLAYER_POSITIONS, 
-  POSITION_MAP,
   GENERATE_BUTTON_COLOR 
 } from '@/lib/constants';
 import { getLikedQuotes, saveLikedQuotes, getGenerationCount, updateGenerationCount } from '@/lib/storage';
