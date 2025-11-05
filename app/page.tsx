@@ -69,6 +69,8 @@ export default function Home() {
   // デスクトップのみサイドバーを描画（モバイルのLCP/JS削減）
   const [isDesktop, setIsDesktop] = useState(false);
   const [shouldLoadMobileLineup, setShouldLoadMobileLineup] = useState(false);
+  // プロフィール画像の読み込み状態
+  const [profileImageError, setProfileImageError] = useState(false);
   useEffect(() => {
     const media = window.matchMedia('(min-width: 1024px)');
     const update = () => setIsDesktop(media.matches);
@@ -936,25 +938,58 @@ export default function Home() {
                   rel="noopener noreferrer"
                   className="flex items-center text-gray-700 dark:text-white hover:text-sky-500 dark:hover:text-sky-400 transition-colors"
                 >
-                  <div className="w-10 h-10 flex-shrink-0 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-white/20 transition-colors">
-                    <svg className="w-5 h-5 text-gray-700 dark:text-white" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                    </svg>
+                  <div className="w-10 h-10 flex-shrink-0 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-white/20 transition-colors overflow-hidden relative">
+                    <img
+                      src="/profile.jpg"
+                      alt="らせのん"
+                      className="w-full h-full object-cover rounded-full"
+                      onError={(e) => {
+                        console.error('Profile image load error:', e);
+                        setProfileImageError(true);
+                      }}
+                      onLoad={() => {
+                        setProfileImageError(false);
+                      }}
+                    />
+                    {profileImageError && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <svg className="w-5 h-5 text-gray-700 dark:text-white" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                      </div>
+                    )}
                   </div>
                 </a>
               </div>
             </div>
             <div className="hidden lg:flex items-center justify-start lg:col-span-1">
               <a
-                href="https://twitter.com/your_handle" 
+                href="https://twitter.com/Rasenooon" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-white hover:text-sky-500 dark:hover:text-sky-400 transition-colors group"
               >
-                <div className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center group-hover:bg-gray-200 dark:group-hover:bg-white/20 transition-colors">
-                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 dark:text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                  </svg>
+                <div className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center group-hover:bg-gray-200 dark:group-hover:bg-white/20 transition-colors overflow-hidden relative">
+                  <img
+                    src="/profile.jpg"
+                    alt="らせのん"
+                    className="w-full h-full object-cover rounded-full"
+                    onError={(e) => {
+                      console.error('Profile image load error:', e);
+                      setProfileImageError(true);
+                    }}
+                    onLoad={() => {
+                      console.log('Profile image loaded successfully');
+                      setProfileImageError(false);
+                    }}
+                  />
+                  {profileImageError && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-white/10">
+                      <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 dark:text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                      </svg>
+                    </div>
+                  )}
                 </div>
                 <div className="text-left hidden sm:block min-w-0 max-w-[140px]">
                   <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-300 mb-0.5 sm:mb-1 truncate">らせのん</p>

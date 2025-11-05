@@ -60,3 +60,14 @@ export const GENERATE_BUTTON_COLOR = {
   HOVER: '#00a8e6',
 } as const;
 
+/**
+ * プロフィール画像パス
+ * ローカル画像（public/profile.jpg）または外部URL（Xのプロフィール画像URL）を指定
+ */
+export const PROFILE_IMAGE = {
+  // ローカル画像を優先、存在しない場合は外部URLを使用
+  LOCAL: '/profile.jpg',
+  // Xのプロフィール画像URL（必要に応じて更新）
+  EXTERNAL: null as string | null,
+} as const;
+
