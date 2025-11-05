@@ -11,11 +11,13 @@ type Props = {
 
 export default function QuotesList({ displayedQuotes, likedQuotes, onLike, onTweet }: Props) {
   return (
-    <div className="space-y-4 sm:space-y-6 min-h-[400px]" style={{ contentVisibility: 'auto' as any }}>
-      {displayedQuotes.map((quote) => {
+    <div className="space-y-4 sm:space-y-6 min-h-[400px]">
+      {displayedQuotes.map((quote, index) => {
+        // LCP要素（最初のアイテム）を優先レンダリング
+        const isLCP = index === 0;
         const isLiked = likedQuotes.has(quote.id);
         return (
-          <div key={quote.id}>
+          <div key={quote.id} style={isLCP ? undefined : { contentVisibility: 'auto' } as React.CSSProperties}>
             <article className="bg-gray-50 dark:bg-gray-900/30 rounded-xl p-5 sm:p-6 hover:bg-gray-100 dark:hover:bg-gray-900/50 transition-colors shadow-lg">
               <div className="space-y-3">
                 <div className="space-y-2.5">
