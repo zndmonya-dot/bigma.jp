@@ -746,8 +746,13 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
-  // 日次スタメンを読み込む（初回のみ）
+  // 日次スタメンを読み込む（デスクトップは即座、モバイルは遅延）
   useEffect(() => {
+    // モバイルで打線がまだ必要ない場合は計算をスキップ
+    if (!isDesktop && !shouldLoadMobileLineup) {
+      return;
+    }
+
     const loadLineup = async () => {
       if (allQuotes.length === 0) {
         setLineup([]);
@@ -822,7 +827,7 @@ export default function Home() {
     };
 
     loadLineup();
-  }, [allQuotes, todaySeed]);
+  }, [allQuotes, todaySeed, isDesktop, shouldLoadMobileLineup]);
 
   return (
     <div className="min-h-screen bg-white dark:bg-black">
