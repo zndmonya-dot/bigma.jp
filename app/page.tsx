@@ -1066,34 +1066,27 @@ export default function Home() {
                 />
               )}
             </section>
-            {/* モバイル用：打線欄（メインカラムの下に表示、遅延マウント、CLS防止） */}
+            {/* モバイル用：打線欄（メインカラムの下に表示、遅延マウント、CLS完全防止） */}
             {!isDesktop && (
               <>
                 <div id="mobile-lineup-trigger" className="h-1" />
-                {/* CLS防止: 固定高さでレイアウト確定、content-visibilityで最適化 */}
-                <section 
-                  className="mt-6 lg:hidden h-[600px]" 
-                  aria-label="打線（モバイル）"
-                  aria-busy={!shouldLoadMobileLineup}
-                  style={{ 
-                    contentVisibility: 'auto',
-                    containIntrinsicSize: '600px'
-                  } as React.CSSProperties}
-                >
-                  {shouldLoadMobileLineup ? (
+                {/* CLS完全防止: shouldLoadMobileLineupがtrueになるまでレンダリングしない */}
+                {shouldLoadMobileLineup && (
+                  <section 
+                    className="mt-6 lg:hidden" 
+                    aria-label="打線（モバイル）"
+                    style={{ 
+                      contentVisibility: 'auto',
+                      containIntrinsicSize: '600px',
+                      minHeight: '600px'
+                    } as React.CSSProperties}
+                  >
                     <LineupAside
                       lineup={lineup}
                       handleTweet={handleTweet}
                     />
-                  ) : (
-                    <div className="bg-gray-50 dark:bg-gray-900/30 rounded-xl p-5 shadow-xl h-full flex flex-col">
-                      <div className="mb-4">
-                        <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-1">打線</h2>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">読み込み中...</p>
-                      </div>
-                    </div>
-                  )}
-                </section>
+                  </section>
+                )}
               </>
             )}
           </div>
