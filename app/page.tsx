@@ -106,7 +106,11 @@ export default function Home() {
     if (typeof window !== 'undefined') {
       const raw = window.localStorage.getItem(DISPLAY_COUNT_STORAGE_KEY);
       const n = raw ? parseInt(raw, 10) : NaN;
-      if (!Number.isNaN(n) && n > 0) return Math.min(n, DISPLAY_CONFIG.MAX_RANKING_QUOTES);
+      if (!Number.isNaN(n) && n > 0) {
+        // 初期表示件数が50件に変更されたので、50件未満の場合は50件に更新
+        const count = Math.min(n, DISPLAY_CONFIG.MAX_RANKING_QUOTES);
+        return count < DISPLAY_CONFIG.INITIAL_QUOTES_COUNT ? DISPLAY_CONFIG.INITIAL_QUOTES_COUNT : count;
+      }
     }
     return DISPLAY_CONFIG.INITIAL_QUOTES_COUNT;
   });
@@ -353,7 +357,7 @@ export default function Home() {
             .slice(0, 50);
           break;
         case 'weekly':
-          // 週間：一日一回の固定ランキング（JST日付でキャッシュ）
+          // 週間：一日一回の固定ランキング（JST日付でキャッシュ）→ 最新50件まで
           const sevenDaysAgo = new Date();
           sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
           const weeklyQuotes = quotesList.filter(quote => {
@@ -366,16 +370,16 @@ export default function Home() {
             const cachedOrder = readRankingOrder('weekly', today);
             if (cachedOrder) {
               const map = new Map(weeklyQuotes.map(q => [q.id, q] as const));
-              sorted = cachedOrder.map(id => map.get(id)).filter((q): q is Quote => Boolean(q));
+              sorted = cachedOrder.map(id => map.get(id)).filter((q): q is Quote => Boolean(q)).slice(0, 50);
             } else {
               const computed = [...weeklyQuotes].sort((a, b) => (b.likes || 0) - (a.likes || 0));
-              sorted = computed;
-              writeRankingOrder('weekly', today, computed.map(q => q.id));
+              sorted = computed.slice(0, 50);
+              writeRankingOrder('weekly', today, sorted.map(q => q.id));
             }
           }
           break;
         case 'monthly':
-          // 月間：一日一回の固定ランキング（JST日付でキャッシュ）
+          // 月間：一日一回の固定ランキング（JST日付でキャッシュ）→ 最新50件まで
           const thirtyDaysAgo = new Date();
           thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
           const monthlyQuotes = quotesList.filter(quote => {
@@ -388,7 +392,7 @@ export default function Home() {
             const cachedOrder = readRankingOrder('monthly', today);
             if (cachedOrder) {
               const map = new Map(monthlyQuotes.map(q => [q.id, q] as const));
-              sorted = cachedOrder.map(id => map.get(id)).filter((q): q is Quote => Boolean(q));
+              sorted = cachedOrder.map(id => map.get(id)).filter((q): q is Quote => Boolean(q)).slice(0, 50);
             } else {
               const computed = [...monthlyQuotes].sort((a, b) => (b.likes || 0) - (a.likes || 0));
               sorted = computed.slice(0, 50);
@@ -458,11 +462,11 @@ export default function Home() {
             const cachedOrder = readRankingOrder('weekly', today);
             if (cachedOrder) {
               const map = new Map(filtered.map(q => [q.id, q] as const));
-              sorted = cachedOrder.map(id => map.get(id)).filter((q): q is Quote => Boolean(q));
+              sorted = cachedOrder.map(id => map.get(id)).filter((q): q is Quote => Boolean(q)).slice(0, 50);
             } else {
               const computed = [...filtered].sort((a, b) => (b.likes || 0) - (a.likes || 0));
-              sorted = computed;
-              writeRankingOrder('weekly', today, computed.map(q => q.id));
+              sorted = computed.slice(0, 50);
+              writeRankingOrder('weekly', today, sorted.map(q => q.id));
             }
             break;
           case 'monthly':
@@ -470,7 +474,7 @@ export default function Home() {
             const cachedOrder2 = readRankingOrder('monthly', today2);
             if (cachedOrder2) {
               const map = new Map(filtered.map(q => [q.id, q] as const));
-              sorted = cachedOrder2.map(id => map.get(id)).filter((q): q is Quote => Boolean(q));
+              sorted = cachedOrder2.map(id => map.get(id)).filter((q): q is Quote => Boolean(q)).slice(0, 50);
             } else {
               const computed = [...filtered].sort((a, b) => (b.likes || 0) - (a.likes || 0));
               sorted = computed.slice(0, 50);

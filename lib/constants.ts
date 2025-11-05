@@ -25,7 +25,7 @@ export const CHARACTER_LIMITS = {
  * 表示設定
  */
 export const DISPLAY_CONFIG = {
-  INITIAL_QUOTES_COUNT: 10,    // 初期表示件数（LCP最優先で10）
+  INITIAL_QUOTES_COUNT: 50,    // 初期表示件数（最大50件）
   LOAD_MORE_INCREMENT: 15,    // もっと見るで追加する件数
   MAX_RANKING_QUOTES: 50,     // ランキング表示上限
   LINEUP_MAX: 9,              // 打線表示上限
