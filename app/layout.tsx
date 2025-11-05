@@ -1,19 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { M_PLUS_Rounded_1c, Kosugi_Maru } from "next/font/google";
+import { M_PLUS_Rounded_1c } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
 const mPlusRounded = M_PLUS_Rounded_1c({
   variable: "--font-m-plus-rounded",
   weight: ["400", "700"],
-  subsets: ["latin"],
-  display: "optional",
-  preload: false,
-});
-
-const kosugiMaru = Kosugi_Maru({
-  variable: "--font-kosugi-maru",
-  weight: ["400"],
   subsets: ["latin"],
   display: "optional",
   preload: false,
@@ -84,9 +76,7 @@ export default function RootLayout({
   return (
     <html lang="ja" suppressHydrationWarning>
       <head>
-        {/* Preconnect to AdSense to speed up initial connection */}
-        <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://googleads.g.doubleclick.net" crossOrigin="anonymous" />
+        {/* AdSense meta tag only (preconnect removed for performance) */}
         <meta name="google-adsense-account" content="ca-pub-4335284954366086" />
         <meta name="author" content="Bigma" />
         <meta property="og:site_name" content="Bigma - ビッグマウス語録ジェネレータ" />
@@ -100,7 +90,7 @@ export default function RootLayout({
         <meta name="twitter:description" content="謙虚な言葉が、ドラマチックに拡大解釈されるネタ生成AI" />
       </head>
       <body
-        className={`${mPlusRounded.variable} ${kosugiMaru.variable} antialiased`}
+        className={`${mPlusRounded.variable} antialiased`}
         suppressHydrationWarning
       >
         {/* Google AdSense 自動広告 - 重複初期化エラー回避のため、明示pushは行わない（script読込のみ） */}

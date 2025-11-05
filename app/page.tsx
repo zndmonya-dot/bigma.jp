@@ -66,6 +66,7 @@ export default function Home() {
 
   // デスクトップのみサイドバーを描画（モバイルのLCP/JS削減）
   const [isDesktop, setIsDesktop] = useState(false);
+  const [shouldLoadMobileLineup, setShouldLoadMobileLineup] = useState(false);
   useEffect(() => {
     const media = window.matchMedia('(min-width: 1024px)');
     const update = () => setIsDesktop(media.matches);
@@ -73,6 +74,23 @@ export default function Home() {
     media.addEventListener?.('change', update);
     return () => media.removeEventListener?.('change', update);
   }, []);
+
+  // モバイル打線をIntersection Observerで遅延マウント
+  useEffect(() => {
+    if (isDesktop) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setShouldLoadMobileLineup(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '200px' } // 200px手前で読み込み開始
+    );
+    const trigger = document.getElementById('mobile-lineup-trigger');
+    if (trigger) observer.observe(trigger);
+    return () => observer.disconnect();
+  }, [isDesktop]);
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [allQuotes, setAllQuotes] = useState<Quote[]>([]);
   const [displayedQuotes, setDisplayedQuotes] = useState<Quote[]>([]);
@@ -1030,14 +1048,19 @@ export default function Home() {
                 />
               )}
             </section>
-            {/* モバイル用：打線欄（メインカラムの下に表示） */}
+            {/* モバイル用：打線欄（メインカラムの下に表示、遅延マウント） */}
             {!isDesktop && (
-              <section className="mt-6 lg:hidden" aria-label="打線（モバイル）">
-                <LineupAside
-                  lineup={lineup}
-                  handleTweet={handleTweet}
-                />
-              </section>
+              <>
+                <div id="mobile-lineup-trigger" className="h-1" />
+                {shouldLoadMobileLineup && (
+                  <section className="mt-6 lg:hidden" aria-label="打線（モバイル）">
+                    <LineupAside
+                      lineup={lineup}
+                      handleTweet={handleTweet}
+                    />
+                  </section>
+                )}
+              </>
             )}
           </div>
 
