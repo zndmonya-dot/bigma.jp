@@ -167,6 +167,17 @@ export async function saveDailyLineup(dateString: string, quoteIds: number[]): P
     });
 
   if (error) {
+    // テーブルが未作成などの環境では失敗を無視（フォールバック運用）
+    const msg = (error as any)?.message || '';
+    const code = (error as any)?.code || '';
+    if (
+      code === '42P01' || // undefined_table
+      code === 'PGRST202' || // relation not found (PostgREST)
+      msg.includes("Could not find the table 'public.lineup_daily'") ||
+      msg.includes('relation "lineup_daily" does not exist')
+    ) {
+      return; // no-op: DBなしで続行
+    }
     throw new Error(`Failed to save daily lineup: ${error.message}`);
   }
 }
@@ -187,6 +198,17 @@ export async function loadDailyLineup(dateString: string): Promise<number[] | nu
   if (error) {
     if (error.code === 'PGRST116') {
       // レコードが見つからない場合はnullを返す（エラーではない）
+      return null;
+    }
+    // テーブル未作成などの環境ではnullを返す（フォールバック運用）
+    const msg = (error as any)?.message || '';
+    const code = (error as any)?.code || '';
+    if (
+      code === '42P01' || // undefined_table
+      code === 'PGRST202' || // relation not found (PostgREST)
+      msg.includes("Could not find the table 'public.lineup_daily'") ||
+      msg.includes('relation "lineup_daily" does not exist')
+    ) {
       return null;
     }
     throw new Error(`Failed to load daily lineup: ${error.message}`);

@@ -103,43 +103,7 @@ export default function RootLayout({
         className={`${mPlusRounded.variable} ${kosugiMaru.variable} antialiased`}
         suppressHydrationWarning
       >
-        {/* Google AdSense 自動広告 - 重複初期化を完全に防ぐ */}
-        <Script
-          id="adsbygoogle-init"
-          strategy="lazyOnload"
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                if (typeof window === 'undefined') return;
-                
-                // グローバルフラグで重複実行を防ぐ
-                if (window.__adsbygoogle_page_level_initialized) return;
-                window.__adsbygoogle_page_level_initialized = true;
-                
-                // adsbygoogle配列を初期化
-                if (!window.adsbygoogle) {
-                  window.adsbygoogle = [];
-                }
-                
-                // enable_page_level_adsは1回だけ設定
-                let hasPageLevelAds = false;
-                for (let i = 0; i < window.adsbygoogle.length; i++) {
-                  if (window.adsbygoogle[i] && window.adsbygoogle[i].enable_page_level_ads) {
-                    hasPageLevelAds = true;
-                    break;
-                  }
-                }
-                
-                if (!hasPageLevelAds) {
-                  window.adsbygoogle.push({
-                    google_ad_client: "${process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID || "ca-pub-4335284954366086"}",
-                    enable_page_level_ads: true
-                  });
-                }
-              })();
-            `,
-          }}
-        />
+        {/* Google AdSense 自動広告 - 重複初期化エラー回避のため、明示pushは行わない（script読込のみ） */}
         {/* ユーザー操作または3秒後にだけAdSenseスクリプトを挿入（未操作なら読み込まない） */}
         <Script
           id="adsbygoogle-defer-loader"
