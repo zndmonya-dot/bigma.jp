@@ -1052,18 +1052,30 @@ export default function Home() {
                 />
               )}
             </section>
-            {/* モバイル用：打線欄（メインカラムの下に表示、遅延マウント） */}
+            {/* モバイル用：打線欄（メインカラムの下に表示、遅延マウント、CLS防止） */}
             {!isDesktop && (
               <>
                 <div id="mobile-lineup-trigger" className="h-1" />
-                {shouldLoadMobileLineup && (
-                  <section className="mt-6 lg:hidden" aria-label="打線（モバイル）">
+                {/* CLS防止: プレースホルダーで高さを確保 */}
+                <section 
+                  className="mt-6 lg:hidden min-h-[600px]" 
+                  aria-label="打線（モバイル）"
+                  aria-busy={!shouldLoadMobileLineup}
+                >
+                  {shouldLoadMobileLineup ? (
                     <LineupAside
                       lineup={lineup}
                       handleTweet={handleTweet}
                     />
-                  </section>
-                )}
+                  ) : (
+                    <div className="bg-gray-50 dark:bg-gray-900/30 rounded-xl p-5 shadow-xl">
+                      <div className="mb-4">
+                        <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-1">打線</h2>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">読み込み中...</p>
+                      </div>
+                    </div>
+                  )}
+                </section>
               </>
             )}
           </div>
@@ -1083,8 +1095,8 @@ export default function Home() {
       </div>
       </main>
       
-      {/* フッター */}
-      <footer className="mt-12 py-6 px-4 border-t border-gray-200 dark:border-gray-800">
+      {/* フッター - CLS防止のためmin-height設定 */}
+      <footer className="mt-12 py-6 px-4 border-t border-gray-200 dark:border-gray-800 min-h-[80px]">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col items-center justify-center gap-4 text-xs text-gray-500 dark:text-gray-400 text-center">
             <div className="flex flex-wrap items-center justify-center gap-4">
