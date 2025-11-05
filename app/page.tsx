@@ -175,10 +175,10 @@ export default function Home() {
       }
       
       const params = new URLSearchParams();
-      // 初回は最大件数を取得、続き読み込み時のみインクリメント件数
+      // 初回は必要最小限（30件）、続き読み込み時のみインクリメント件数
       params.set(
         'limit',
-        String(cursor ? DISPLAY_CONFIG.LOAD_MORE_INCREMENT : DISPLAY_CONFIG.MAX_RANKING_QUOTES)
+        String(cursor ? DISPLAY_CONFIG.LOAD_MORE_INCREMENT : 30)
       );
       if (cursor) params.set('cursor', String(cursor));
       const response = await fetch(`/api/quotes/list?${params.toString()}`, { headers });
@@ -291,7 +291,7 @@ export default function Home() {
    */
   const checkForUpdates = async (cachedETag: string) => {
     try {
-      const response = await fetch(`/api/quotes/list?limit=${DISPLAY_CONFIG.MAX_RANKING_QUOTES}`, {
+      const response = await fetch(`/api/quotes/list?limit=30`, {
         headers: {
           'If-None-Match': cachedETag,
         },
@@ -409,13 +409,90 @@ export default function Home() {
       }
     };
 
-    // requestIdleCallbackで非同期実行（メインスレッドブロック回避）
-    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      requestIdleCallback(processQuotes, { timeout: 100 });
-    } else {
-      // フォールバック: setTimeout
-      setTimeout(processQuotes, 0);
-    }
+    // 長時間タスク削減: より細かく分割（各処理を個別にスケジュール）
+    const scheduleWork = (fn: () => void) => {
+      if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+        requestIdleCallback(fn, { timeout: 50 });
+      } else {
+        setTimeout(fn, 0);
+      }
+    };
+
+    // フィルタリングとソートを分割
+    scheduleWork(() => {
+      let filtered: Quote[] = [];
+      switch (tab) {
+        case 'new':
+          filtered = [...quotesList];
+          break;
+        case 'weekly':
+          const sevenDaysAgo = new Date();
+          sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+          filtered = quotesList.filter(quote => {
+            if (!quote.createdAt) return false;
+            const createdDate = new Date(quote.createdAt);
+            return createdDate >= sevenDaysAgo;
+          });
+          break;
+        case 'monthly':
+          const thirtyDaysAgo = new Date();
+          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+          filtered = quotesList.filter(quote => {
+            if (!quote.createdAt) return false;
+            const createdDate = new Date(quote.createdAt);
+            return createdDate >= thirtyDaysAgo;
+          });
+          break;
+      }
+
+      // ソートと表示更新を次のタスクに分割
+      scheduleWork(() => {
+        let sorted: Quote[] = [];
+        switch (tab) {
+          case 'new':
+            sorted = filtered.sort((a, b) => b.id - a.id).slice(0, 50);
+            break;
+          case 'weekly':
+            const today = getTodayString();
+            const cachedOrder = readRankingOrder('weekly', today);
+            if (cachedOrder) {
+              const map = new Map(filtered.map(q => [q.id, q] as const));
+              sorted = cachedOrder.map(id => map.get(id)).filter((q): q is Quote => Boolean(q));
+            } else {
+              const computed = [...filtered].sort((a, b) => (b.likes || 0) - (a.likes || 0));
+              sorted = computed;
+              writeRankingOrder('weekly', today, computed.map(q => q.id));
+            }
+            break;
+          case 'monthly':
+            const today2 = getTodayString();
+            const cachedOrder2 = readRankingOrder('monthly', today2);
+            if (cachedOrder2) {
+              const map = new Map(filtered.map(q => [q.id, q] as const));
+              sorted = cachedOrder2.map(id => map.get(id)).filter((q): q is Quote => Boolean(q));
+            } else {
+              const computed = [...filtered].sort((a, b) => (b.likes || 0) - (a.likes || 0));
+              sorted = computed.slice(0, 50);
+              writeRankingOrder('monthly', today2, sorted.map(q => q.id));
+            }
+            break;
+        }
+        
+        // 最終更新を次のタスクに分割
+        scheduleWork(() => {
+          setQuotes(sorted.slice(0, DISPLAY_CONFIG.MAX_RANKING_QUOTES));
+          const initialCount = desiredDisplayCount ?? displayCount ?? DISPLAY_CONFIG.INITIAL_QUOTES_COUNT;
+          if (preserveCount) {
+            const base = desiredDisplayCount ?? displayCount;
+            const nextCount = Math.max(base, initialCount);
+            setDisplayedQuotes(sorted.slice(0, Math.min(nextCount, sorted.length)));
+          } else {
+            setDisplayedQuotes(sorted.slice(0, initialCount));
+            if (displayCount !== initialCount) setDisplayCount(initialCount);
+          }
+        });
+      });
+    });
   };
 
   useEffect(() => {

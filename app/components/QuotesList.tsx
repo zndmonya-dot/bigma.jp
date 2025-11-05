@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { Quote } from '@/lib/types';
 
 type Props = {
@@ -9,7 +10,7 @@ type Props = {
   onTweet: (quote: Quote) => void;
 };
 
-export default function QuotesList({ displayedQuotes, likedQuotes, onLike, onTweet }: Props) {
+function QuotesList({ displayedQuotes, likedQuotes, onLike, onTweet }: Props) {
   return (
     <div className="space-y-4 sm:space-y-6 min-h-[400px]">
       {displayedQuotes.map((quote, index) => {
@@ -67,5 +68,7 @@ export default function QuotesList({ displayedQuotes, likedQuotes, onLike, onTwe
     </div>
   );
 }
+
+export default memo(QuotesList);
 
 
