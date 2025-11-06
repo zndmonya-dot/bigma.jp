@@ -1106,7 +1106,7 @@ export default function Home() {
             <section className="mt-6">
               <div className="flex items-center justify-between mb-1">
                 <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
-                  みんなの語録一覧
+                  みんなの語録（言ってない）一覧
                 </h2>
                 {/* 件数表示は非表示に変更 */}
               </div>
